@@ -1,33 +1,28 @@
-"use client";
-import Link from "next/link";
 import React from "react";
+import Link from "next/link"; // ใช้ Link จาก Next.js
 
-const Navbar: React.FC = () => {
+const Navbar = () => {
   return (
-    <nav className="flex items-center justify-between px-8 py-4 bg-white shadow-md">
-      {/* Logo & Title */}
-      <div className="flex items-center space-x-3">
-        <img src="/Logo.png" alt="Logo" className="h-[102px] w-[102px]" />
-        <span className="text-xl font-semibold">Smart Healthcare Asst.</span>
-      </div>
+    <nav>
+      <ul>
+        <li>
+          <Link href="/" legacyBehavior>
+            <a>Home</a> {/* ใช้ <a> tag ภายใน Link */}
+          </Link>
+        </li>
+        <li>
+          <Link href="/login" legacyBehavior>
+            <a>Login</a> {/* ใช้ <a> tag ภายใน Link */}
+          </Link>
+        </li>
 
-      {/* Navigation Links */}
-      <div className="hidden md:flex space-x-10 text-lg ml-auto mr-9">
-        <a href="#" className="hover:text-blue-600">
-          Homepage
-        </a>
-       
-        <a href="#" className="hover:text-blue-600">
-          Contact
-        </a>
-      </div>
-
-      {/* Profile Icon */}
-      <Link href="/profile">
-        <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center hover:bg-blue-600">
-          <span className="text-white text-lg">P</span>
-        </div>
-      </Link>
+        {/* เพิ่มลิงค์ไปยังหน้า Sign Up */}
+        <li>
+          <Link href="/signup" legacyBehavior>
+            <a>Sign Up</a> {/* ใช้ <a> tag ภายใน Link */}
+          </Link>
+        </li>
+      </ul>
     </nav>
   );
 };

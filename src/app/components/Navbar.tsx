@@ -13,26 +13,28 @@ const Navbar: React.FC = () => {
 
       {/* Navigation Links */}
       <div className="hidden md:flex space-x-10 text-lg ml-auto mr-9">
-        <a href="#" className="hover:text-blue-600">
+        <Link href="/" className="hover:text-blue-600">
           Homepage
-        </a>
-        <a href="#" className="hover:text-blue-600">
-          Profile
-        </a>
-        <a href="#" className="hover:text-blue-600">
+        </Link>
+        
+        {/* เพิ่มลิงค์ไปยังหน้า Sign Up */}
+        <Link href="/signup" className="hover:text-blue-600">
+          Sign Up
+        </Link>
+
+        <Link href="#" className="hover:text-blue-600">
           Contact
-        </a>
+        </Link>
       </div>
 
-      {/* Login Button */}
-      <Link href="/login">
-        <button className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600">
-          Login
-        </button>
+      {/* Profile Icon */}
+      <Link href="/profile">
+        <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center hover:bg-blue-600">
+          <span className="text-white text-lg">P</span>
+        </div>
       </Link>
     </nav>
   );
 };
 
 export default Navbar;
-

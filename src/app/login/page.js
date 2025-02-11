@@ -1,23 +1,25 @@
-"use client";
+// navbar.tsx
+
 import React from "react";
-import { BrowserRouter } from "react-router-dom";
-import LoginPage from "../components/login"; // Import the LoginPage component
-import Navbar from "../components/Navbar";
+import { Link } from "react-router-dom"; // ใช้สำหรับลิงก์ใน React Router
+import LoginPage from "../components/login"; // นำเข้า LoginPage จาก login.js
 
-const Navbarr = () => {
+const Navbar = () => {
   return (
-    <BrowserRouter>
-      <nav>
+    <nav>
+      <ul>
+        <li>
+          <Link to="/">Home</Link>
+        </li>
+        <li>
+          <Link to="/login">Login</Link> {/* ลิงก์ไปยังหน้า Login */}
+        </li>
+      </ul>
 
-        {/* Directly render the LoginPage component */}
-        <Navbar />
-        <LoginPage />
-      </nav>
-    </BrowserRouter>
+      {/* หากอยู่ในหน้า login ให้แสดง LoginPage */}
+      <Route path="/login" component={LoginPage} />
+    </nav>
   );
 };
 
-export default Navbarr;
-
-
-
+export default Navbar;
