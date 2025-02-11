@@ -25,20 +25,15 @@ const Navbar: React.FC = () => {
       </div>
 
       {/* Login Button */}
-      <Link href="/main">
-        <button className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600">
-          Login
-        </button>
+      <Link href="/login">
+        <a>
+          <button className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600">
+            Login
+          </button>
+        </a>
       </Link>
     </nav>
   );
 };
 
 export default Navbar;
-
-
-
-
-
-
-
