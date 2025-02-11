@@ -1,23 +1,24 @@
+"use client";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // สำหรับการนำทาง
+import { useRouter } from "next/navigation"; // Use Next.js navigation hook
 import { FaGoogle } from "react-icons/fa";
 import { Eye, EyeOff } from "lucide-react";
 import Card from "./card";
-import Input from "./input"; // เพิ่มการนำเข้า Input component
+import Input from "./input"; // Import your custom Input component
 import Button from "./button";
 import { CardContent } from "./card";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");  // สถานะสำหรับเก็บอีเมล
-  const [password, setPassword] = useState(""); // สถานะสำหรับเก็บรหัสผ่าน
-  const navigate = useNavigate(); // ใช้สำหรับการนำทาง
+  const [email, setEmail] = useState("");    // For storing email input
+  const [password, setPassword] = useState(""); // For storing password input
+  const router = useRouter(); // Next.js router for navigation
 
   const handleLogin = () => {
-    // ตัวอย่างการตรวจสอบอีเมลและรหัสผ่าน
+    // Check if both email and password are provided
     if (email && password) {
-      // ถ้ากรอกอีเมลและรหัสผ่านครบ
-      navigate("/home"); // เปลี่ยนไปหน้าหลักหลังจากล็อกอินสำเร็จ
+      // If both fields are filled, navigate to "/main"
+      router.push("/main");
     } else {
       alert("กรุณากรอกข้อมูลให้ครบ");
     }
@@ -48,21 +49,21 @@ const LoginPage = () => {
               type="email"
               placeholder="Email"
               className="w-full"
-              value={email} // ส่งค่า email
-              onChange={handleEmailChange} // ใช้ฟังก์ชัน handleEmailChange
+              value={email}
+              onChange={handleEmailChange}
             />
             <div className="relative">
               <Input
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 className="w-full"
-                value={password} // ส่งค่า password
-                onChange={handlePasswordChange} // ใช้ฟังก์ชัน handlePasswordChange
+                value={password}
+                onChange={handlePasswordChange}
               />
               <button
                 type="button"
                 className="absolute right-3 top-3 text-gray-500"
-                onClick={() => setShowPassword(!showPassword)} // สลับการแสดงรหัสผ่าน
+                onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
@@ -74,7 +75,7 @@ const LoginPage = () => {
 
           <Button
             className="mt-4 w-full bg-blue-600 text-white hover:bg-blue-700"
-            onClick={handleLogin} // เรียกฟังก์ชัน handleLogin เมื่อกดปุ่ม
+            onClick={handleLogin}
           >
             Sign in
           </Button>
@@ -96,3 +97,4 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
