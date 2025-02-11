@@ -1,16 +1,15 @@
 "use client";
 import React from "react";
 import Navbar from "../components/Navbar2";
-import TitleSection from "../components/search";
-import FeatureSection from "../components/Feature";
+import CaseStudyScreen from "../components/CaseStudy";
+
 
 function App() {
   return (
     <div>
       <Navbar />
-      <TitleSection />
-      <FeatureSection />
-
+      <CaseStudyScreen />
+      
     </div>
   );
 }
