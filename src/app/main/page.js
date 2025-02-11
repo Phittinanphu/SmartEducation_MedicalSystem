@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/Navbar2";
 import TitleSection from "../components/search";
 import FeatureSection from "../components/Feature";
 
