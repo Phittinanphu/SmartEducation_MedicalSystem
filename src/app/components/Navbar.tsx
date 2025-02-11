@@ -25,7 +25,7 @@ const Navbar: React.FC = () => {
       </div>
 
       {/* Login Button */}
-      <Link href="/main">
+      <Link href="/login">
         <button className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600">
           Login
         </button>
@@ -35,10 +35,4 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
-
-
-
-
-
-
 
