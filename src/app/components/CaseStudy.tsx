@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const CaseStudyScreen: React.FC = () => {
   const router = useRouter();
@@ -28,14 +29,16 @@ const CaseStudyScreen: React.FC = () => {
         <h1 className="text-4xl font-bold text-black mt-2">Study cases</h1>
 
         {/* Start Button */}
-        <button
-          onClick={handleStart}
-          className="mt-6 bg-red-600 text-white text-lg font-semibold px-8 py-3 rounded-lg hover:bg-red-700 transition duration-300"
-        >
-          Start
-        </button>
+        <Link href="/chat">
+          <button
+            onClick={handleStart}
+            className="mt-6 bg-red-600 text-white text-lg font-semibold px-8 py-3 rounded-lg hover:bg-red-700 transition duration-300"
+          >
+            Start
+          </button>
+        </Link>
+        </div>
       </div>
-    </div>
   );
 };
 
