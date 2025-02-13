@@ -35,7 +35,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   return (
     <div className="absolute top-10 left-10 bg-white rounded-lg shadow-lg p-6 w-[40%] h-[69%] flex flex-col justify-between">
       {/* Patient's Message or Chat */}
-      <div className="bg-gray-100 p-4 rounded-lg text-black flex-1 overflow-y-auto">
+      <div className="bg-gray-100 p-4 rounded-lg text-black flex-1 overflow-y-auto space-y-3">
         <p className="font-bold text-blue-600">{patientName}</p>
         {messages.map((msg, index) => (
           <div
