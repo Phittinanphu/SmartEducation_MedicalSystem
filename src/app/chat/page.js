@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Navbar2 from "../components/Navbar2"; // ✅ Navbar2 comes first
 import Background from "../components/case/background";
-import ChatInterface from "../components/case/chat1";
+import ChatInterface from "../components/case/chat";
 
 const Page = () => {
   const [selectedOption, setSelectedOption] = useState("");

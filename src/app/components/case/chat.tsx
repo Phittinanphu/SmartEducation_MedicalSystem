@@ -1,4 +1,4 @@
-// ChatInterface.tsx
+// ChatInterface.tsx 
 import React, { useState } from "react";
 
 type ChatInterfaceProps = {
@@ -21,25 +21,41 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const [showAnswerButton, setShowAnswerButton] = useState(false);
   const [examMode, setExamMode] = useState(false);
 
+  // For regular chat mode
   const handleOptionSelect = (option: string) => {
     setChatStarted(true);
     setShowAnswerButton(true);
-    setMessages([...messages, { sender: "student", text: option }]);
+    setMessages((prevMessages) => [...prevMessages, { sender: "student", text: option }]);
     onOptionSelect(option);
   };
 
   const handleSendMessage = () => {
     if (inputText.trim() !== "") {
-      setMessages([...messages, { sender: "student", text: inputText }]);
+      setMessages((prevMessages) => [...prevMessages, { sender: "student", text: inputText }]);
       setInputText("");
     }
   };
 
+  // This was used in the chat popup before entering exam mode.
   const handleConfirmAnswer = () => {
     setShowPopup(false);
     setExamMode(true);
   };
 
+  // New handler for exam mode submission:
+  const handleExamSubmit = () => {
+    setShowPopup(true);
+  };
+
+  // Handler for confirming the exam submission
+  const handleExamConfirmSubmit = () => {
+    setShowPopup(false);
+    // Place your exam submission logic here.
+    console.log("Exam submitted");
+    // Optionally, you could exit exam mode or show a success message.
+  };
+
+  // Exam mode UI
   if (examMode) {
     return (
       <div className="absolute top-10 left-10 bg-white rounded-lg shadow-lg p-6 w-[40%] h-[69%] flex flex-col">
@@ -47,32 +63,76 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         <div className="flex flex-col gap-4 mt-4 flex-1">
           <label>
             <span className="font-semibold">Patient's Name:</span>
-            <input type="text" className="border rounded-lg p-2 w-full" placeholder="Enter patient's name" />
+            <input
+              type="text"
+              className="border rounded-lg p-2 w-full"
+              placeholder="Enter patient's name"
+            />
           </label>
           <label>
             <span className="font-semibold">Age:</span>
-            <input type="number" className="border rounded-lg p-2 w-full" placeholder="Enter age" />
+            <input
+              type="number"
+              className="border rounded-lg p-2 w-full"
+              placeholder="Enter age"
+            />
           </label>
           <label>
             <span className="font-semibold">Primary Symptoms:</span>
-            <textarea className="border rounded-lg p-2 w-full" placeholder="Describe symptoms"></textarea>
+            <textarea
+              className="border rounded-lg p-2 w-full"
+              placeholder="Describe symptoms"
+            ></textarea>
           </label>
           <label>
             <span className="font-semibold">Diagnosis (if applicable):</span>
-            <input type="text" className="border rounded-lg p-2 w-full" placeholder="Enter diagnosis" />
+            <input
+              type="text"
+              className="border rounded-lg p-2 w-full"
+              placeholder="Enter diagnosis"
+            />
           </label>
           <label>
             <span className="font-semibold">Medications Prescribed:</span>
-            <input type="text" className="border rounded-lg p-2 w-full" placeholder="Enter medications" />
+            <input
+              type="text"
+              className="border rounded-lg p-2 w-full"
+              placeholder="Enter medications"
+            />
           </label>
         </div>
-        <button className="bg-red-600 font-bold text-white px-6 py-3 rounded-lg shadow-md hover:bg-red-700 mt-4 self-center">
+        <button
+          className="bg-red-600 font-bold text-white px-6 py-3 rounded-lg shadow-md hover:bg-red-700 mt-4 self-center"
+          onClick={handleExamSubmit}
+        >
           Submit
         </button>
+        {showPopup && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg text-center w-96 h-40 flex flex-col justify-center">
+              <p className="text-lg font-bold">Confirm Answers</p>
+              <div className="flex justify-center gap-4 mt-4">
+                <button
+                  className="bg-gray-700 text-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-800"
+                  onClick={() => setShowPopup(false)}
+                >
+                  NO
+                </button>
+                <button
+                  className="bg-red-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-700"
+                  onClick={handleExamConfirmSubmit}
+                >
+                  YES
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
 
+  // Regular Chat UI
   return (
     <div className="absolute top-10 left-10 bg-white rounded-lg shadow-lg p-6 w-[40%] h-[69%] flex flex-col justify-between">
       <div className="bg-gray-100 p-4 rounded-lg text-black flex-1 overflow-y-auto space-y-3">
@@ -138,13 +198,23 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           </>
         )}
       </div>
-      {showPopup && (
+      {showPopup && !examMode && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center">
             <p className="text-lg font-bold">Are you sure to answer?</p>
             <div className="flex justify-center gap-4 mt-4">
-              <button className="bg-gray-700 text-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-800" onClick={() => setShowPopup(false)}>NO</button>
-              <button className="bg-red-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-700" onClick={handleConfirmAnswer}>YES</button>
+              <button
+                className="bg-gray-700 text-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-800"
+                onClick={() => setShowPopup(false)}
+              >
+                NO
+              </button>
+              <button
+                className="bg-red-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-700"
+                onClick={handleConfirmAnswer}
+              >
+                YES
+              </button>
             </div>
           </div>
         </div>
@@ -154,5 +224,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 };
 
 export default ChatInterface;
+
+
+
 
 
