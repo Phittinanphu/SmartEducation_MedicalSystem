@@ -19,6 +19,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const [inputText, setInputText] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [showAnswerButton, setShowAnswerButton] = useState(false);
+  const [examMode, setExamMode] = useState(false);
 
   const handleOptionSelect = (option: string) => {
     setChatStarted(true);
@@ -33,6 +34,44 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       setInputText("");
     }
   };
+
+  const handleConfirmAnswer = () => {
+    setShowPopup(false);
+    setExamMode(true);
+  };
+
+  if (examMode) {
+    return (
+      <div className="absolute top-10 left-10 bg-white rounded-lg shadow-lg p-6 w-[40%] h-[69%] flex flex-col">
+        <h2 className="text-xl font-bold text-center">Exam Section</h2>
+        <div className="flex flex-col gap-4 mt-4 flex-1">
+          <label>
+            <span className="font-semibold">Patient's Name:</span>
+            <input type="text" className="border rounded-lg p-2 w-full" placeholder="Enter patient's name" />
+          </label>
+          <label>
+            <span className="font-semibold">Age:</span>
+            <input type="number" className="border rounded-lg p-2 w-full" placeholder="Enter age" />
+          </label>
+          <label>
+            <span className="font-semibold">Primary Symptoms:</span>
+            <textarea className="border rounded-lg p-2 w-full" placeholder="Describe symptoms"></textarea>
+          </label>
+          <label>
+            <span className="font-semibold">Diagnosis (if applicable):</span>
+            <input type="text" className="border rounded-lg p-2 w-full" placeholder="Enter diagnosis" />
+          </label>
+          <label>
+            <span className="font-semibold">Medications Prescribed:</span>
+            <input type="text" className="border rounded-lg p-2 w-full" placeholder="Enter medications" />
+          </label>
+        </div>
+        <button className="bg-red-600 font-bold text-white px-6 py-3 rounded-lg shadow-md hover:bg-red-700 mt-4 self-center">
+          Submit
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="absolute top-10 left-10 bg-white rounded-lg shadow-lg p-6 w-[40%] h-[69%] flex flex-col justify-between">
@@ -104,18 +143,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           <div className="bg-white p-6 rounded-lg shadow-lg text-center">
             <p className="text-lg font-bold">Are you sure to answer?</p>
             <div className="flex justify-center gap-4 mt-4">
-              <button
-                className="bg-gray-700 text-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-800"
-                onClick={() => setShowPopup(false)}
-              >
-                NO
-              </button>
-              <button
-                className="bg-red-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-700"
-                onClick={() => setShowPopup(false)}
-              >
-                YES
-              </button>
+              <button className="bg-gray-700 text-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-800" onClick={() => setShowPopup(false)}>NO</button>
+              <button className="bg-red-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-700" onClick={handleConfirmAnswer}>YES</button>
             </div>
           </div>
         </div>
