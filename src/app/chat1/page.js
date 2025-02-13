@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
+import Navbar2 from "../components/Navbar2"; // ✅ Navbar2 comes first
 import Background from "../components/case/background";
 import ChatInterface from "../components/case/chat1";
-import Navbar from "../components/Navbar2";
 
 const Page = () => {
   const [selectedOption, setSelectedOption] = useState("");
@@ -17,17 +17,22 @@ const Page = () => {
   ];
 
   return (
-    <Background>
-      <div className="flex items-center justify-center h-screen">
-        <ChatInterface
-          patientMessage={patientMessage}
-          options={options}
-          onOptionSelect={(option) => setSelectedOption(option)}
-        />
-      </div>
-    </Background>
+    <div className="relative w-full h-screen">
+      <Navbar2 /> {/* ✅ Navbar2 is placed first */}
+      <Background>
+        <div className="flex items-center justify-center h-screen">
+          <ChatInterface
+            patientMessage={patientMessage}
+            options={options}
+            onOptionSelect={(option) => setSelectedOption(option)}
+          />
+        </div>
+      </Background>
+    </div>
   );
 };
 
 export default Page;
+
+
 
