@@ -1,5 +1,6 @@
 // ChatInterface.tsx 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 type ChatInterfaceProps = {
   patientName?: string;
@@ -20,6 +21,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const [showPopup, setShowPopup] = useState(false);
   const [showAnswerButton, setShowAnswerButton] = useState(false);
   const [examMode, setExamMode] = useState(false);
+  const router = useRouter(); // Next.js router for navigation
 
   // For regular chat mode
   const handleOptionSelect = (option: string) => {
@@ -52,6 +54,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     setShowPopup(false);
     // Place your exam submission logic here.
     console.log("Exam submitted");
+    // Navigate to "/sumission"
+    router.push("/submission");
     // Optionally, you could exit exam mode or show a success message.
   };
 
