@@ -12,14 +12,14 @@ let client;
 let clientPromise;
 
 if (process.env.NODE_ENV === "development") {
-  // Cache the MongoDB client in development
+  // Cache the MongoDB client in development to prevent multiple connections
   if (!global._mongoClientPromise) {
     client = new MongoClient(uri, options);
     global._mongoClientPromise = client.connect();
   }
   clientPromise = global._mongoClientPromise;
 } else {
-  // In production, create a new client instance
+  // In production, create a new client instance each time
   client = new MongoClient(uri, options);
   clientPromise = client.connect();
 }

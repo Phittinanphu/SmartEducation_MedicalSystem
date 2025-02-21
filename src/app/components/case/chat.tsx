@@ -60,14 +60,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     setShowPopup(false);
     try {
       // Save exam answers to MongoDB
-      const examResponse = await fetch("/api/exam", {
+      const examResponse = await fetch("/apiExam", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ examAnswers: examData }),
       });
 
       // Save chat history to MongoDB
-      const chatResponse = await fetch("/api/chat", {
+      const chatResponse = await fetch("/apiChat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ chatHistory: messages }),
