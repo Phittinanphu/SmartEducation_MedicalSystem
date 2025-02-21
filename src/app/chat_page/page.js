@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import Navbar2 from "../components/Navbar2"; // ✅ Navbar2 comes first
+import Navbar2 from "../components/Navbar2";
 import Background from "../components/case/background";
 import ChatInterface from "../components/case/chat";
 
@@ -9,7 +9,7 @@ const Page = () => {
 
   const patientMessage =
     "Hello, doctor. I've been feeling unwell for the past few days. I have a persistent cough and a fever...";
-  
+
   const options = [
     "Do you think you have pneumonia?",
     "Have you eaten anything unusual that might have caused this?",
@@ -18,7 +18,7 @@ const Page = () => {
 
   return (
     <div className="relative w-full h-screen">
-      <Navbar2 /> {/* ✅ Navbar2 is placed first */}
+      <Navbar2 />
       <Background>
         <div className="flex items-center justify-center h-screen">
           <ChatInterface
@@ -33,6 +33,3 @@ const Page = () => {
 };
 
 export default Page;
-
-
-
