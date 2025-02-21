@@ -29,7 +29,7 @@ const CaseStudyScreen: React.FC = () => {
         <h1 className="text-4xl font-bold text-black mt-2">Study cases</h1>
 
         {/* Start Button */}
-        <Link href="/chat">
+        <Link href="/chat_page">
           <button
             onClick={handleStart}
             className="mt-6 bg-red-600 text-white text-lg font-semibold px-8 py-3 rounded-lg hover:bg-red-700 transition duration-300"

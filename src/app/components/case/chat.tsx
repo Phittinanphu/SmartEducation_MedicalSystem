@@ -1,4 +1,3 @@
-// ChatInterface.tsx 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -21,9 +20,16 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const [showPopup, setShowPopup] = useState(false);
   const [showAnswerButton, setShowAnswerButton] = useState(false);
   const [examMode, setExamMode] = useState(false);
+  const [examData, setExamData] = useState({
+    patientName: "",
+    age: "",
+    symptoms: "",
+    diagnosis: "",
+    medications: "",
+  });
   const router = useRouter(); // Next.js router for navigation
 
-  // For regular chat mode
+  // Regular chat mode
   const handleOptionSelect = (option: string) => {
     setChatStarted(true);
     setShowAnswerButton(true);
@@ -38,25 +44,44 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   };
 
-  // This was used in the chat popup before entering exam mode.
+  // Popup before entering exam mode
   const handleConfirmAnswer = () => {
     setShowPopup(false);
     setExamMode(true);
   };
 
-  // New handler for exam mode submission:
+  // Trigger exam submission popup
   const handleExamSubmit = () => {
     setShowPopup(true);
   };
 
-  // Handler for confirming the exam submission
-  const handleExamConfirmSubmit = () => {
+  // Confirm exam submission and save data
+  const handleExamConfirmSubmit = async () => {
     setShowPopup(false);
-    // Place your exam submission logic here.
-    console.log("Exam submitted");
-    // Navigate to "/sumission"
-    router.push("/submission");
-    // Optionally, you could exit exam mode or show a success message.
+    try {
+      // Save exam answers to MongoDB
+      const examResponse = await fetch("/apiExam", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ examAnswers: examData }),
+      });
+
+      // Save chat history to MongoDB
+      const chatResponse = await fetch("/apiChat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chatHistory: messages }),
+      });
+
+      if (examResponse.ok && chatResponse.ok) {
+        console.log("Data saved successfully");
+        router.push("/submission");
+      } else {
+        console.error("Error saving data");
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+    }
   };
 
   // Exam mode UI
@@ -71,6 +96,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               type="text"
               className="border rounded-lg p-2 w-full"
               placeholder="Enter patient's name"
+              value={examData.patientName}
+              onChange={(e) => setExamData({ ...examData, patientName: e.target.value })}
             />
           </label>
           <label>
@@ -79,6 +106,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               type="number"
               className="border rounded-lg p-2 w-full"
               placeholder="Enter age"
+              value={examData.age}
+              onChange={(e) => setExamData({ ...examData, age: e.target.value })}
             />
           </label>
           <label>
@@ -86,6 +115,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             <textarea
               className="border rounded-lg p-2 w-full"
               placeholder="Describe symptoms"
+              value={examData.symptoms}
+              onChange={(e) => setExamData({ ...examData, symptoms: e.target.value })}
             ></textarea>
           </label>
           <label>
@@ -94,6 +125,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               type="text"
               className="border rounded-lg p-2 w-full"
               placeholder="Enter diagnosis"
+              value={examData.diagnosis}
+              onChange={(e) => setExamData({ ...examData, diagnosis: e.target.value })}
             />
           </label>
           <label>
@@ -102,6 +135,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               type="text"
               className="border rounded-lg p-2 w-full"
               placeholder="Enter medications"
+              value={examData.medications}
+              onChange={(e) => setExamData({ ...examData, medications: e.target.value })}
             />
           </label>
         </div>
@@ -228,8 +263,3 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 };
 
 export default ChatInterface;
-
-
-
-
-
