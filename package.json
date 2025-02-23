@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "lucide-react": "^0.475.0",
+    "mongodb": "^6.13.1",
     "next": "^15.2.0-canary.51",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
