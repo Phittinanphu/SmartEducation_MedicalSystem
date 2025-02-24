@@ -17,7 +17,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onPrevious }) => {
         .then((res) => res.json())
         .then((data) => {
           if (data.success) {
-            // Assuming records are sorted descending, take the first element.
+            // Take the first record (most recent)
             setChatHistoryData(data.data[0]);
           } else {
             console.error("Error fetching chat history:", data.error);
@@ -34,6 +34,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onPrevious }) => {
         .then((res) => res.json())
         .then((data) => {
           if (data.success) {
+            // Take the first record (most recent)
             setExamAnswerData(data.data[0]);
           } else {
             console.error("Error fetching exam answers:", data.error);
@@ -81,17 +82,26 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onPrevious }) => {
       {showChatModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg max-w-lg w-full">
-            <h2 className="text-xl font-bold mb-4">Latest Chat History</h2>
+            <h2 className="text-xl font-bold mb-4">Chat History</h2>
             <div className="max-h-80 overflow-y-auto">
-              {chatHistoryData ? (
-                <pre>{JSON.stringify(chatHistoryData, null, 2)}</pre>
+              {chatHistoryData && chatHistoryData.chatHistory ? (
+                <ul className="space-y-3">
+                  {chatHistoryData.chatHistory.map((message: any, index: number) => (
+                    <li key={index} className="p-2 border-b border-gray-200">
+                      <span className="font-semibold">
+                        {message.sender === "patient" ? "Patient" : "Student"}:
+                      </span>{" "}
+                      <span>{message.text}</span>
+                    </li>
+                  ))}
+                </ul>
               ) : (
-                <p>Loading chat history...</p>
+                <p>No chat history available.</p>
               )}
             </div>
             <button
               onClick={() => setShowChatModal(false)}
-              className="mt-4 bg-blue-600 text-white px-4 py-2 rounded"
+              className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
               Close
             </button>
@@ -103,17 +113,33 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onPrevious }) => {
       {showExamModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg max-w-lg w-full">
-            <h2 className="text-xl font-bold mb-4">Latest Exam Answer</h2>
+            <h2 className="text-xl font-bold mb-4">Exam Answer</h2>
             <div className="max-h-80 overflow-y-auto">
-              {examAnswerData ? (
-                <pre>{JSON.stringify(examAnswerData, null, 2)}</pre>
+              {examAnswerData && examAnswerData.examAnswers ? (
+                <div className="space-y-2">
+                  <p>
+                    <strong>Patient's Name:</strong> {examAnswerData.examAnswers.patientName}
+                  </p>
+                  <p>
+                    <strong>Age:</strong> {examAnswerData.examAnswers.age}
+                  </p>
+                  <p>
+                    <strong>Symptoms:</strong> {examAnswerData.examAnswers.symptoms}
+                  </p>
+                  <p>
+                    <strong>Diagnosis:</strong> {examAnswerData.examAnswers.diagnosis}
+                  </p>
+                  <p>
+                    <strong>Medications:</strong> {examAnswerData.examAnswers.medications}
+                  </p>
+                </div>
               ) : (
-                <p>Loading exam answer...</p>
+                <p>No exam answer available.</p>
               )}
             </div>
             <button
               onClick={() => setShowExamModal(false)}
-              className="mt-4 bg-blue-600 text-white px-4 py-2 rounded"
+              className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
               Close
             </button>
