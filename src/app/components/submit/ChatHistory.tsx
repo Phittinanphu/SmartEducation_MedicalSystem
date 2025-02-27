@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 
 interface ChatHistoryProps {
   onPrevious: () => void;
+  active: boolean;
 }
 
-const ChatHistory: React.FC<ChatHistoryProps> = ({ onPrevious }) => {
+const ChatHistory: React.FC<ChatHistoryProps> = ({ onPrevious, active }) => {
   const [showChatModal, setShowChatModal] = useState(false);
   const [showExamModal, setShowExamModal] = useState(false);
   const [chatHistoryData, setChatHistoryData] = useState<any>(null);
@@ -17,7 +18,6 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onPrevious }) => {
         .then((res) => res.json())
         .then((data) => {
           if (data.success) {
-            // Take the first record as the latest chat history
             setChatHistoryData(data.data[0]);
           } else {
             console.error("Error fetching chat history:", data.error);
@@ -34,7 +34,6 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onPrevious }) => {
         .then((res) => res.json())
         .then((data) => {
           if (data.success) {
-            // Take the first record as the latest exam answer
             setExamAnswerData(data.data[0]);
           } else {
             console.error("Error fetching exam answers:", data.error);
@@ -61,18 +60,19 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onPrevious }) => {
           View Exam Answer
         </button>
       </div>
-      <div className="flex justify-between mt-4">
-        <button
-          onClick={onPrevious}
-          className="bg-gray-800 text-white px-6 py-2 rounded-lg transition transform hover:bg-gray-900 hover:scale-105"
-        >
-          Previous
-        </button>
-        <button className="bg-blue-600 text-white px-6 py-2 rounded-lg transition transform hover:bg-blue-700 hover:scale-105">
-          Submit
-        </button>
-      </div>
-
+      {active && (
+        <div className="flex justify-between mt-4">
+          <button
+            onClick={onPrevious}
+            className="bg-gray-800 text-white px-6 py-2 rounded-lg transition transform hover:bg-gray-900 hover:scale-105"
+          >
+            Previous
+          </button>
+          <button className="bg-blue-600 text-white px-6 py-2 rounded-lg transition transform hover:bg-blue-700 hover:scale-105">
+            Submit
+          </button>
+        </div>
+      )}
       {/* Chat History Modal */}
       {showChatModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-blue-200 bg-opacity-80 z-50">
@@ -113,7 +113,6 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onPrevious }) => {
           </div>
         </div>
       )}
-
       {/* Exam Answer Modal */}
       {showExamModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-blue-200 bg-opacity-80 z-50">
