@@ -1,48 +1,54 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 interface ChatHistoryProps {
+  examData: {
+    patientName: string;
+    age: string;
+    symptoms: string;
+    diagnosis: string;
+    medications: string;
+  } | null;
+  chatHistory: Array<{ sender: string; text: string }>;
   onPrevious: () => void;
+  onEditAnswer: () => void;
 }
 
-const ChatHistory: React.FC<ChatHistoryProps> = ({ onPrevious }) => {
+const ChatHistory: React.FC<ChatHistoryProps> = ({
+  examData,
+  chatHistory,
+  onPrevious,
+  onEditAnswer,
+}) => {
   const [showChatModal, setShowChatModal] = useState(false);
   const [showExamModal, setShowExamModal] = useState(false);
-  const [chatHistoryData, setChatHistoryData] = useState<any>(null);
-  const [examAnswerData, setExamAnswerData] = useState<any>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fetch the latest chat history when the chat modal opens
-  useEffect(() => {
-    if (showChatModal) {
-      fetch("/apiChat")
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success) {
-            // Take the first record as the latest chat history
-            setChatHistoryData(data.data[0]);
-          } else {
-            console.error("Error fetching chat history:", data.error);
-          }
-        })
-        .catch((err) => console.error("Error fetching chat history:", err));
+  // Function to handle saving data to MongoDB using the temporary data
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      const examResponse = await fetch("/apiExam", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ examAnswers: examData }),
+      });
+      const chatResponse = await fetch("/apiChat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chatHistory: chatHistory }),
+      });
+      if (examResponse.ok && chatResponse.ok) {
+        console.log("Data saved successfully");
+        // Optionally, show a success message or further navigation
+      } else {
+        console.error("Error saving data");
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+    } finally {
+      setIsSubmitting(false);
     }
-  }, [showChatModal]);
-
-  // Fetch the latest exam answer when the exam modal opens
-  useEffect(() => {
-    if (showExamModal) {
-      fetch("/apiExam")
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success) {
-            // Take the first record as the latest exam answer
-            setExamAnswerData(data.data[0]);
-          } else {
-            console.error("Error fetching exam answers:", data.error);
-          }
-        })
-        .catch((err) => console.error("Error fetching exam answers:", err));
-    }
-  }, [showExamModal]);
+  };
 
   return (
     <div className="bg-green-300 p-6 rounded-2xl shadow-lg w-[883px] h-[185px]">
@@ -68,9 +74,24 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onPrevious }) => {
         >
           Previous
         </button>
-        <button className="bg-blue-600 text-white px-6 py-2 rounded-lg transition transform hover:bg-blue-700 hover:scale-105">
-          Submit
-        </button>
+        <div className="flex gap-2">
+          <button
+            // When Edit Answer is clicked, immediately call onEditAnswer.
+            // The parent component should then render the chat/exam view,
+            // passing in the temporary data so that previous chat history and exam answers are loaded.
+            onClick={onEditAnswer}
+            className="bg-yellow-500 text-white px-6 py-2 rounded-lg transition transform hover:bg-yellow-600 hover:scale-105"
+          >
+            Edit Answer
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg transition transform hover:bg-blue-700 hover:scale-105"
+          >
+            {isSubmitting ? "Submitting..." : "Submit"}
+          </button>
+        </div>
       </div>
 
       {/* Chat History Modal */}
@@ -78,7 +99,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onPrevious }) => {
         <div className="fixed inset-0 flex items-center justify-center bg-blue-200 bg-opacity-80 z-50">
           <div className="bg-blue-50 rounded-lg shadow-2xl max-w-2xl w-full mx-4 p-8 text-gray-900">
             <div className="flex justify-between items-center border-b border-blue-200 pb-4 mb-4">
-              <h2 className="text-2xl font-semibold">Latest Chat History</h2>
+              <h2 className="text-2xl font-semibold">Temporary Chat History</h2>
               <button
                 onClick={() => setShowChatModal(false)}
                 className="text-gray-600 hover:text-gray-800 text-3xl leading-none"
@@ -87,9 +108,9 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onPrevious }) => {
               </button>
             </div>
             <div className="max-h-96 overflow-y-auto">
-              {chatHistoryData && chatHistoryData.chatHistory ? (
+              {chatHistory && chatHistory.length > 0 ? (
                 <ul className="space-y-4">
-                  {chatHistoryData.chatHistory.map((message: any, index: number) => (
+                  {chatHistory.map((message, index) => (
                     <li key={index} className="border-b border-blue-200 pb-2">
                       <span className="font-bold">
                         {message.sender === "patient" ? "Patient" : "Student"}:
@@ -119,7 +140,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onPrevious }) => {
         <div className="fixed inset-0 flex items-center justify-center bg-blue-200 bg-opacity-80 z-50">
           <div className="bg-blue-50 rounded-lg shadow-2xl max-w-2xl w-full mx-4 p-8 text-gray-900">
             <div className="flex justify-between items-center border-b border-blue-200 pb-4 mb-4">
-              <h2 className="text-2xl font-semibold">Latest Exam Answer</h2>
+              <h2 className="text-2xl font-semibold">Temporary Exam Answer</h2>
               <button
                 onClick={() => setShowExamModal(false)}
                 className="text-gray-600 hover:text-gray-800 text-3xl leading-none"
@@ -128,22 +149,22 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onPrevious }) => {
               </button>
             </div>
             <div className="max-h-96 overflow-y-auto">
-              {examAnswerData && examAnswerData.examAnswers ? (
+              {examData ? (
                 <div className="space-y-4">
                   <p>
-                    <strong>Patient's Name:</strong> {examAnswerData.examAnswers.patientName}
+                    <strong>Patient's Name:</strong> {examData.patientName}
                   </p>
                   <p>
-                    <strong>Age:</strong> {examAnswerData.examAnswers.age}
+                    <strong>Age:</strong> {examData.age}
                   </p>
                   <p>
-                    <strong>Symptoms:</strong> {examAnswerData.examAnswers.symptoms}
+                    <strong>Symptoms:</strong> {examData.symptoms}
                   </p>
                   <p>
-                    <strong>Diagnosis:</strong> {examAnswerData.examAnswers.diagnosis}
+                    <strong>Diagnosis:</strong> {examData.diagnosis}
                   </p>
                   <p>
-                    <strong>Medications:</strong> {examAnswerData.examAnswers.medications}
+                    <strong>Medications:</strong> {examData.medications}
                   </p>
                 </div>
               ) : (

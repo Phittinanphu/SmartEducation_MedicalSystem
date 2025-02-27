@@ -28,10 +28,24 @@ const Page = () => {
     <div className="relative w-full h-screen">
       <Navbar2 />
       <Background>
-        <div className="flex flex-col items-center gap-6 mt-[-80px]"> {/* Moves all blocks higher */}
-          {step >= 1 && <SubmitInstructions onNext={handleNext} onPrevious={handlePrevious} />}
-          {step >= 2 && <PatientDetails onNext={handleNext} onPrevious={handlePrevious} />}
-          {step >= 3 && <ChatHistory onPrevious={handlePrevious} />}
+        <div className="flex flex-col items-center gap-6 mt-[-80px]">
+          {step >= 1 && (
+            <SubmitInstructions
+              active={step === 1}
+              onNext={handleNext}
+              onPrevious={handlePrevious}
+            />
+          )}
+          {step >= 2 && (
+            <PatientDetails
+              active={step === 2}
+              onNext={handleNext}
+              onPrevious={handlePrevious}
+            />
+          )}
+          {step >= 3 && (
+            <ChatHistory active={step === 3} onPrevious={handlePrevious} />
+          )}
         </div>
       </Background>
     </div>
@@ -39,14 +53,3 @@ const Page = () => {
 };
 
 export default Page;
-
-
-
-
-
-
-
-
-
-
-
