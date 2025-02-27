@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Navbar2 from "../components/Navbar2";
 import Background from "../components/case/background";
-import ChatInterface from "../components/case/chat";
+import ChatInterface from "../components/case/ChatInterface";
 
 const Page = () => {
   const [selectedOption, setSelectedOption] = useState("");
@@ -20,12 +20,19 @@ const Page = () => {
     <div className="relative w-full h-screen">
       <Navbar2 />
       <Background>
-        <div className="flex items-center justify-center h-screen">
-          <ChatInterface
-            patientMessage={patientMessage}
-            options={options}
-            onOptionSelect={(option) => setSelectedOption(option)}
-          />
+        <div className="flex h-full">
+          {/* Left side: Chat/Exam area */}
+          <div className="w-[100%]">
+            <ChatInterface
+              patientMessage={patientMessage}
+              options={options}
+              onOptionSelect={(option) => setSelectedOption(option)}
+            />
+          </div>
+          {/* Right side: Reserved for patient animation */}
+          <div className="flex-1">
+            {/* Patient animation area goes here */}
+          </div>
         </div>
       </Background>
     </div>
