@@ -1,23 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ChatMode from "./ChatMode";
 import ExamMode from "./ExamMode";
+
+type Message = { sender: string; text: string };
+
+type ExamDataType = {
+  patientName: string;
+  age: string;
+  symptoms: string;
+  diagnosis: string;
+  medications: string;
+};
 
 type ChatInterfaceProps = {
   patientName?: string;
   patientMessage: string;
   options: string[];
   onOptionSelect: (option: string) => void;
-  onExamSubmitComplete?: (
-    examData: {
-      patientName: string;
-      age: string;
-      symptoms: string;
-      diagnosis: string;
-      medications: string;
-    },
-    messages: Array<{ sender: string; text: string }>
-  ) => void;
+  onExamSubmitComplete?: (examData: ExamDataType, messages: Message[]) => void;
+  // Optional props for pre-populating fields when editing answers
+  initialMessages?: Message[];
+  initialExamData?: ExamDataType;
 };
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
@@ -26,20 +30,45 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   options,
   onOptionSelect,
   onExamSubmitComplete,
+  initialMessages,
+  initialExamData,
 }) => {
-  const [chatStarted, setChatStarted] = useState(false);
-  const [messages, setMessages] = useState([{ sender: "patient", text: patientMessage }]);
+  const router = useRouter();
+
+  // Initialize state with props if provided.
+  const [chatStarted, setChatStarted] = useState<boolean>(!!initialMessages);
+  const [messages, setMessages] = useState<Message[]>(
+    initialMessages ? initialMessages : [{ sender: "patient", text: patientMessage }]
+  );
   const [inputText, setInputText] = useState("");
   const [activeMode, setActiveMode] = useState<"chat" | "exam">("chat");
-  const [examData, setExamData] = useState({
-    patientName: "",
-    age: "",
-    symptoms: "",
-    diagnosis: "",
-    medications: "",
-  });
+  const [examData, setExamData] = useState<ExamDataType>(
+    initialExamData
+      ? initialExamData
+      : {
+          patientName: "",
+          age: "",
+          symptoms: "",
+          diagnosis: "",
+          medications: "",
+        }
+  );
   const [showExamSubmitPopup, setShowExamSubmitPopup] = useState(false);
-  const router = useRouter();
+
+  // When initialMessages prop changes, update the messages state.
+  useEffect(() => {
+    if (initialMessages) {
+      setMessages(initialMessages);
+      setChatStarted(true);
+    }
+  }, [initialMessages]);
+
+  // When initialExamData prop changes, update the examData state.
+  useEffect(() => {
+    if (initialExamData) {
+      setExamData(initialExamData);
+    }
+  }, [initialExamData]);
 
   // Chat mode handlers
   const handleOptionSelect = (option: string) => {
@@ -55,8 +84,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   };
 
-  // Exam mode handlers
-  const handleExamDataChange = (field: keyof typeof examData, value: string) => {
+  // Exam mode handler
+  const handleExamDataChange = (field: keyof ExamDataType, value: string) => {
     setExamData((prev) => ({ ...prev, [field]: value }));
   };
 

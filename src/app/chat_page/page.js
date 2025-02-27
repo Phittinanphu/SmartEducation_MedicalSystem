@@ -1,9 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Navbar2 from "../components/Navbar2";
-// ChatBackground is used for the chat/exam view
 import ChatBackground from "../components/case/background";
-// SubmitBackground is used for the submission multi‑step view
 import SubmitBackground from "../components/submit/Background";
 import ChatInterface from "../components/case/ChatInterface";
 import SubmitInstructions from "../components/submit/SubmitInstructions";
@@ -11,14 +9,14 @@ import PatientDetails from "../components/submit/PatientDetails";
 import ChatHistory from "../components/submit/ChatHistory";
 
 const Page = () => {
-  // State to track whether the student has submitted exam answers
+  // Tracks whether the exam submission process is complete.
   const [submitted, setSubmitted] = useState(false);
-  // Step state for the multi‑step submission view:
+  // Step state for the submission multi‑step view:
   // 1 = Submit Instructions, 2 = Patient Details, 3 = Chat History
   const [step, setStep] = useState(1);
   const [selectedOption, setSelectedOption] = useState("");
 
-  // New state to hold exam data and chat history from ChatInterface
+  // Temporary data from the ChatInterface
   const [examData, setExamData] = useState(null);
   const [chatMessages, setChatMessages] = useState([]);
 
@@ -31,35 +29,33 @@ const Page = () => {
     "Can you describe your cough? Is it dry, or are you producing phlegm?",
   ];
 
-  // Callback passed to ChatInterface.
-  // When exam submission is complete, ChatInterface passes its exam answers and chat messages.
+  // Callback from ChatInterface when the exam is submitted.
+  // It saves the temporary data and switches to the submission view.
   const handleExamSubmitComplete = (examAnswers, messages) => {
     setExamData(examAnswers);
     setChatMessages(messages);
     setSubmitted(true);
-    // Reset the submission flow step to 1
     setStep(1);
   };
 
-  // Handlers for the submission multi‑step view
+  // onEditAnswer callback: switch back to the chat/exam view.
+  // The temporary data is passed into ChatInterface so the student can continue editing.
+  const handleEditAnswer = () => {
+    setSubmitted(false);
+  };
+
+  // Handlers for the submission multi‑step navigation.
   const handleNext = () => {
     if (step < 3) setStep(step + 1);
   };
 
   const handlePrevious = () => {
     if (step === 1) {
-      // If the user wants to go back from the first submission step,
-      // return to the chat/exam view.
+      // If on the first step, going back returns to the chat/exam view.
       setSubmitted(false);
     } else {
       setStep(step - 1);
     }
-  };
-
-  // Handler for editing answers from the Chat History step.
-  // It switches back to the chat/exam view so students can modify their answers.
-  const handleEditAnswer = () => {
-    setSubmitted(false);
   };
 
   return (
@@ -69,18 +65,21 @@ const Page = () => {
         // Chat/Exam view
         <ChatBackground>
           <div className="flex h-full">
-            {/* Left side: Chat/Exam area */}
             <div className="w-[100%]">
               <ChatInterface
                 patientMessage={patientMessage}
                 options={options}
                 onOptionSelect={(option) => setSelectedOption(option)}
-                // When exam submission is complete in ChatInterface,
-                // it calls this callback with exam data and chat messages.
                 onExamSubmitComplete={handleExamSubmitComplete}
+                // When starting for the first time, temporary data is not provided,
+                // so ChatInterface will load default values and show the three option blocks.
+                // In case of Edit Answer, the temporary data (if any) is passed.
+                initialMessages={
+                  chatMessages && chatMessages.length > 0 ? chatMessages : undefined
+                }
+                initialExamData={examData ? examData : undefined}
               />
             </div>
-            {/* Right side: Reserved for patient animation */}
             <div className="flex-1">
               {/* Patient animation area goes here */}
             </div>
@@ -90,8 +89,6 @@ const Page = () => {
         // Submission multi‑step view
         <SubmitBackground>
           <div className="flex flex-col items-center gap-6 mt-[-80px]">
-            {/* Render Submit Instructions if step >= 1.
-                Only pass navigation props when active (step === 1). */}
             {step >= 1 && (
               <SubmitInstructions
                 active={step === 1}
@@ -99,7 +96,6 @@ const Page = () => {
                 onPrevious={step === 1 ? handlePrevious : undefined}
               />
             )}
-            {/* Render Patient Details if step >= 2 */}
             {step >= 2 && (
               <PatientDetails
                 active={step === 2}
@@ -107,7 +103,6 @@ const Page = () => {
                 onPrevious={step === 2 ? handlePrevious : undefined}
               />
             )}
-            {/* Render Chat History if step >= 3 */}
             {step >= 3 && (
               <ChatHistory
                 active={step === 3}
