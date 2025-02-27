@@ -1,15 +1,23 @@
 import React, { useState, useEffect } from "react";
 
 interface ChatHistoryProps {
+  examData: any;
+  chatHistory: any;
   onPrevious: () => void;
-  active: boolean;
+  onEditAnswer: () => void;
 }
 
-const ChatHistory: React.FC<ChatHistoryProps> = ({ onPrevious, active }) => {
+const ChatHistory: React.FC<ChatHistoryProps> = ({
+  examData,
+  chatHistory,
+  onPrevious,
+  onEditAnswer,
+}) => {
   const [showChatModal, setShowChatModal] = useState(false);
   const [showExamModal, setShowExamModal] = useState(false);
   const [chatHistoryData, setChatHistoryData] = useState<any>(null);
   const [examAnswerData, setExamAnswerData] = useState<any>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch the latest chat history when the chat modal opens
   useEffect(() => {
@@ -18,6 +26,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onPrevious, active }) => {
         .then((res) => res.json())
         .then((data) => {
           if (data.success) {
+            // Take the first record as the latest chat history
             setChatHistoryData(data.data[0]);
           } else {
             console.error("Error fetching chat history:", data.error);
@@ -34,6 +43,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onPrevious, active }) => {
         .then((res) => res.json())
         .then((data) => {
           if (data.success) {
+            // Take the first record as the latest exam answer
             setExamAnswerData(data.data[0]);
           } else {
             console.error("Error fetching exam answers:", data.error);
@@ -42,6 +52,33 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onPrevious, active }) => {
         .catch((err) => console.error("Error fetching exam answers:", err));
     }
   }, [showExamModal]);
+
+  // New function to handle saving data to MongoDB
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      const examResponse = await fetch("/apiExam", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ examAnswers: examData }),
+      });
+      const chatResponse = await fetch("/apiChat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chatHistory: chatHistory }),
+      });
+      if (examResponse.ok && chatResponse.ok) {
+        console.log("Data saved successfully");
+        // Optionally, display a success message or navigate further
+      } else {
+        console.error("Error saving data");
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="bg-green-300 p-6 rounded-2xl shadow-lg w-[883px] h-[185px]">
@@ -60,19 +97,30 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onPrevious, active }) => {
           View Exam Answer
         </button>
       </div>
-      {active && (
-        <div className="flex justify-between mt-4">
+      <div className="flex justify-between mt-4">
+        <button
+          onClick={onPrevious}
+          className="bg-gray-800 text-white px-6 py-2 rounded-lg transition transform hover:bg-gray-900 hover:scale-105"
+        >
+          Previous
+        </button>
+        <div className="flex gap-2">
           <button
-            onClick={onPrevious}
-            className="bg-gray-800 text-white px-6 py-2 rounded-lg transition transform hover:bg-gray-900 hover:scale-105"
+            onClick={onEditAnswer}
+            className="bg-yellow-500 text-white px-6 py-2 rounded-lg transition transform hover:bg-yellow-600 hover:scale-105"
           >
-            Previous
+            Edit Answer
           </button>
-          <button className="bg-blue-600 text-white px-6 py-2 rounded-lg transition transform hover:bg-blue-700 hover:scale-105">
-            Submit
+          <button
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg transition transform hover:bg-blue-700 hover:scale-105"
+          >
+            {isSubmitting ? "Submitting..." : "Submit"}
           </button>
         </div>
-      )}
+      </div>
+
       {/* Chat History Modal */}
       {showChatModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-blue-200 bg-opacity-80 z-50">
@@ -113,6 +161,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onPrevious, active }) => {
           </div>
         </div>
       )}
+
       {/* Exam Answer Modal */}
       {showExamModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-blue-200 bg-opacity-80 z-50">

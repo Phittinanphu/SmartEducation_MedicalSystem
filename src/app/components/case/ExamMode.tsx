@@ -15,7 +15,7 @@ type ExamModeProps = {
   onSubmitExam: () => void;
   showSubmitPopup: boolean;
   setShowSubmitPopup: (value: boolean) => void;
-  onConfirmSubmit: () => void;
+  onConfirmSubmit: () => void; // Provided by page.js to remain on the same page in "chat_page" folder
 };
 
 const ExamMode: React.FC<ExamModeProps> = ({
@@ -107,6 +107,8 @@ const ExamMode: React.FC<ExamModeProps> = ({
                 NO
               </button>
               <button
+                // Clicking YES will call onConfirmSubmit, which is implemented in page.js (within the chat_page folder)
+                // to remain on the same page rather than navigating away.
                 className="bg-red-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-700"
                 onClick={onConfirmSubmit}
               >

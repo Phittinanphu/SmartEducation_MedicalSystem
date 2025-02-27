@@ -8,6 +8,16 @@ type ChatInterfaceProps = {
   patientMessage: string;
   options: string[];
   onOptionSelect: (option: string) => void;
+  onExamSubmitComplete?: (
+    examData: {
+      patientName: string;
+      age: string;
+      symptoms: string;
+      diagnosis: string;
+      medications: string;
+    },
+    messages: Array<{ sender: string; text: string }>
+  ) => void;
 };
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
@@ -15,6 +25,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   patientMessage,
   options,
   onOptionSelect,
+  onExamSubmitComplete,
 }) => {
   const [chatStarted, setChatStarted] = useState(false);
   const [messages, setMessages] = useState([{ sender: "patient", text: patientMessage }]);
@@ -47,30 +58,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   // Exam mode handlers
   const handleExamDataChange = (field: keyof typeof examData, value: string) => {
     setExamData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleExamConfirmSubmit = async () => {
-    setShowExamSubmitPopup(false);
-    try {
-      const examResponse = await fetch("/apiExam", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ examAnswers: examData }),
-      });
-      const chatResponse = await fetch("/apiChat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chatHistory: messages }),
-      });
-      if (examResponse.ok && chatResponse.ok) {
-        console.log("Data saved successfully");
-        router.push("/submission");
-      } else {
-        console.error("Error saving data");
-      }
-    } catch (error) {
-      console.error("Submission error:", error);
-    }
   };
 
   return (
@@ -117,7 +104,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           onSubmitExam={() => setShowExamSubmitPopup(true)}
           showSubmitPopup={showExamSubmitPopup}
           setShowSubmitPopup={setShowExamSubmitPopup}
-          onConfirmSubmit={handleExamConfirmSubmit}
+          onConfirmSubmit={() => {
+            setShowExamSubmitPopup(false);
+            if (onExamSubmitComplete) {
+              onExamSubmitComplete(examData, messages);
+            }
+          }}
         />
       )}
     </div>
