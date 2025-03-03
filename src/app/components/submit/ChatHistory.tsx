@@ -1,4 +1,6 @@
+"use client";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface ChatHistoryProps {
   examData: {
@@ -22,9 +24,10 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   const [showChatModal, setShowChatModal] = useState(false);
   const [showExamModal, setShowExamModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const router = useRouter();
   // Function to handle saving data to MongoDB using the temporary data
   const handleSubmit = async () => {
+
     setIsSubmitting(true);
     try {
       const examResponse = await fetch("/apiExam", {
@@ -39,7 +42,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
       });
       if (examResponse.ok && chatResponse.ok) {
         console.log("Data saved successfully");
-        // Optionally, show a success message or further navigation
+        router.push("/submission_success");
       } else {
         console.error("Error saving data");
       }
