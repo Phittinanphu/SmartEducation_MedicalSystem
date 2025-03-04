@@ -16,11 +16,16 @@ const Navbar: React.FC = () => {
         <a href="#" className="hover:text-blue-600">
           Homepage
         </a>
-       
+
+        <Link href="/history" className="hover:text-blue-600">
+          History
+        </Link>
+
         <a href="#" className="hover:text-blue-600">
           Contact
         </a>
       </div>
+
 
       {/* Profile Icon */}
       <Link href="/profile">
