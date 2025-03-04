@@ -1,6 +1,6 @@
 import PatientHistory from "../components/PatientHistory";
 import TitleSection from "../components/Titles";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/Navbar2";
 
 export default function Page() {
   return (
