@@ -1,4 +1,6 @@
+"use client";
 import React from "react";
+import { useRouter } from "next/navigation";
 
 interface PatientHistoryItem {
   name: string;
@@ -12,6 +14,12 @@ const historyData: PatientHistoryItem[] = [
 ];
 
 const PatientHistory: React.FC = () => {
+  const router = useRouter();
+
+  const handleViewAnswer = () => {
+    router.push("/evaluation_page");
+  };
+
   return (
     <div className="p-6 space-y-4">
       <h2 className="text-2xl font-bold">Patient Chat History</h2>
@@ -32,7 +40,9 @@ const PatientHistory: React.FC = () => {
             </div>
           </div>
           <div className="flex space-x-4">
-            <button className="text-blue-600 hover:underline">View Answer</button>
+            <button onClick={handleViewAnswer} className="text-blue-600 hover:underline">
+              View Answer
+            </button>
             <button className="text-red-600 hover:underline">Report</button>
           </div>
         </div>

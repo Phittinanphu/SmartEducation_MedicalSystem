@@ -13,9 +13,9 @@ const Navbar: React.FC = () => {
 
       {/* Navigation Links */}
       <div className="hidden md:flex space-x-10 text-lg ml-auto mr-9">
-        <a href="#" className="hover:text-blue-600">
+        <Link href="/main" className="hover:text-blue-600">
           Homepage
-        </a>
+        </Link>
 
         <Link href="/history" className="hover:text-blue-600">
           History
