@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 // TYPES & INTERFACES
 // ---------------------------------------------------
 
-// Overall evaluation data now only uses the case name (domain scores will be computed).
+// Overall evaluation data uses only the case name (domain scores are computed from metric scores)
 interface EvaluationData {
   case: string;
 }
@@ -40,7 +40,7 @@ const domainMaxScores: Record<string, { [key in DomainKey]: number }> = {
   'Acute pancreatitis': { domain1: 20, domain2: 60, domain3: 30, domain4: 20 },
   'Food poisoning': { domain1: 20, domain2: 60, domain3: 30, domain4: 20 },
   'Renal stone': { domain1: 20, domain2: 60, domain3: 30, domain4: 20 },
-  'Unknown Case': { domain1: 20, domain2: 30, domain3: 30, domain4: 20 },
+  'Unknown Case': { domain1: 20, domain2: 30, domain3: 30, domain4: 20 }
 };
 
 // Labels for each domain.
@@ -48,11 +48,10 @@ const domainLabels: Record<DomainKey, string> = {
   domain1: 'Communication Skills',
   domain2: 'General History Taking',
   domain3: 'Disease-Specific History',
-  domain4: 'Diagnosis',
+  domain4: 'Diagnosis'
 };
 
 // Detailed evaluation metrics for each case and domain.
-// These values are based on the provided PDF.
 const evaluationMetrics: Record<string, Record<DomainKey, EvaluationMetric[]>> = {
   'Peptic ulcer disease': {
     domain1: [
@@ -221,10 +220,10 @@ const CardContent: React.FC<CardContentProps> = ({ children, className = '', ...
 // SCORE EVALUATION COMPONENT
 // ---------------------------------------------------
 const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({ inputData }) => {
-  // State for the currently selected domain section.
-  const [DomainSection, setSelectedDomain] = useState<DomainKey | null>(null);
+  // State for the currently open domain sections (multiple allowed).
+  const [openDomains, setOpenDomains] = useState<DomainKey[]>([]);
 
-  // We only need to capture the case from inputData; domain scores will be computed.
+  // State to capture the case from inputData.
   const [evaluationCase, setEvaluationCase] = useState<string>('Unknown Case');
 
   // Default metric scores for all domains.
@@ -251,16 +250,13 @@ const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({ inputData }) => {
   // Determine current case.
   const currentCase = evaluationCase || 'Unknown Case';
 
-  // Build an array of domain entries by computing the domain score from metric scores.
+  // Build an array of domain entries by computing each domain's total score from its metric scores.
   const domainEntries = (Object.keys(domainLabels) as DomainKey[]).map(domainKey => {
-    // Get metrics for this domain and case.
     const metrics = evaluationMetrics[currentCase][domainKey] || [];
-    // Compute total score for this domain by summing scores for each metric.
     const computedScore = metrics.reduce((sum, metric) => {
       const scoreForMetric = (metricScores[domainKey] && metricScores[domainKey][metric.id]) ?? 0;
       return sum + scoreForMetric;
     }, 0);
-    // Compute maximum score for this domain by summing the maxScore of each metric.
     const computedMax = metrics.reduce((sum, metric) => sum + metric.maxScore, 0);
     return {
       domainKey,
@@ -279,34 +275,43 @@ const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({ inputData }) => {
   const highestDomain = sortedDomains[0];
   const lowestDomain = sortedDomains[sortedDomains.length - 1];
 
+  // Toggle open/close state for a domain.
+  const toggleDomain = (domainKey: DomainKey) => {
+    if (openDomains.includes(domainKey)) {
+      setOpenDomains(openDomains.filter(key => key !== domainKey));
+    } else {
+      setOpenDomains([...openDomains, domainKey]);
+    }
+  };
+
   return (
     <div className="p-6">
-      {/* Header showing current case */}
-      <h2 className="text-xl font-bold mb-4">
-        Accuracy Per Concept (Case: {currentCase})
+      {/* Header with larger text in red; case information in same line but smaller */}
+      <h2 className="text-3xl font-bold text-red-600 mb-4">
+        Performance Per Concept <span className="text-xl font-normal">(Case: {currentCase})</span>
       </h2>
 
-      {/* Display highest and lowest accuracy domains */}
+      {/* Display highest and lowest performance domains */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center mb-6">
         <div className="mr-6 mb-2 sm:mb-0">
-          <strong>Highest Accuracy</strong>:<br />
+          <strong>Highest Performance</strong>:<br />
           Your highest score is in <b>{highestDomain?.label}</b>
         </div>
         <div>
-          <strong>Lowest Accuracy</strong>:<br />
+          <strong>Lowest Performance</strong>:<br />
           Your lowest score is in <b>{lowestDomain?.label}</b>
         </div>
       </div>
 
-      {/* Render each domain's details */}
+      {/* Render each domain */}
       <div className="space-y-4">
         {domainEntries.map(({ domainKey, label, score, max }) => {
-          // Compute percentage for progress bar.
+          // Compute percentage for the overall domain progress bar.
           const percentage = max > 0 ? Math.round((score / max) * 100) : 0;
           return (
             <Card key={domainKey}>
               <CardContent>
-                {/* Domain header displaying total score/maximum score */}
+                {/* Domain header with label and score/max inline */}
                 <div className="flex justify-between items-center">
                   <div className="font-semibold">{label}</div>
                   <div className="text-sm">{score} / {max}</div>
@@ -315,25 +320,27 @@ const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({ inputData }) => {
                 <div className="mt-2 bg-gray-200 w-full h-3 rounded-full">
                   <div className="bg-green-500 h-3 rounded-full" style={{ width: `${percentage}%` }} />
                 </div>
-                {/* Button to toggle detailed metric view */}
+                {/* Toggle button for detailed evaluation metrics */}
                 <button
                   className="mt-3 px-4 py-2 bg-blue-500 text-white rounded-lg"
-                  onClick={() => setSelectedDomain(DomainSection === domainKey ? null : domainKey)}
+                  onClick={() => toggleDomain(domainKey)}
                 >
-                  {DomainSection === domainKey ? 'Hide' : 'View'} Evaluation Metrics
+                  {openDomains.includes(domainKey) ? 'Hide' : 'View'} Evaluation Metrics
                 </button>
                 {/* Detailed evaluation metrics for the domain */}
-                {DomainSection === domainKey && (
+                {openDomains.includes(domainKey) && (
                   <div className="mt-4 p-4 bg-gray-100 rounded-lg">
                     <ul className="list-disc list-inside">
                       {evaluationMetrics[currentCase][domainKey] && evaluationMetrics[currentCase][domainKey].length > 0 ? (
                         evaluationMetrics[currentCase][domainKey].map((metric, idx) => {
-                          // Retrieve the student's score for this metric; default to 0.
                           const studentScore = (metricScores[domainKey] && metricScores[domainKey][metric.id]) ?? 0;
                           return (
                             <li key={idx} className="mb-2">
-                              <strong>{metric.id}.</strong> {metric.description} – Score: {studentScore} / {metric.maxScore} points
-                              {/* Discrete bars for each point in this metric */}
+                              <strong>{metric.id}.</strong> {metric.description} –{' '}
+                              <span className="text-red-800 inline whitespace-nowrap">
+                                Score: {studentScore} / {metric.maxScore} points
+                              </span>
+                              {/* Discrete bars for the metric */}
                               <div className="flex space-x-1 mt-1">
                                 {Array.from({ length: metric.maxScore }).map((_, i) => (
                                   <div

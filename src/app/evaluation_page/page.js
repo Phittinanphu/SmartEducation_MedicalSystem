@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import Navbar from "../components/Navbar2";
 import ScoreEvaluation from '../components/evaluation/ScoreEvaluation';
 
 export default function Page() {
-  // State to hold the JSON input from the file.
+  // State to hold JSON input read from the file.
   const [llmOutput, setLlmOutput] = useState(null);
 
-  // On mount, fetch the JSON file from the public folder.
+  // On component mount, fetch the JSON file from the public folder.
   useEffect(() => {
     fetch('/evaluation.json')
       .then((res) => {
@@ -34,9 +35,13 @@ export default function Page() {
   }
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-      <h1>Student Evaluation</h1>
-      <ScoreEvaluation inputData={llmOutput} />
+    // Full-width container with light blue background covering the entire page.
+    <div className="bg-blue-100 min-h-screen">
+      <Navbar />
+      {/* Centered container for the ScoreEvaluation content */}
+      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <ScoreEvaluation inputData={llmOutput} />
+      </div>
     </div>
   );
 }
