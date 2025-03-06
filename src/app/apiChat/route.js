@@ -1,20 +1,5 @@
-import pg from "pg";
-import dotenv from "dotenv";
-// import pool from "../lib/postgres";
-
-// Load environment variables from .env
-dotenv.config();
-
-// Configure PostgreSQL connection pool using environment variables
-const pool = new pg.Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 5432,
-  max: 10, // Max connections
-  idleTimeoutMillis: 30000, // Close idle connections after 30s
-});
+import pool from "../lib/postgres";
+import { NextResponse } from "next/server";
 
 // GET handler to fetch chat history
 export async function GET() {
@@ -23,10 +8,7 @@ export async function GET() {
     const result = await client.query("SELECT * FROM chat_logs.chat ORDER BY createdAt DESC");
     client.release();
 
-    return new Response(JSON.stringify({ success: true, data: result.rows }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json({ success: true, data: result.rows }, { status: 200 });
   } catch (error) {
     console.error("Error in GET /apiChat:", error);
     
@@ -61,18 +43,24 @@ export async function POST(request) {
     }
     
     const { chatHistory } = body;
+    
+    // Validate that chatHistory is an array
+    if (!Array.isArray(chatHistory)) {
+      return NextResponse.json({
+        success: false,
+        error: "chatHistory must be an array"
+      }, { status: 400 });
+    }
+    
     const client = await pool.connect();
 
     const result = await client.query(
-      "INSERT INTO Chat (chatHistory, createdAt) VALUES ($1, $2) RETURNING *",
+      "INSERT INTO chat_logs.Chat (chatHistory, createdAt) VALUES ($1, $2) RETURNING *",
       [JSON.stringify(chatHistory), new Date()]
     );
     client.release();
 
-    return new Response(JSON.stringify({ success: true, data: result.rows[0] }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json({ success: true, data: result.rows[0] }, { status: 200 });
   } catch (error) {
     console.error("Error in POST /apiChat:", error);
     

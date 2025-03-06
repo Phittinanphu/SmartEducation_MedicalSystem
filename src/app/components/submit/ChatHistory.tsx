@@ -26,11 +26,14 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   const [showChatModal, setShowChatModal] = useState(false);
   const [showExamModal, setShowExamModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const router = useRouter();
   const BE_IP = process.env.NEXT_PUBLIC_BE_IP;
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
+    setErrorMessage(null);
+    
     try {
       // Send the completion request
       const completionResponse = await fetch(`${BE_IP}/chat/complete`, {
@@ -62,6 +65,10 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
       router.push(`/submission_success?${queryParams}`);
     } catch (error) {
       console.error("Submission error:", error);
+      // Display error message to state for rendering in UI
+      setErrorMessage(error.message || "Failed to submit data. Please try again later.");
+      // Also show an alert for immediate notification
+      alert(error.message || "Failed to submit data. Please try again later.");
     } finally {
       setIsSubmitting(false);
     }
@@ -70,6 +77,11 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   return (
     <div className="bg-green-300 p-6 rounded-2xl shadow-lg w-[883px] h-[185px]">
       <h2 className="font-bold text-lg">Chat History Section</h2>
+      {errorMessage && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mt-2 mb-2">
+          <p className="font-medium">Error: {errorMessage}</p>
+        </div>
+      )}
       <div className="flex justify-center gap-4 mt-4">
         <button
           onClick={() => setShowChatModal(true)}

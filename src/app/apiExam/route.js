@@ -1,5 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const pool = require("../lib/postgres")
+import pool from "../lib/postgres";
+import { NextResponse } from "next/server";
 
 // GET handler to fetch exam answers
 export async function GET() {
@@ -8,10 +8,7 @@ export async function GET() {
     const result = await client.query("SELECT * FROM chat_logs.Exam ORDER BY createdAt DESC");
     client.release();
 
-    return new Response(JSON.stringify({ success: true, data: result.rows }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json({ success: true, data: result.rows }, { status: 200 });
   } catch (error) {
     console.error("Error in GET /apiExam:", error);
     
@@ -49,15 +46,12 @@ export async function POST(request) {
     const client = await pool.connect();
 
     const result = await client.query(
-      "INSERT INTO Exam (examAnswers, createdAt) VALUES ($1, $2) RETURNING *",
+      "INSERT INTO chat_logs.Exam (examAnswers, createdAt) VALUES ($1, $2) RETURNING *",
       [JSON.stringify(examAnswers), new Date()]
     );
     client.release();
 
-    return new Response(JSON.stringify({ success: true, data: result.rows[0] }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json({ success: true, data: result.rows[0] }, { status: 200 });
   } catch (error) {
     console.error("Error in POST /apiExam:", error);
     
