@@ -88,7 +88,12 @@ const LoginPage = () => {
 
           <p className="mt-4 text-sm text-gray-600">
             Don't have an account yet?{" "}
-            <span className="text-blue-500 cursor-pointer">Sign up</span>
+            <span
+              className="text-blue-500 cursor-pointer"
+              onClick={() => router.push("/signup")}
+            >
+              Sign up
+            </span>
           </p>
         </CardContent>
       </Card>
@@ -97,4 +102,3 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
-

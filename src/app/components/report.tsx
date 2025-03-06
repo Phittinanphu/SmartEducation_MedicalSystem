@@ -2,8 +2,8 @@
 import React from "react";
 
 const Report = ({ patientName }: { patientName: string }) => {
-  // ✅ แปลงชื่อคนไข้ให้เป็นชื่อไฟล์ PDF
-  const pdfFileName = `/reports/${patientName.toLowerCase().replace(/ /g, "-")}-report.pdf`;
+  // ✅ ปรับชื่อไฟล์ให้ตรงกับชื่อจริงที่มี ".pdf.pdf"
+  const pdfFileName = `/reports/${patientName.toLowerCase().replace(/ /g, "-")}-report.pdf.pdf`;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
