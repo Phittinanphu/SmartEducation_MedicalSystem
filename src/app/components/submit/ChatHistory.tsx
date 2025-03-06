@@ -24,30 +24,71 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   const [showChatModal, setShowChatModal] = useState(false);
   const [showExamModal, setShowExamModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const router = useRouter();
   // Function to handle saving data to MongoDB using the temporary data
   const handleSubmit = async () => {
 
     setIsSubmitting(true);
+    setErrorMessage(null);
+    
     try {
+      // First API call to save exam data
       const examResponse = await fetch("/apiExam", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ examAnswers: examData }),
       });
+      
+      // Check if exam data save was successful
+      if (!examResponse.ok) {
+        let errorDetail = "Failed to save exam data";
+        try {
+          // Try to extract detailed error message from response
+          const errorData = await examResponse.json();
+          if (errorData.message || errorData.error) {
+            errorDetail = `Failed to save exam data: ${errorData.message || errorData.error}`;
+          }
+        } catch (parseError) {
+          // If response can't be parsed as JSON, use status text
+          errorDetail = `Failed to save exam data: ${examResponse.statusText || `Status ${examResponse.status}`}`;
+        }
+        throw new Error(errorDetail);
+      }
+      
+      // Second API call to save chat history
       const chatResponse = await fetch("/apiChat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ chatHistory: chatHistory }),
       });
-      if (examResponse.ok && chatResponse.ok) {
-        console.log("Data saved successfully");
-        router.push("/submission_success");
-      } else {
-        console.error("Error saving data");
+      
+      // Check if chat history save was successful
+      if (!chatResponse.ok) {
+        let errorDetail = "Failed to save chat history";
+        try {
+          // Try to extract detailed error message from response
+          const errorData = await chatResponse.json();
+          if (errorData.message || errorData.error) {
+            errorDetail = `Failed to save chat history: ${errorData.message || errorData.error}`;
+          }
+        } catch (parseError) {
+          // If response can't be parsed as JSON, use status text
+          errorDetail = `Failed to save chat history: ${chatResponse.statusText || `Status ${chatResponse.status}`}`;
+        }
+        throw new Error(errorDetail);
       }
-    } catch (error) {
+      
+      // If both API calls were successful, redirect to success page
+      console.log("Data saved successfully");
+      router.push("/submission_success");
+      
+    } catch (error: any) {
       console.error("Submission error:", error);
+      // Display error message to state for rendering in UI
+      setErrorMessage(error.message || "Failed to submit data. Please try again later.");
+      // Also show an alert for immediate notification
+      alert(error.message || "Failed to submit data. Please try again later.");
     } finally {
       setIsSubmitting(false);
     }
@@ -56,6 +97,11 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   return (
     <div className="bg-green-300 p-6 rounded-2xl shadow-lg w-[883px] h-[185px]">
       <h2 className="font-bold text-lg">Chat History Section</h2>
+      {errorMessage && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mt-2 mb-2">
+          <p className="font-medium">Error: {errorMessage}</p>
+        </div>
+      )}
       <div className="flex justify-center gap-4 mt-4">
         <button
           onClick={() => setShowChatModal(true)}
