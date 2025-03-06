@@ -1,13 +1,14 @@
-import clientPromise from "../lib/mongodb";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const pool = require("../lib/postgres")
 
 // GET handler to fetch exam answers
-export async function GET(request) {
+export async function GET() {
   try {
-    const client = await clientPromise;
-    const db = client.db("CaseData");
-    // Fetch exam records sorted by creation time descending
-    const exams = await db.collection("Exam").find({}).sort({ createdAt: -1 }).toArray();
-    return new Response(JSON.stringify({ success: true, data: exams || [] }), {
+    const client = await pool.connect();
+    const result = await client.query("SELECT * FROM chat_logs.Exam ORDER BY createdAt DESC");
+    client.release();
+
+    return new Response(JSON.stringify({ success: true, data: result.rows }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
@@ -25,13 +26,15 @@ export async function POST(request) {
   try {
     const body = await request.json();
     const { examAnswers } = body;
-    const client = await clientPromise;
-    const db = client.db("CaseData");
-    const result = await db.collection("Exam").insertOne({
-      examAnswers,
-      createdAt: new Date(),
-    });
-    return new Response(JSON.stringify({ success: true, data: result }), {
+    const client = await pool.connect();
+
+    const result = await client.query(
+      "INSERT INTO Exam (examAnswers, createdAt) VALUES ($1, $2) RETURNING *",
+      [JSON.stringify(examAnswers), new Date()]
+    );
+    client.release();
+
+    return new Response(JSON.stringify({ success: true, data: result.rows[0] }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
