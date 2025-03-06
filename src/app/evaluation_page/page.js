@@ -4,10 +4,10 @@ import React, { useState, useEffect } from 'react';
 import ScoreEvaluation from '../components/evaluation/ScoreEvaluation';
 
 export default function Page() {
-  // State to hold JSON input read from the file.
+  // State to hold the JSON input from the file.
   const [llmOutput, setLlmOutput] = useState(null);
 
-  // On component mount, fetch the JSON file from the public folder.
+  // On mount, fetch the JSON file from the public folder.
   useEffect(() => {
     fetch('/evaluation.json')
       .then((res) => {
@@ -23,13 +23,12 @@ export default function Page() {
         console.log('Using default values.');
         setLlmOutput({
           case: 'Unknown Case',
-          domainScores: { domain1: 0, domain2: 0, domain3: 0, domain4: 0 },
-          evaluationMetricScores: {},
+          evaluationMetricScores: {}
         });
       });
   }, []);
 
-  // Show a loading state until the JSON file is fetched.
+  // Display a loading state until the JSON file is fetched.
   if (!llmOutput) {
     return <div>Loading...</div>;
   }

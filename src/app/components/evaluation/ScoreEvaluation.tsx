@@ -4,34 +4,24 @@ import React, { useState, useEffect } from 'react';
 // TYPES & INTERFACES
 // ---------------------------------------------------
 
-// Overall domain scores interface
-interface DomainScores {
-  domain1: number; // Communication Skills
-  domain2: number; // General History Taking
-  domain3: number; // Disease-Specific History
-  domain4: number; // Diagnosis
-}
-
-// Overall evaluation data (case name and domain scores)
+// Overall evaluation data now only uses the case name (domain scores will be computed).
 interface EvaluationData {
   case: string;
-  scores: DomainScores;
 }
 
-// Domain keys alias
-type DomainKey = keyof DomainScores;
+// Domain keys alias.
+export type DomainKey = 'domain1' | 'domain2' | 'domain3' | 'domain4';
 
 // Each evaluation metric has an ID, description, and maximum score.
-interface EvaluationMetric {
+export interface EvaluationMetric {
   id: string;
   description: string;
   maxScore: number;
 }
 
-// Input JSON structure includes overall scores and detailed metric scores.
-interface InputData {
+// Input JSON structure includes the case and detailed metric scores.
+export interface InputData {
   case?: string;
-  domainScores?: DomainScores;
   evaluationMetricScores?: Record<DomainKey, Record<string, number>>;
 }
 
@@ -45,7 +35,7 @@ interface ScoreEvaluationProps {
 // ---------------------------------------------------
 
 // Maximum overall scores per domain for each case.
-const domainMaxScores: Record<string, DomainScores> = {
+const domainMaxScores: Record<string, { [key in DomainKey]: number }> = {
   'Peptic ulcer disease': { domain1: 20, domain2: 30, domain3: 30, domain4: 20 },
   'Acute pancreatitis': { domain1: 20, domain2: 60, domain3: 30, domain4: 20 },
   'Food poisoning': { domain1: 20, domain2: 60, domain3: 30, domain4: 20 },
@@ -62,7 +52,7 @@ const domainLabels: Record<DomainKey, string> = {
 };
 
 // Detailed evaluation metrics for each case and domain.
-// (Each metric includes an ID, its description, and its maximum score.)
+// These values are based on the provided PDF.
 const evaluationMetrics: Record<string, Record<DomainKey, EvaluationMetric[]>> = {
   'Peptic ulcer disease': {
     domain1: [
@@ -70,7 +60,7 @@ const evaluationMetrics: Record<string, Record<DomainKey, EvaluationMetric[]>> =
       { id: '1.2', description: 'ถามชื่อ-สกุลของผู้ป่วย', maxScore: 4 },
       { id: '1.3', description: 'ขออนุญาตและแจ้งวัตถุประสงค์', maxScore: 4 },
       { id: '1.4', description: 'ใช้คำถามมีความต่อเนื่อง เชื่อมโยง และมีจังหวะการรับฟังเหมาะสม', maxScore: 6 },
-      { id: '1.5', description: 'เปิดโอกาสให้ผู้ป่วยซักถาม', maxScore: 2 },
+      { id: '1.5', description: 'เปิดโอกาสให้ผู้ป่วยซักถาม', maxScore: 2 }
     ],
     domain2: [
       { id: '2.1', description: 'ตำแหน่งที่มีอาการปวดท้อง', maxScore: 3 },
@@ -86,18 +76,18 @@ const evaluationMetrics: Record<string, Record<DomainKey, EvaluationMetric[]>> =
       { id: '2.11', description: 'ประวัติการสูบบุหรี่', maxScore: 2 },
       { id: '2.12', description: 'ประวัติดื่มสุรา/การใช้ยาประจำ', maxScore: 2 },
       { id: '2.13', description: 'ประวัติการรักษาก่อนมาพบแพทย์', maxScore: 2 },
-      { id: '2.14', description: 'ประวัติอุบัติเหตุก่อนมีอาการหรือไม่', maxScore: 2 },
+      { id: '2.14', description: 'ประวัติอุบัติเหตุก่อนมีอาการหรือไม่', maxScore: 2 }
     ],
     domain3: [
       { id: '3.1', description: 'Episodic burning epigastric pain', maxScore: 6 },
       { id: '3.2', description: 'Symptoms worse after eating, on an empty stomach and nighttime awakening', maxScore: 6 },
       { id: '3.3', description: 'Symptoms relieved with food and antacids', maxScore: 6 },
       { id: '3.4', description: 'Melena or hematemesis', maxScore: 6 },
-      { id: '3.5', description: 'Less common symptoms: nausea, vomiting, loss of appetite, bloating', maxScore: 6 },
+      { id: '3.5', description: 'Less common symptoms: nausea, vomiting, loss of appetite, bloating', maxScore: 6 }
     ],
     domain4: [
-      { id: '4.1', description: 'Diagnosis: Peptic ulcer disease', maxScore: 20 },
-    ],
+      { id: '4.1', description: 'Diagnosis: Peptic ulcer disease', maxScore: 20 }
+    ]
   },
   'Acute pancreatitis': {
     domain1: [
@@ -105,7 +95,7 @@ const evaluationMetrics: Record<string, Record<DomainKey, EvaluationMetric[]>> =
       { id: '1.2', description: 'ถามชื่อ-สกุลของผู้ป่วย', maxScore: 4 },
       { id: '1.3', description: 'ขออนุญาตและแจ้งวัตถุประสงค์', maxScore: 4 },
       { id: '1.4', description: 'ใช้คำถามมีความต่อเนื่อง เชื่อมโยง และมีจังหวะการรับฟังเหมาะสม', maxScore: 6 },
-      { id: '1.5', description: 'เปิดโอกาสให้ผู้ป่วยซักถาม', maxScore: 2 },
+      { id: '1.5', description: 'เปิดโอกาสให้ผู้ป่วยซักถาม', maxScore: 2 }
     ],
     domain2: [
       { id: '2.1', description: 'ตำแหน่งที่มีอาการปวดท้อง', maxScore: 3 },
@@ -121,18 +111,18 @@ const evaluationMetrics: Record<string, Record<DomainKey, EvaluationMetric[]>> =
       { id: '2.11', description: 'ประวัติการสูบบุหรี่', maxScore: 2 },
       { id: '2.12', description: 'ประวัติดื่มสุรา/การใช้ยาประจำ', maxScore: 2 },
       { id: '2.13', description: 'ประวัติการรักษาก่อนมาพบแพทย์', maxScore: 2 },
-      { id: '2.14', description: 'ประวัติอุบัติเหตุก่อนมีอาการหรือไม่', maxScore: 2 },
+      { id: '2.14', description: 'ประวัติอุบัติเหตุก่อนมีอาการหรือไม่', maxScore: 2 }
     ],
     domain3: [
       { id: '3.1', description: 'severe epigastric and RUQ pain', maxScore: 6 },
       { id: '3.2', description: 'Pain from gallstones: sudden onset', maxScore: 6 },
       { id: '3.3', description: 'Pain from anything related to ethanol or alcohol: more gradual onset', maxScore: 6 },
       { id: '3.4', description: 'Characteristics include acute and constant pain', maxScore: 6 },
-      { id: '3.5', description: 'Radiation to the back', maxScore: 6 },
+      { id: '3.5', description: 'Radiation to the back', maxScore: 6 }
     ],
     domain4: [
-      { id: '4.1', description: 'Diagnosis: Acute pancreatitis', maxScore: 20 },
-    ],
+      { id: '4.1', description: 'Diagnosis: Acute pancreatitis', maxScore: 20 }
+    ]
   },
   'Food poisoning': {
     domain1: [
@@ -140,7 +130,7 @@ const evaluationMetrics: Record<string, Record<DomainKey, EvaluationMetric[]>> =
       { id: '1.2', description: 'ถามชื่อ-สกุลของผู้ป่วย', maxScore: 4 },
       { id: '1.3', description: 'ขออนุญาตและแจ้งวัตถุประสงค์', maxScore: 4 },
       { id: '1.4', description: 'ใช้คำถามมีความต่อเนื่อง เชื่อมโยง และมีจังหวะการรับฟังเหมาะสม', maxScore: 6 },
-      { id: '1.5', description: 'เปิดโอกาสให้ผู้ป่วยซักถาม', maxScore: 2 },
+      { id: '1.5', description: 'เปิดโอกาสให้ผู้ป่วยซักถาม', maxScore: 2 }
     ],
     domain2: [
       { id: '2.1', description: 'ตำแหน่งที่มีอาการปวดท้อง', maxScore: 3 },
@@ -156,18 +146,18 @@ const evaluationMetrics: Record<string, Record<DomainKey, EvaluationMetric[]>> =
       { id: '2.11', description: 'ประวัติการสูบบุหรี่', maxScore: 2 },
       { id: '2.12', description: 'ประวัติดื่มสุรา/การใช้ยาประจำ', maxScore: 2 },
       { id: '2.13', description: 'ประวัติการรักษาก่อนมาพบแพทย์', maxScore: 2 },
-      { id: '2.14', description: 'ประวัติอุบัติเหตุก่อนมีอาการหรือไม่', maxScore: 2 },
+      { id: '2.14', description: 'ประวัติอุบัติเหตุก่อนมีอาการหรือไม่', maxScore: 2 }
     ],
     domain3: [
       { id: '3.1', description: 'Characteristic of stool (watery, mucous, bloody), frequency of stool and amount of stool', maxScore: 6 },
       { id: '3.2', description: 'Characteristic of vomitus, Frequency of vomit', maxScore: 6 },
       { id: '3.3', description: 'nausea, vomiting, loss of appetite, bloating', maxScore: 6 },
       { id: '3.4', description: 'History of food exposure (raw, cooked, spoiled food)', maxScore: 6 },
-      { id: '3.5', description: 'People in the house who have the same symptoms', maxScore: 6 },
+      { id: '3.5', description: 'People in the house who have the same symptoms', maxScore: 6 }
     ],
     domain4: [
-      { id: '4.1', description: 'Diagnosis: Food poisoning', maxScore: 20 },
-    ],
+      { id: '4.1', description: 'Diagnosis: Food poisoning', maxScore: 20 }
+    ]
   },
   'Renal stone': {
     domain1: [
@@ -175,23 +165,12 @@ const evaluationMetrics: Record<string, Record<DomainKey, EvaluationMetric[]>> =
       { id: '1.2', description: 'ถามชื่อ-สกุลของผู้ป่วย', maxScore: 4 },
       { id: '1.3', description: 'ขออนุญาตและแจ้งวัตถุประสงค์', maxScore: 4 },
       { id: '1.4', description: 'ใช้คำถามมีความต่อเนื่อง เชื่อมโยง และมีจังหวะการรับฟังเหมาะสม', maxScore: 6 },
-      { id: '1.5', description: 'เปิดโอกาสให้ผู้ป่วยซักถาม', maxScore: 2 },
+      { id: '1.5', description: 'เปิดโอกาสให้ผู้ป่วยซักถาม', maxScore: 2 }
     ],
     domain2: [
       { id: '2.1', description: 'ตำแหน่งที่มีอาการปวดท้อง', maxScore: 3 },
       { id: '2.2', description: 'ปวดทันทีหรือค่อยๆมากขึ้น', maxScore: 3 },
-      { id: '2.3', description: 'ลักษณะการปวดท้อง (ปวดบีบ/จุกแน่น/ปวดตื้อๆ)', maxScore: 2 },
-      { id: '2.4', description: 'ปวดร้าวไปที่ใด', maxScore: 2 },
-      { id: '2.5', description: 'ปวดตลอดเวลาหรือมีอาการปวดเป็นพักๆ', maxScore: 2 },
-      { id: '2.6', description: 'ปัจจัยที่ทำให้อาการปวดดีขึ้นหรือแย่ลง', maxScore: 2 },
-      { id: '2.7', description: 'ขณะมีอาการปวดท้องกำลังทำอะไรอยู่', maxScore: 2 },
-      { id: '2.8', description: 'อาการปวดท้องในอดีตที่มีลักษณะคล้ายกัน', maxScore: 2 },
-      { id: '2.9', description: 'ประวัติเคยผ่าตัดช่องท้อง', maxScore: 2 },
-      { id: '2.10', description: 'โรคประจำตัวและยาที่ใช้เป็นประจำ', maxScore: 2 },
-      { id: '2.11', description: 'ประวัติการสูบบุหรี่', maxScore: 2 },
-      { id: '2.12', description: 'ประวัติดื่มสุรา/การใช้ยาประจำ', maxScore: 2 },
-      { id: '2.13', description: 'ประวัติการรักษาก่อนมาพบแพทย์', maxScore: 2 },
-      { id: '2.14', description: 'ประวัติอุบัติเหตุก่อนมีอาการหรือไม่', maxScore: 2 },
+      { id: '2.3', description: 'ลักษณะการปวดท้อง (ปวดบีบ/จุกแน่น/ปวดตื้อๆ)', maxScore: 2 }
     ],
     domain3: [
       { id: '3.1', description: 'Pain starts rapidly and waxes and wanes', maxScore: 6 },
@@ -200,18 +179,18 @@ const evaluationMetrics: Record<string, Record<DomainKey, EvaluationMetric[]>> =
       { id: '3.4', description: 'Recurrent UTIs', maxScore: 6 },
       { id: '3.5', description: 'Bladder dysfunction (if the stone is lodged at the junction between the ureter and bladder)', maxScore: 3 },
       { id: '3.6', description: 'Personal history of: DM, Obesity', maxScore: 3 },
-      { id: '3.7', description: 'Medication use, including Calcium containing supplements, Vitamin D', maxScore: 3 },
+      { id: '3.7', description: 'Medication use, including Calcium containing supplements, Vitamin D', maxScore: 3 }
     ],
     domain4: [
-      { id: '4.1', description: 'Diagnosis: Renal stone', maxScore: 20 },
-    ],
+      { id: '4.1', description: 'Diagnosis: Renal stone', maxScore: 20 }
+    ]
   },
   'Unknown Case': {
     domain1: [],
     domain2: [],
     domain3: [],
-    domain4: [],
-  },
+    domain4: []
+  }
 };
 
 // ---------------------------------------------------
@@ -239,69 +218,61 @@ const CardContent: React.FC<CardContentProps> = ({ children, className = '', ...
 );
 
 // ---------------------------------------------------
-// ScoreEvaluation COMPONENT
+// SCORE EVALUATION COMPONENT
 // ---------------------------------------------------
 const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({ inputData }) => {
   // State for the currently selected domain section.
   const [DomainSection, setSelectedDomain] = useState<DomainKey | null>(null);
 
-  // State to hold overall evaluation data (case and overall domain scores).
-  const [evaluationData, setEvaluationData] = useState<EvaluationData>({
-    case: 'Unknown Case',
-    scores: { domain1: 0, domain2: 0, domain3: 0, domain4: 0 },
-  });
+  // We only need to capture the case from inputData; domain scores will be computed.
+  const [evaluationCase, setEvaluationCase] = useState<string>('Unknown Case');
 
   // Default metric scores for all domains.
   const defaultMetricScores: Record<DomainKey, Record<string, number>> = {
     domain1: {},
     domain2: {},
     domain3: {},
-    domain4: {},
+    domain4: {}
   };
 
-  // Extract metric scores from inputData or use default.
+  // Extract metric scores from inputData, or use default.
   const metricScores: Record<DomainKey, Record<string, number>> =
     inputData?.evaluationMetricScores ?? defaultMetricScores;
 
-  // Update overall evaluation data when inputData changes.
+  // Update evaluationCase when inputData changes.
   useEffect(() => {
     if (inputData && inputData.case) {
-      setEvaluationData({
-        case: inputData.case,
-        scores: {
-          domain1: inputData.domainScores?.domain1 ?? 0,
-          domain2: inputData.domainScores?.domain2 ?? 0,
-          domain3: inputData.domainScores?.domain3 ?? 0,
-          domain4: inputData.domainScores?.domain4 ?? 0,
-        },
-      });
+      setEvaluationCase(inputData.case);
     } else {
-      setEvaluationData({
-        case: 'Unknown Case',
-        scores: { domain1: 0, domain2: 0, domain3: 0, domain4: 0 },
-      });
+      setEvaluationCase('Unknown Case');
     }
   }, [inputData]);
 
-  // Get current case and maximum scores for each domain.
-  const currentCase = evaluationData.case || 'Unknown Case';
-  const maxScores = domainMaxScores[currentCase] || domainMaxScores['Unknown Case'];
+  // Determine current case.
+  const currentCase = evaluationCase || 'Unknown Case';
 
-  // Build array of domain entries.
-  const domainEntries = (Object.keys(evaluationData.scores) as DomainKey[]).map((domainKey) => {
-    const score = evaluationData.scores[domainKey];
-    const max = maxScores[domainKey];
+  // Build an array of domain entries by computing the domain score from metric scores.
+  const domainEntries = (Object.keys(domainLabels) as DomainKey[]).map(domainKey => {
+    // Get metrics for this domain and case.
+    const metrics = evaluationMetrics[currentCase][domainKey] || [];
+    // Compute total score for this domain by summing scores for each metric.
+    const computedScore = metrics.reduce((sum, metric) => {
+      const scoreForMetric = (metricScores[domainKey] && metricScores[domainKey][metric.id]) ?? 0;
+      return sum + scoreForMetric;
+    }, 0);
+    // Compute maximum score for this domain by summing the maxScore of each metric.
+    const computedMax = metrics.reduce((sum, metric) => sum + metric.maxScore, 0);
     return {
       domainKey,
       label: domainLabels[domainKey],
-      score,
-      max,
+      score: computedScore,
+      max: computedMax
     };
   });
 
-  // Calculate total points.
-  const totalMaxPoints = domainEntries.reduce((acc, d) => acc + d.max, 0);
-  const totalScore = domainEntries.reduce((acc, d) => acc + d.score, 0);
+  // Calculate overall total score and overall maximum score.
+  const totalScore = domainEntries.reduce((sum, entry) => sum + entry.score, 0);
+  const totalMaxPoints = domainEntries.reduce((sum, entry) => sum + entry.max, 0);
 
   // Determine highest and lowest scoring domains.
   const sortedDomains = [...domainEntries].sort((a, b) => b.score - a.score);
@@ -310,60 +281,59 @@ const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({ inputData }) => {
 
   return (
     <div className="p-6">
-      {/* Header with case name */}
+      {/* Header showing current case */}
       <h2 className="text-xl font-bold mb-4">
-        Accuracy Per Concept (Case: {evaluationData.case})
+        Accuracy Per Concept (Case: {currentCase})
       </h2>
 
       {/* Display highest and lowest accuracy domains */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center mb-6">
         <div className="mr-6 mb-2 sm:mb-0">
           <strong>Highest Accuracy</strong>:<br />
-          Your accuracy is highest in <b>{highestDomain?.label}</b>
+          Your highest score is in <b>{highestDomain?.label}</b>
         </div>
         <div>
           <strong>Lowest Accuracy</strong>:<br />
-          Your accuracy is lowest in <b>{lowestDomain?.label}</b>
+          Your lowest score is in <b>{lowestDomain?.label}</b>
         </div>
       </div>
 
-      {/* Render each domain */}
+      {/* Render each domain's details */}
       <div className="space-y-4">
         {domainEntries.map(({ domainKey, label, score, max }) => {
+          // Compute percentage for progress bar.
           const percentage = max > 0 ? Math.round((score / max) * 100) : 0;
           return (
             <Card key={domainKey}>
               <CardContent>
-                {/* Domain header */}
+                {/* Domain header displaying total score/maximum score */}
                 <div className="flex justify-between items-center">
                   <div className="font-semibold">{label}</div>
-                  <div className="text-sm">{percentage}%</div>
+                  <div className="text-sm">{score} / {max}</div>
                 </div>
                 {/* Overall domain progress bar (green) */}
                 <div className="mt-2 bg-gray-200 w-full h-3 rounded-full">
                   <div className="bg-green-500 h-3 rounded-full" style={{ width: `${percentage}%` }} />
                 </div>
-                {/* Toggle button for detailed metrics */}
+                {/* Button to toggle detailed metric view */}
                 <button
                   className="mt-3 px-4 py-2 bg-blue-500 text-white rounded-lg"
                   onClick={() => setSelectedDomain(DomainSection === domainKey ? null : domainKey)}
                 >
                   {DomainSection === domainKey ? 'Hide' : 'View'} Evaluation Metrics
                 </button>
-                {/* Detailed evaluation metrics */}
+                {/* Detailed evaluation metrics for the domain */}
                 {DomainSection === domainKey && (
                   <div className="mt-4 p-4 bg-gray-100 rounded-lg">
                     <ul className="list-disc list-inside">
-                      {evaluationMetrics[currentCase][domainKey] &&
-                      evaluationMetrics[currentCase][domainKey].length > 0 ? (
+                      {evaluationMetrics[currentCase][domainKey] && evaluationMetrics[currentCase][domainKey].length > 0 ? (
                         evaluationMetrics[currentCase][domainKey].map((metric, idx) => {
-                          // Retrieve student's score; default to 0.
-                          const studentScore =
-                            (metricScores[domainKey] && metricScores[domainKey][metric.id]) ?? 0;
+                          // Retrieve the student's score for this metric; default to 0.
+                          const studentScore = (metricScores[domainKey] && metricScores[domainKey][metric.id]) ?? 0;
                           return (
                             <li key={idx} className="mb-2">
                               <strong>{metric.id}.</strong> {metric.description} – Score: {studentScore} / {metric.maxScore} points
-                              {/* Render discrete score bars. One bar per point. */}
+                              {/* Discrete bars for each point in this metric */}
                               <div className="flex space-x-1 mt-1">
                                 {Array.from({ length: metric.maxScore }).map((_, i) => (
                                   <div
@@ -387,7 +357,7 @@ const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({ inputData }) => {
         })}
       </div>
 
-      {/* Total overall score */}
+      {/* Overall total score card */}
       <div className="mt-6">
         <Card>
           <CardContent>
