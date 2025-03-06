@@ -2,6 +2,9 @@
 import React from "react";
 
 const Report = ({ patientName }: { patientName: string }) => {
+  // ✅ แปลงชื่อคนไข้ให้เป็นชื่อไฟล์ PDF
+  const pdfFileName = `/reports/${patientName.toLowerCase().replace(/ /g, "-")}-report.pdf`;
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <div className="max-w-3xl w-full bg-white shadow-lg rounded-lg p-6">
@@ -16,11 +19,16 @@ const Report = ({ patientName }: { patientName: string }) => {
 
         <h3 className="text-lg font-semibold mt-6 text-center underline">Formal Report</h3>
 
+        {/* ✅ ปุ่ม Download PDF */}
         <div className="flex justify-end mt-2">
-          <button className="flex items-center space-x-2 bg-gray-200 px-4 py-2 rounded-md hover:bg-gray-300">
+          <a
+            href={pdfFileName}
+            download
+            className="flex items-center space-x-2 bg-gray-200 px-4 py-2 rounded-md hover:bg-gray-300"
+          >
             <span>Download</span>
-            <img src="/pdf-icon.png" alt="PDF Icon" className="w-5 h-5" />
-          </button>
+            <img src="/file.svg" alt="PDF Icon" className="w-5 h-5" />
+          </a>
         </div>
 
         <div className="mt-6 border p-4 rounded-md bg-gray-50">
