@@ -7,7 +7,7 @@ const SubmitSucessScreen: React.FC = () => {
 
 
   const HandleViewAnswer = () => {
-    router.push("/submission_success"); 
+    router.push("/evaluation_page"); 
   };
 
   const HandleBackToHome = () => {
