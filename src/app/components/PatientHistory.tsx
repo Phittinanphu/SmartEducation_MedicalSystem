@@ -20,6 +20,11 @@ const PatientHistory: React.FC = () => {
     router.push("/evaluation_page");
   };
 
+  // ✅ ฟังก์ชันใหม่สำหรับปุ่ม Report
+  const handleViewReport = (patientName: string) => {
+    router.push(`/report?patient=${encodeURIComponent(patientName)}`);
+  };
+
   return (
     <div className="p-6 space-y-4">
       <h2 className="text-2xl font-bold">Patient Chat History</h2>
@@ -43,7 +48,10 @@ const PatientHistory: React.FC = () => {
             <button onClick={handleViewAnswer} className="text-blue-600 hover:underline">
               View Answer
             </button>
-            <button className="text-red-600 hover:underline">Report</button>
+            {/* ✅ กดปุ่ม Report แล้วไปที่หน้ารายงาน */}
+            <button onClick={() => handleViewReport(caseItem.name)} className="text-red-600 hover:underline">
+              Report
+            </button>
           </div>
         </div>
       ))}
