@@ -286,9 +286,9 @@ const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({ inputData }) => {
 
   return (
     <div className="p-6">
-      {/* Header with larger text in red; case information in same line but smaller */}
-      <h2 className="text-3xl font-bold text-red-600 mb-4">
-        Performance Per Concept <span className="text-xl font-normal">(Case: {currentCase})</span>
+      {/* Header with larger text; entire header on one line */}
+      <h2 className="text-3xl font-bold mb-4">
+        Performance Per Concept <span className="text-xl font-normal text-red-600">(Case: {currentCase})</span>
       </h2>
 
       {/* Display highest and lowest performance domains */}
@@ -311,7 +311,7 @@ const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({ inputData }) => {
           return (
             <Card key={domainKey}>
               <CardContent>
-                {/* Domain header with label and score/max inline */}
+                {/* Domain header with label and score/max displayed inline */}
                 <div className="flex justify-between items-center">
                   <div className="font-semibold">{label}</div>
                   <div className="text-sm">{score} / {max}</div>
@@ -320,7 +320,7 @@ const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({ inputData }) => {
                 <div className="mt-2 bg-gray-200 w-full h-3 rounded-full">
                   <div className="bg-green-500 h-3 rounded-full" style={{ width: `${percentage}%` }} />
                 </div>
-                {/* Toggle button for detailed evaluation metrics */}
+                {/* Toggle button for evaluation metrics */}
                 <button
                   className="mt-3 px-4 py-2 bg-blue-500 text-white rounded-lg"
                   onClick={() => toggleDomain(domainKey)}
@@ -340,7 +340,7 @@ const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({ inputData }) => {
                               <span className="text-red-800 inline whitespace-nowrap">
                                 Score: {studentScore} / {metric.maxScore} points
                               </span>
-                              {/* Discrete bars for the metric */}
+                              {/* Discrete bars for this metric */}
                               <div className="flex space-x-1 mt-1">
                                 {Array.from({ length: metric.maxScore }).map((_, i) => (
                                   <div
