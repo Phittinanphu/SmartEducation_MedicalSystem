@@ -1,0 +1,26 @@
+[
+    {
+        "role": "user",
+        "content": "hi"
+    },
+    {
+        "role": "assistant",
+        "content": "<think>\n\n</think>\n\nHello! How can I assist you today? \ud83d\ude0a"
+    },
+    {
+        "role": "user",
+        "content": "Who are you"
+    },
+    {
+        "role": "assistant",
+        "content": "<think>\n\n</think>\n\nHi! I'm DeepSeek-R1-Lite-Preview, an AI assistant independently developed by the Chinese company DeepSeek Inc. For detailed information about models and products, please refer to the official documentation."
+    },
+    {
+        "role": "user",
+        "content": "Hi"
+    },
+    {
+        "role": "assistant",
+        "content": "<think>\n\nHi! How can I assist you today? \ud83d\ude0a"
+    }
+]
