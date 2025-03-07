@@ -51,35 +51,38 @@ const ConversationAnalysis: React.FC<ConversationAnalysisProps> = ({
           Conversation Analysis
         </h1>
         <button
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+          className="px-4 py-2 bg-orange-400 text-white rounded-lg hover:bg-orange-500"
           onClick={onShowEvaluationMetrics}
         >
           Evaluation Metrics
         </button>
       </div>
 
-      {data.map((item, index) => (
-        <div
-          key={index}
-          style={{
-            marginBottom: "16px",
-            backgroundColor: "#ffffff",
-            borderRadius: "8px",
-            padding: "16px",
-            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-          }}
-        >
-          <div style={{ marginBottom: "8px" }}>
-            <strong style={{ color: "blue" }}>Question:</strong>
-            <p style={{ margin: "4px 0", color: "#555" }}>{item.question}</p>
-          </div>
+      {/* Add some space before data.map */}
+      <div style={{ marginTop: "20px" }}>
+        {data.map((item, index) => (
+          <div
+            key={index}
+            style={{
+              marginBottom: "16px",
+              backgroundColor: "#ffffff",
+              borderRadius: "8px",
+              padding: "16px",
+              boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            <div style={{ marginBottom: "8px" }}>
+              <strong style={{ color: "blue" }}>Question:</strong>
+              <p style={{ margin: "4px 0", color: "#555" }}>{item.question}</p>
+            </div>
 
-          <div>
-            <strong style={{ color: "blue" }}>Comment:</strong>
-            <p style={{ margin: "4px 0", color: "#555" }}>{item.comment}</p>
+            <div>
+              <strong style={{ color: "blue" }}>Comment:</strong>
+              <p style={{ margin: "4px 0", color: "#555" }}>{item.comment}</p>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 };

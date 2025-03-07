@@ -567,7 +567,7 @@ const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({
                 </div>
                 {/* Toggle button for evaluation metrics */}
                 <button
-                  className="mt-3 px-4 py-2 bg-blue-500 text-white rounded-lg"
+                  className="mt-3 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                   onClick={() => toggleDomain(domainKey)}
                 >
                   {openDomains.includes(domainKey) ? "Hide" : "View"} Evaluation
@@ -635,7 +635,7 @@ const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({
               {totalScore} / {totalMaxPoints}
             </p>
             <button
-              className="mt-3 px-4 py-2 bg-blue-500 text-white rounded-lg"
+              className="mt-3 px-4 py-2 bg-orange-400 text-white rounded-lg hover:bg-orange-500"
               onClick={onShowConversationAnalysis}
             >
               Show Conversation Analysis
