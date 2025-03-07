@@ -1,27 +1,44 @@
 "use client";
 import React from "react";
+import { useRouter } from "next/navigation"; // Import useRouter from next/navigation
 import Navbar from "../components/Navbar2"; // ✅ Import Navbar
 
 const Report = ({ patientName }: { patientName: string }) => {
-  const pdfFileName = `/reports/${patientName.toLowerCase().replace(/ /g, "-")}-report.pdf`;
+  const router = useRouter(); // Initialize router
+  const pdfFileName = `/reports/${patientName
+    .toLowerCase()
+    .replace(/ /g, "-")}-report.pdf`;
+
+  const handleButtonClick = () => {
+    router.push("/evaluation_page"); // Router push to /evaluation_page
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-
+    <div className="min-h-screen bg-blue-100">
+      {" "}
+      {/* Change background color to blue-100 */}
       <Navbar />
-
       <div className="flex flex-col items-center justify-center mt-6">
         <div className="max-w-3xl w-full bg-white shadow-lg rounded-lg p-6">
-          <h2 className="text-2xl font-bold text-center">{patientName}'s Report</h2>
-          <p className="text-center text-green-600 font-semibold mt-2">✅ The correct answer</p>
+          <h2 className="text-2xl font-bold text-center">
+            {patientName}'s Report
+          </h2>
+          <p className="text-center text-green-600 font-semibold mt-2">
+            ✅ The correct answer
+          </p>
 
           <div className="flex justify-center mt-4">
-            <button className="bg-red-500 text-white px-6 py-2 rounded-full hover:bg-red-600">
-              Show Conversation Analysis
+            <button
+              className="bg-red-500 text-white px-6 py-2 rounded-full hover:bg-red-600"
+              onClick={handleButtonClick} // Add onClick handler
+            >
+              Evaluation Score
             </button>
           </div>
 
-          <h3 className="text-lg font-semibold mt-6 text-center underline">Formal Report</h3>
+          <h3 className="text-lg font-semibold mt-6 text-center underline">
+            Formal Report
+          </h3>
 
           <div className="flex justify-end mt-2">
             <a
