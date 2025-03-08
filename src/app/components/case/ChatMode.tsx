@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 type Message = {
   sender: string;
@@ -14,6 +14,7 @@ type ChatModeProps = {
   onSendMessage: () => void;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onOptionSelect: (option: string) => void;
+  onKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 };
 
 const ChatMode: React.FC<ChatModeProps> = ({
@@ -25,7 +26,16 @@ const ChatMode: React.FC<ChatModeProps> = ({
   onSendMessage,
   onInputChange,
   onOptionSelect,
+  onKeyPress,
 }) => {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
   return (
     <>
       <div className="bg-gray-100 p-4 rounded-lg text-black flex-1 overflow-y-auto space-y-3">
@@ -48,6 +58,7 @@ const ChatMode: React.FC<ChatModeProps> = ({
             {msg.text}
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
       {!chatStarted && (
         <div className="flex flex-col gap-2 mt-4">
@@ -71,6 +82,7 @@ const ChatMode: React.FC<ChatModeProps> = ({
               placeholder="Type a message..."
               value={inputText}
               onChange={onInputChange}
+              onKeyPress={onKeyPress}
             />
             <button
               className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600"

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import io from "socket.io-client";
 import ChatMode from "./ChatMode";
 import ExamMode from "./ExamMode";
 
@@ -24,6 +25,8 @@ type ChatInterfaceProps = {
   initialExamData?: ExamDataType;
 };
 
+const socket = io("http://localhost:5000");
+
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
   patientName = "Johnson William",
   patientMessage,
@@ -34,11 +37,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   initialExamData,
 }) => {
   const router = useRouter();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Initialize state with props if provided.
   const [chatStarted, setChatStarted] = useState<boolean>(!!initialMessages);
   const [messages, setMessages] = useState<Message[]>(
-    initialMessages ? initialMessages : [{ sender: "patient", text: patientMessage }]
+    initialMessages
+      ? initialMessages
+      : [{ sender: "patient", text: patientMessage }]
   );
   const [inputText, setInputText] = useState("");
   const [activeMode, setActiveMode] = useState<"chat" | "exam">("chat");
@@ -70,17 +76,41 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   }, [initialExamData]);
 
+  useEffect(() => {
+    socket.on("response", (data: string) => {
+      setMessages((prev) => [...prev, { sender: "patient", text: data }]);
+    });
+
+    return () => {
+      socket.off("response");
+    };
+  }, []);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
   // Chat mode handlers
   const handleOptionSelect = (option: string) => {
     setChatStarted(true);
     setMessages((prev) => [...prev, { sender: "student", text: option }]);
+    socket.emit("message", option); // Send the selected message to the server
     onOptionSelect(option);
   };
 
   const handleSendMessage = () => {
     if (inputText.trim() !== "") {
       setMessages((prev) => [...prev, { sender: "student", text: inputText }]);
+      socket.emit("message", inputText);
       setInputText("");
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSendMessage();
     }
   };
 
@@ -124,6 +154,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           onSendMessage={handleSendMessage}
           onInputChange={(e) => setInputText(e.target.value)}
           onOptionSelect={handleOptionSelect}
+          onKeyPress={handleKeyPress}
         />
       ) : (
         <ExamMode
@@ -141,6 +172,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           }}
         />
       )}
+      <div ref={messagesEndRef} />
     </div>
   );
 };
