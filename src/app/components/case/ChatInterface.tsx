@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import io from "socket.io-client";
 import ChatMode from "./ChatMode";
@@ -37,6 +37,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   initialExamData,
 }) => {
   const router = useRouter();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Initialize state with props if provided.
   const [chatStarted, setChatStarted] = useState<boolean>(!!initialMessages);
@@ -85,10 +86,17 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     };
   }, []);
 
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
   // Chat mode handlers
   const handleOptionSelect = (option: string) => {
     setChatStarted(true);
     setMessages((prev) => [...prev, { sender: "student", text: option }]);
+    socket.emit("message", option); // Send the selected message to the server
     onOptionSelect(option);
   };
 
@@ -97,6 +105,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       setMessages((prev) => [...prev, { sender: "student", text: inputText }]);
       socket.emit("message", inputText);
       setInputText("");
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSendMessage();
     }
   };
 
@@ -140,6 +154,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           onSendMessage={handleSendMessage}
           onInputChange={(e) => setInputText(e.target.value)}
           onOptionSelect={handleOptionSelect}
+          onKeyPress={handleKeyPress}
         />
       ) : (
         <ExamMode
@@ -157,6 +172,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           }}
         />
       )}
+      <div ref={messagesEndRef} />
     </div>
   );
 };
