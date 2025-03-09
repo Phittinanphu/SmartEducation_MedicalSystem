@@ -57,4 +57,4 @@ def handle_message(user_input):
 
 
 if __name__ == "__main__":
-    socketio.run(app, host="0.0.0.0", port=5000)
+    socketio.run(app, host="0.0.0.0", port=5002, debug=True, use_reloader=False)
