@@ -42,7 +42,12 @@ def handle_message(user_input):
     messages = read_json()
     messages.append({"role": "user", "content": user_input})
 
-    response = chat(model="deepseek-r1:8b", messages=messages)
+    try:
+        response = chat(model="deepseek-r1:8b", messages=messages)
+    except Exception as e:
+        emit("error", str(e))
+        return
+    
     filtered_content = filter_think_tags(response.message.content)
 
     messages.append({"role": "assistant", "content": filtered_content})
