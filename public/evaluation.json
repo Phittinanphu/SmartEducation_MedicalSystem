@@ -34,5 +34,59 @@
     "domain4": {
       "4.1": 18
     }
-  }
+  },
+  "conversationData": [
+    {
+      "question": "What are the symptoms of peptic ulcer disease?",
+      "comment": "Peptic ulcer disease symptoms include burning epigastric pain, worse after eating, and relieved with food or antacids."
+    },
+    {
+      "question": "How is peptic ulcer disease diagnosed?",
+      "comment": "Diagnosis is typically made based on clinical symptoms and confirmed with endoscopy or barium swallow."
+    },
+    {
+      "question": "Can you describe the pain you are experiencing?",
+      "comment": "The pain is usually described as a burning or gnawing sensation in the upper abdomen."
+    },
+    {
+      "question": "Do you have any other symptoms like nausea or vomiting?",
+      "comment": "Yes, some patients may experience nausea, vomiting, bloating, or loss of appetite."
+    },
+    {
+      "question": "Have you noticed any blood in your stool or vomit?",
+      "comment": "Yes, in severe cases, there may be blood in the stool (melena) or vomit (hematemesis)."
+    },
+    {
+      "question": "Do you have a history of taking NSAIDs or aspirin?",
+      "comment": "Yes, prolonged use of NSAIDs or aspirin can increase the risk of developing peptic ulcers."
+    },
+    {
+      "question": "Have you been under a lot of stress lately?",
+      "comment": "Stress and lifestyle factors can contribute to the development of peptic ulcers."
+    },
+    {
+      "question": "Do you smoke or consume alcohol?",
+      "comment": "Smoking and excessive alcohol consumption can aggravate peptic ulcer disease."
+    },
+    {
+      "question": "Have you had any previous episodes of similar pain?",
+      "comment": "Yes, recurrent episodes of similar pain may indicate a chronic peptic ulcer condition."
+    },
+    {
+      "question": "Are you currently taking any medications for this condition?",
+      "comment": "Medications like proton pump inhibitors (PPIs) or H2 blockers are commonly used to treat peptic ulcers."
+    },
+    {
+      "question": "Have you made any dietary changes recently?",
+      "comment": "Certain foods and beverages can trigger or worsen peptic ulcer symptoms."
+    },
+    {
+      "question": "Do you have any family history of peptic ulcer disease?",
+      "comment": "A family history of peptic ulcer disease can increase the risk of developing the condition."
+    },
+    {
+      "question": "Do you have a boyfriend or girlfriend?",
+      "comment": "This question might be too personal unless it directly relates to the case."
+    }
+  ]
 }

@@ -9,9 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+<<<<<<< HEAD
     "dotenv": "^16.4.7",
     "lucide-react": "^0.475.0",
     "mongodb": "^6.13.1",
+=======
+    "@heroicons/react": "^2.2.0",
+    "lucide-react": "^0.475.0",
+    "mongodb": "^6.14.1",
+>>>>>>> origin/master
     "my-next-app": "file:",
     "next": "^15.2.0-canary.51",
     "pg": "^8.13.3",
@@ -19,7 +25,11 @@
     "react-dom": "^19.0.0",
     "react-icons": "^5.4.0",
     "react-router-dom": "^7.1.5",
+<<<<<<< HEAD
     "requirement": "^0.0.8"
+=======
+    "socket.io-client": "^4.8.1"
+>>>>>>> origin/master
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -27,6 +37,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-icons": "^2.2.7",
+    "@types/socket.io-client": "^1.4.36",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
     "postcss": "^8",
