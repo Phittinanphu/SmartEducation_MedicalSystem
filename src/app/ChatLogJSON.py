@@ -42,12 +42,7 @@ def handle_message(user_input):
     messages = read_json()
     messages.append({"role": "user", "content": user_input})
 
-    try:
-        response = chat(model="deepseek-r1:8b", messages=messages)
-    except Exception as e:
-        emit("error", str(e))
-        return
-    
+    response = chat(model="deepseek-r1:latest", messages=messages)
     filtered_content = filter_think_tags(response.message.content)
 
     messages.append({"role": "assistant", "content": filtered_content})
@@ -57,4 +52,4 @@ def handle_message(user_input):
 
 
 if __name__ == "__main__":
-    socketio.run(app, host="0.0.0.0", port=5002, debug=True, use_reloader=False)
+    socketio.run(app, host="0.0.0.0", port=5001)
