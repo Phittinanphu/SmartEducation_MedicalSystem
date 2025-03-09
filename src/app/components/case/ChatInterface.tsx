@@ -25,7 +25,7 @@ type ChatInterfaceProps = {
   initialExamData?: ExamDataType;
 };
 
-const socket = io("http://localhost:5000");
+const socket = io("http://localhost:5001");
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
   patientName = "Johnson William",
