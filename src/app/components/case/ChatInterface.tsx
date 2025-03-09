@@ -25,8 +25,6 @@ type ChatInterfaceProps = {
   initialExamData?: ExamDataType;
 };
 
-const socket = io("http://localhost:5000");
-
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
   patientName = "Johnson William",
   patientMessage,
@@ -46,8 +44,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       ? initialMessages
       : [{ sender: "patient", text: patientMessage }]
   );
-  const [inputText, setInputText] = useState("");
-  const [activeMode, setActiveMode] = useState<"chat" | "exam">("chat");
+const [inputText, setInputText] = useState("");
+const [socket, setSocket] = useState<any>(null);
+const [activeMode, setActiveMode] = useState<"chat" | "exam">("chat");
   const [examData, setExamData] = useState<ExamDataType>(
     initialExamData
       ? initialExamData
@@ -76,15 +75,26 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   }, [initialExamData]);
 
-  useEffect(() => {
-    socket.on("response", (data: string) => {
-      setMessages((prev) => [...prev, { sender: "patient", text: data }]);
-    });
+useEffect(() => {
+const socketInstance = io("http://localhost:5000");
+setSocket(socketInstance);
 
+return () => {
+    socketInstance.disconnect();
+};
+}, []);
+
+useEffect(() => {
+if (socket) {
+    socket.on("response", (data: string) => {
+    setMessages((prev) => [...prev, { sender: "patient", text: data }]);
+    });
+    
     return () => {
-      socket.off("response");
+    socket.off("response");
     };
-  }, []);
+}
+}, [socket]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -93,20 +103,24 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   }, [messages]);
 
   // Chat mode handlers
-  const handleOptionSelect = (option: string) => {
-    setChatStarted(true);
-    setMessages((prev) => [...prev, { sender: "student", text: option }]);
+const handleOptionSelect = (option: string) => {
+setChatStarted(true);
+setMessages((prev) => [...prev, { sender: "student", text: option }]);
+if (socket) {
     socket.emit("message", option); // Send the selected message to the server
-    onOptionSelect(option);
-  };
+}
+onOptionSelect(option);
+};
 
-  const handleSendMessage = () => {
-    if (inputText.trim() !== "") {
-      setMessages((prev) => [...prev, { sender: "student", text: inputText }]);
-      socket.emit("message", inputText);
-      setInputText("");
+const handleSendMessage = () => {
+if (inputText.trim() !== "") {
+    setMessages((prev) => [...prev, { sender: "student", text: inputText }]);
+    if (socket) {
+    socket.emit("message", inputText);
     }
-  };
+    setInputText("");
+}
+};
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {

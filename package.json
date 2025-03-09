@@ -13,7 +13,7 @@
     "dotenv": "^16.4.7",
     "lucide-react": "^0.475.0",
     "mongodb": "^6.14.1",
-    "my-next-app": "file:.",
+    "my-next-app": "file:",
     "next": "^15.2.0-canary.51",
     "pg": "^8.13.3",
     "react": "^19.0.0",

@@ -1,0 +1,33 @@
+# Requirements file for Python dependencies
+# Syntax for specifying versions:
+# package==1.0.0         Exact version
+# package>=1.0.0         Minimum version
+# package<=1.0.0         Maximum version
+# package>=1.0.0,<2.0.0  Version range
+# package~=1.0.0         Compatible release (same as >=1.0.0,<2.0.0)
+
+# Web and API packages
+requests==2.31.0        # Popular HTTP library
+flask==2.3.3            # Web framework
+flask-socketio>=5.3.4   # WebSocket for Flask
+flask-cors>=4.0.0       # CORS support for Flask
+fastapi>=0.103.1        # Modern API framework
+
+# Data science and analysis
+numpy==1.25.2           # Numerical computing
+pandas>=2.1.0           # Data analysis library
+matplotlib~=3.7.2       # Plotting library
+scikit-learn>=1.3.0     # Machine learning
+
+# Utilities
+python-dotenv==1.0.0    # Environment variable management
+pyyaml>=6.0.1           # YAML parser
+tqdm~=4.66.1            # Progress bars
+
+# Development tools
+pytest>=7.4.0           # Testing framework
+black==23.7.0           # Code formatter
+mypy>=1.5.1             # Static type checker
+
+# LLM dependencies
+ollama==0.5.11           # Client for Ollama models
