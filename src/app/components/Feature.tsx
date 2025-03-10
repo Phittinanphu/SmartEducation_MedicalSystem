@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
+import Patient2D from "./Patient2D";
 
 const FeatureSection: React.FC = () => {
+  const [text, setText] = useState("");
+
   return (
     <section className="py-12 text-center">
       <h2 className="text-4xl font-bold mb-10">Feature</h2>
@@ -17,9 +20,19 @@ const FeatureSection: React.FC = () => {
           <p className="mt-4 text-xl font-semibold text-gray-800">Chat History</p>
         </div>
       </div>
+
+      {/* Patient Model */}
+      <div className="mt-12 flex flex-col items-center">
+        <Patient2D text={text} />
+        <button
+          onClick={() => setText("Hello, welcome to the hospital!")}
+          className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700"
+        >
+          Speak
+        </button>
+      </div>
     </section>
   );
 };
 
 export default FeatureSection;
-
