@@ -8,6 +8,7 @@ import React, { useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import PatientModel from "../components/PatientModel";
+import Patient2D from "../Patient2D"; // ✅ Import Patient2D
 
 type Message = { sender: string; text: string };
 
@@ -25,7 +26,6 @@ type ChatInterfaceProps = {
   options: string[];
   onOptionSelect: (option: string) => void;
   onExamSubmitComplete?: (examData: ExamDataType, messages: Message[]) => void;
-  // Optional props for pre-populating fields when editing answers
   initialMessages?: Message[];
   initialExamData?: ExamDataType;
 };
@@ -43,8 +43,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 }) => {
   const router = useRouter();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  // Initialize state with props if provided.
   const [chatStarted, setChatStarted] = useState<boolean>(!!initialMessages);
   const [messages, setMessages] = useState<Message[]>(
     initialMessages
@@ -65,8 +63,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         }
   );
   const [showExamSubmitPopup, setShowExamSubmitPopup] = useState(false);
+  const [patientText, setPatientText] = useState(""); // ✅ State for Patient2D
 
-  // When initialMessages prop changes, update the messages state.
   useEffect(() => {
     if (initialMessages) {
       setMessages(initialMessages);
@@ -74,7 +72,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   }, [initialMessages]);
 
-  // When initialExamData prop changes, update the examData state.
   useEffect(() => {
     if (initialExamData) {
       setExamData(initialExamData);
@@ -84,6 +81,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   useEffect(() => {
     socket.on("response", (data: string) => {
       setMessages((prev) => [...prev, { sender: "patient", text: data }]);
+      setPatientText(data); // ✅ Send text to Patient2D
     });
 
     return () => {
@@ -97,11 +95,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   }, [messages]);
 
-  // Chat mode handlers
   const handleOptionSelect = (option: string) => {
     setChatStarted(true);
     setMessages((prev) => [...prev, { sender: "student", text: option }]);
-    socket.emit("message", option); // Send the selected message to the server
+    socket.emit("message", option);
     onOptionSelect(option);
   };
 
@@ -119,7 +116,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   };
 
-  // Exam mode handler
   const handleExamDataChange = (field: keyof ExamDataType, value: string) => {
     setExamData((prev) => ({ ...prev, [field]: value }));
   };
@@ -194,7 +190,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   return (
     <div className="absolute top-10 left-10 bg-white rounded-lg shadow-lg p-6 w-[40%] h-[69%] flex flex-col relative">
-      {/* Mode buttons arranged side by side */}
       <div className="flex items-center gap-2 mb-4">
         <button
           className={`px-4 py-2 rounded-lg shadow-md ${
@@ -246,6 +241,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         />
       )}
       <div ref={messagesEndRef} />
+      {/* ✅ Added Patient2D here */}
+      <div className="absolute top-0 right-[-300px] w-[300px] h-[500px]">
+        <Patient2D text={patientText} />
+      </div>
     </div>
   );
 };
