@@ -9,8 +9,7 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import PatientModel from "../components/PatientModel";
 
-const ChatInterface = () => {
-  const [speech, setSpeech] = useState("");
+type Message = { sender: string; text: string };
 
 type ExamDataType = {
   patientName: string;
@@ -22,28 +21,38 @@ type ExamDataType = {
 
 type ChatInterfaceProps = {
   patientName?: string;
+  patientMessage: string;
+  options: string[];
   onOptionSelect: (option: string) => void;
   onExamSubmitComplete?: (examData: ExamDataType, messages: Message[]) => void;
+  // Optional props for pre-populating fields when editing answers
+  initialMessages?: Message[];
   initialExamData?: ExamDataType;
-  activeMode: "chat" | "exam";
-  setActiveMode: (mode: "chat" | "exam") => void;
 };
 
 const socket = io("http://localhost:5000");
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
   patientName = "Johnson William",
+  patientMessage,
+  options,
+  onOptionSelect,
   onExamSubmitComplete,
+  initialMessages,
   initialExamData,
-  activeMode,
-  setActiveMode,
 }) => {
   const router = useRouter();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Initialize state with props if provided.
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [chatStarted, setChatStarted] = useState<boolean>(!!initialMessages);
+  const [messages, setMessages] = useState<Message[]>(
+    initialMessages
+      ? initialMessages
+      : [{ sender: "patient", text: patientMessage }]
+  );
   const [inputText, setInputText] = useState("");
+  const [activeMode, setActiveMode] = useState<"chat" | "exam">("chat");
   const [examData, setExamData] = useState<ExamDataType>(
     initialExamData
       ? initialExamData
@@ -56,6 +65,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         }
   );
   const [showExamSubmitPopup, setShowExamSubmitPopup] = useState(false);
+
+  // When initialMessages prop changes, update the messages state.
+  useEffect(() => {
+    if (initialMessages) {
+      setMessages(initialMessages);
+      setChatStarted(true);
+    }
+  }, [initialMessages]);
 
   // When initialExamData prop changes, update the examData state.
   useEffect(() => {
@@ -79,6 +96,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
+
+  // Chat mode handlers
+  const handleOptionSelect = (option: string) => {
+    setChatStarted(true);
+    setMessages((prev) => [...prev, { sender: "student", text: option }]);
+    socket.emit("message", option); // Send the selected message to the server
+    onOptionSelect(option);
+  };
 
   const handleSendMessage = () => {
     if (inputText.trim() !== "") {
@@ -168,24 +193,59 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "row" }}>
-      {/* ส่วนแชท */}
-      <div style={{ flex: 1, padding: "20px", background: "#f4f4f4" }}>
-        <h2>Chat Interface</h2>
-        <button onClick={() => handleSpeak("I can respond to your voice!")}>
-          Speak
+    <div className="absolute top-10 left-10 bg-white rounded-lg shadow-lg p-6 w-[40%] h-[69%] flex flex-col relative">
+      {/* Mode buttons arranged side by side */}
+      <div className="flex items-center gap-2 mb-4">
+        <button
+          className={`px-4 py-2 rounded-lg shadow-md ${
+            activeMode === "chat"
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200 text-black hover:bg-gray-300"
+          }`}
+          onClick={() => setActiveMode("chat")}
+        >
+          Chat
+        </button>
+        <button
+          className={`px-4 py-2 rounded-lg shadow-md ${
+            activeMode === "exam"
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200 text-black hover:bg-gray-300"
+          }`}
+          onClick={() => setActiveMode("exam")}
+        >
+          Exam
         </button>
       </div>
-
-      {/* ส่วนโมเดล 3D */}
-      <div style={{ flex: 1 }}>
-        <Canvas camera={{ position: [0, 2, 5] }}>
-          <ambientLight intensity={0.5} />
-          <pointLight position={[10, 10, 10]} />
-          <PatientModel speech={speech} />
-          <OrbitControls />
-        </Canvas>
-      </div>
+      {activeMode === "chat" ? (
+        <ChatMode
+          patientName={patientName}
+          messages={messages}
+          inputText={inputText}
+          options={options}
+          chatStarted={chatStarted}
+          onSendMessage={handleSendMessage}
+          onInputChange={(e) => setInputText(e.target.value)}
+          onOptionSelect={handleOptionSelect}
+          onKeyPress={handleKeyPress}
+        />
+      ) : (
+        <ExamMode
+          examData={examData}
+          onExamDataChange={handleExamDataChange}
+          onBackToChat={() => setActiveMode("chat")}
+          onSubmitExam={() => setShowExamSubmitPopup(true)}
+          showSubmitPopup={showExamSubmitPopup}
+          setShowSubmitPopup={setShowExamSubmitPopup}
+          onConfirmSubmit={() => {
+            setShowExamSubmitPopup(false);
+            if (onExamSubmitComplete) {
+              onExamSubmitComplete(examData, messages);
+            }
+          }}
+        />
+      )}
+      <div ref={messagesEndRef} />
     </div>
   );
 };
