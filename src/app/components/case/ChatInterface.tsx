@@ -78,7 +78,7 @@ const [activeMode, setActiveMode] = useState<"chat" | "exam">("chat");
   }, [initialExamData]);
 
 useEffect(() => {
-const socketInstance = io("http://localhost:5000");
+const socketInstance = io("http://localhost:5001");
 setSocket(socketInstance);
 
 return () => {
