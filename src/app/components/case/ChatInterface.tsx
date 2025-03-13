@@ -29,9 +29,6 @@ const socket = io("http://localhost:5000");
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
   patientName = "Johnson William",
-  patientMessage,
-  options,
-  onOptionSelect,
   onExamSubmitComplete,
   initialMessages,
   initialExamData,
@@ -40,11 +37,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Initialize state with props if provided.
-  const [chatStarted, setChatStarted] = useState<boolean>(!!initialMessages);
+  
   const [messages, setMessages] = useState<Message[]>(
-    initialMessages
-      ? initialMessages
-      : [{ sender: "patient", text: patientMessage }]
+    initialMessages ? initialMessages : []
   );
   const [inputText, setInputText] = useState("");
   const [activeMode, setActiveMode] = useState<"chat" | "exam">("chat");
@@ -61,13 +56,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   );
   const [showExamSubmitPopup, setShowExamSubmitPopup] = useState(false);
 
-  // When initialMessages prop changes, update the messages state.
-  useEffect(() => {
-    if (initialMessages) {
-      setMessages(initialMessages);
-      setChatStarted(true);
-    }
-  }, [initialMessages]);
+  
 
   // When initialExamData prop changes, update the examData state.
   useEffect(() => {
@@ -92,13 +81,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   }, [messages]);
 
-  // Chat mode handlers
-  const handleOptionSelect = (option: string) => {
-    setChatStarted(true);
-    setMessages((prev) => [...prev, { sender: "student", text: option }]);
-    socket.emit("message", option); // Send the selected message to the server
-    onOptionSelect(option);
-  };
 
   const handleSendMessage = () => {
     if (inputText.trim() !== "") {
@@ -149,11 +131,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           patientName={patientName}
           messages={messages}
           inputText={inputText}
-          options={options}
-          chatStarted={chatStarted}
           onSendMessage={handleSendMessage}
           onInputChange={(e) => setInputText(e.target.value)}
-          onOptionSelect={handleOptionSelect}
           onKeyPress={handleKeyPress}
         />
       ) : (

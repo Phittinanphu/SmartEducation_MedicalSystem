@@ -14,20 +14,12 @@ const Page = () => {
   // Step state for the submission multi‑step view:
   // 1 = Submit Instructions, 2 = Patient Details, 3 = Chat History
   const [step, setStep] = useState(1);
-  const [selectedOption, setSelectedOption] = useState("");
 
   // Temporary data from the ChatInterface
   const [examData, setExamData] = useState(null);
   const [chatMessages, setChatMessages] = useState([]);
 
-  const patientMessage =
-    "Hello, doctor. I've been feeling unwell for the past few days. I have a persistent cough and a fever...";
-
-  const options = [
-    "Do you think you have pneumonia?",
-    "Have you eaten anything unusual that might have caused this?",
-    "Can you describe your cough? Is it dry, or are you producing phlegm?",
-  ];
+  const patientMessage = ""; // Removed initial patient message
 
   // Callback from ChatInterface when the exam is submitted.
   // It saves the temporary data and switches to the submission view.
@@ -68,14 +60,14 @@ const Page = () => {
             <div className="w-[100%]">
               <ChatInterface
                 patientMessage={patientMessage}
-                options={options}
-                onOptionSelect={(option) => setSelectedOption(option)}
                 onExamSubmitComplete={handleExamSubmitComplete}
                 // When starting for the first time, temporary data is not provided,
                 // so ChatInterface will load default values and show the three option blocks.
                 // In case of Edit Answer, the temporary data (if any) is passed.
                 initialMessages={
-                  chatMessages && chatMessages.length > 0 ? chatMessages : undefined
+                  chatMessages && chatMessages.length > 0
+                    ? chatMessages
+                    : undefined
                 }
                 initialExamData={examData ? examData : undefined}
               />
