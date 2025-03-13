@@ -25,8 +25,6 @@ type ChatInterfaceProps = {
   initialExamData?: ExamDataType;
 };
 
-const socket = io("http://localhost:5001");
-
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
   patientName = "Johnson William",
   patientMessage,
@@ -74,25 +72,24 @@ const [activeMode, setActiveMode] = useState<"chat" | "exam">("chat");
     }
   }, [initialExamData]);
 
-  useEffect(() => {
-    socket.on("response", (data: string) => {
-      setMessages((prev) => [...prev, { sender: "patient", text: data }]);
-      setPatientText(data); // ✅ Send text to Patient2D
-    });
+useEffect(() => {
+    const newSocket = io("http://localhost:5001");
+    setSocket(newSocket);
 
-return () => {
-    socketInstance.disconnect();
-};
+    return () => {
+        if (newSocket) newSocket.disconnect();
+    };
 }, []);
 
 useEffect(() => {
 if (socket) {
     socket.on("response", (data: string) => {
-    setMessages((prev) => [...prev, { sender: "patient", text: data }]);
+        setMessages((prev) => [...prev, { sender: "patient", text: data }]);
+        setPatientText(data); // Send text to Patient2D
     });
     
     return () => {
-    socket.off("response");
+        socket.off("response");
     };
 }
 }, [socket]);
