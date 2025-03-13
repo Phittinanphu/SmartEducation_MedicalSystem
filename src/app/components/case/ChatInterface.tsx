@@ -18,8 +18,9 @@ type ChatInterfaceProps = {
   patientName?: string;
   onOptionSelect: (option: string) => void;
   onExamSubmitComplete?: (examData: ExamDataType, messages: Message[]) => void;
-  // Optional props for pre-populating fields when editing answers
   initialExamData?: ExamDataType;
+  activeMode: "chat" | "exam";
+  setActiveMode: (mode: "chat" | "exam") => void;
 };
 
 const socket = io("http://localhost:5000");
@@ -28,6 +29,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   patientName = "Johnson William",
   onExamSubmitComplete,
   initialExamData,
+  activeMode,
+  setActiveMode,
 }) => {
   const router = useRouter();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -35,7 +38,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   // Initialize state with props if provided.
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
-  const [activeMode, setActiveMode] = useState<"chat" | "exam">("chat");
   const [examData, setExamData] = useState<ExamDataType>(
     initialExamData
       ? initialExamData

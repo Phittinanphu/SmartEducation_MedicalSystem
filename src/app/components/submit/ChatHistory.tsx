@@ -12,7 +12,7 @@ interface ChatHistoryProps {
   } | null;
   chatHistory: Array<{ sender: string; text: string }>;
   onPrevious: () => void;
-  onEditAnswer: () => void;
+  onEditAnswer: (section: string) => void;
 }
 
 const ChatHistory: React.FC<ChatHistoryProps> = ({
@@ -27,7 +27,6 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   const router = useRouter();
   // Function to handle saving data to MongoDB using the temporary data
   const handleSubmit = async () => {
-
     setIsSubmitting(true);
     try {
       const examResponse = await fetch("/apiExam", {
@@ -80,9 +79,9 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
         <div className="flex gap-2">
           <button
             // When Edit Answer is clicked, immediately call onEditAnswer.
-            // The parent component should then render the chat/exam view,
-            // passing in the temporary data so that previous chat history and exam answers are loaded.
-            onClick={onEditAnswer}
+            // The parent component should then render the exam view,
+            // passing in the temporary data so that previous exam answers are loaded.
+            onClick={() => onEditAnswer("exam")}
             className="bg-yellow-500 text-white px-6 py-2 rounded-lg transition transform hover:bg-yellow-600 hover:scale-105"
           >
             Edit Answer
