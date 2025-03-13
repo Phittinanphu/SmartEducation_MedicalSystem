@@ -78,15 +78,6 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
         </button>
         <div className="flex gap-2">
           <button
-            // When Edit Answer is clicked, immediately call onEditAnswer.
-            // The parent component should then render the exam view,
-            // passing in the temporary data so that previous exam answers are loaded.
-            onClick={() => onEditAnswer("exam")}
-            className="bg-yellow-500 text-white px-6 py-2 rounded-lg transition transform hover:bg-yellow-600 hover:scale-105"
-          >
-            Edit Answer
-          </button>
-          <button
             onClick={handleSubmit}
             disabled={isSubmitting}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg transition transform hover:bg-blue-700 hover:scale-105"
