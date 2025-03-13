@@ -10,7 +10,6 @@ const SignUp = () => {
   const [name, setName] = useState("");
   const [studentId, setStudentId] = useState("");
   const [university, setUniversity] = useState("");
-  const [dob, setDob] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -18,7 +17,7 @@ const SignUp = () => {
 
   const handleSubmit = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
-    if (!name || !studentId || !university || !dob || !email || !password || !confirmPassword) {
+    if (!name || !studentId || !university || !email || !password || !confirmPassword) {
       alert("Please fill in all fields.");
       return;
     }
@@ -44,7 +43,6 @@ const SignUp = () => {
           <input type="text" placeholder="Name - Surname" className="w-full px-4 py-2 border rounded-md" value={name} onChange={(e) => setName(e.target.value)} />
           <input type="text" placeholder="Student ID" className="w-full px-4 py-2 border rounded-md" value={studentId} onChange={(e) => setStudentId(e.target.value)} />
           <input type="text" placeholder="University" className="w-full px-4 py-2 border rounded-md" value={university} onChange={(e) => setUniversity(e.target.value)} />
-          <input type="date" placeholder="Date of Birth" className="w-full px-4 py-2 border rounded-md" value={dob} onChange={(e) => setDob(e.target.value)} />
           <input type="email" placeholder="Email" className="w-full px-4 py-2 border rounded-md" value={email} onChange={(e) => setEmail(e.target.value)} />
 
           <div className="relative">
