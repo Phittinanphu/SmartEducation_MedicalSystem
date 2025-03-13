@@ -49,10 +49,18 @@
     },
     {
         "role": "user",
-        "content": "scared"
+        "content": "happy"
     },
     {
         "role": "assistant",
-        "content": "\n\nIt sounds like you're feeling a bit worried, which is completely understandable. If you're experiencing something unusual or have concerns about your health, I recommend reaching out to a medical professional who can provide personalized advice and care. You don't need to face this alone, so take care of yourself and reach out if you need more information or support! \ud83d\ude0a"
+        "content": "\n\nIt seems like you might be asking about something unusual you've experienced, but as an AI, I don't have a physical body or the ability to eat or experience physical changes like pneumonia. If you're feeling unwell or have specific concerns, I recommend consulting a medical professional for advice. Let me know how I can assist you further! \ud83d\ude0a"
+    },
+    {
+        "role": "user",
+        "content": "happy"
+    },
+    {
+        "role": "assistant",
+        "content": "\n\nIt seems like you might be asking about something unusual you've experienced, but as an AI, I don't have a physical body or the ability to eat or experience physical changes like pneumonia. If you're feeling unwell or have specific concerns, I recommend consulting a medical professional for advice. Let me know how I can assist you further! \ud83d\ude0a"
     }
 ]
