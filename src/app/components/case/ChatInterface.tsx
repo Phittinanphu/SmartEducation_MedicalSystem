@@ -16,12 +16,9 @@ type ExamDataType = {
 
 type ChatInterfaceProps = {
   patientName?: string;
-  patientMessage: string;
-  options: string[];
   onOptionSelect: (option: string) => void;
   onExamSubmitComplete?: (examData: ExamDataType, messages: Message[]) => void;
   // Optional props for pre-populating fields when editing answers
-  initialMessages?: Message[];
   initialExamData?: ExamDataType;
 };
 
@@ -30,17 +27,13 @@ const socket = io("http://localhost:5000");
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
   patientName = "Johnson William",
   onExamSubmitComplete,
-  initialMessages,
   initialExamData,
 }) => {
   const router = useRouter();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Initialize state with props if provided.
-  
-  const [messages, setMessages] = useState<Message[]>(
-    initialMessages ? initialMessages : []
-  );
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
   const [activeMode, setActiveMode] = useState<"chat" | "exam">("chat");
   const [examData, setExamData] = useState<ExamDataType>(
@@ -55,8 +48,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         }
   );
   const [showExamSubmitPopup, setShowExamSubmitPopup] = useState(false);
-
-  
 
   // When initialExamData prop changes, update the examData state.
   useEffect(() => {
@@ -80,7 +71,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
-
 
   const handleSendMessage = () => {
     if (inputText.trim() !== "") {

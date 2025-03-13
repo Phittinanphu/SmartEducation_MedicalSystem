@@ -19,8 +19,6 @@ const Page = () => {
   const [examData, setExamData] = useState(null);
   const [chatMessages, setChatMessages] = useState([]);
 
-  const patientMessage = ""; // Removed initial patient message
-
   // Callback from ChatInterface when the exam is submitted.
   // It saves the temporary data and switches to the submission view.
   const handleExamSubmitComplete = (examAnswers, messages) => {
@@ -59,16 +57,10 @@ const Page = () => {
           <div className="flex h-full">
             <div className="w-[100%]">
               <ChatInterface
-                patientMessage={patientMessage}
                 onExamSubmitComplete={handleExamSubmitComplete}
                 // When starting for the first time, temporary data is not provided,
                 // so ChatInterface will load default values and show the three option blocks.
                 // In case of Edit Answer, the temporary data (if any) is passed.
-                initialMessages={
-                  chatMessages && chatMessages.length > 0
-                    ? chatMessages
-                    : undefined
-                }
                 initialExamData={examData ? examData : undefined}
               />
             </div>
