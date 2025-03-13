@@ -175,10 +175,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       )}
       <div ref={messagesEndRef} />
 
-            <div className="absolute top-[100px] right-[-520px] w-[700px] h-auto scale-150 translate-x-8">
+        <div className="absolute top-[100px] right-[-500px] w-[700px] h-auto scale-150 translate-x-10">
         <Patient2D mood={patientMood} />
       </div>
-
     </div>
   );
 };
