@@ -14,20 +14,11 @@ const Page = () => {
   // Step state for the submission multi‑step view:
   // 1 = Submit Instructions, 2 = Patient Details, 3 = Chat History
   const [step, setStep] = useState(1);
-  const [selectedOption, setSelectedOption] = useState("");
 
   // Temporary data from the ChatInterface
   const [examData, setExamData] = useState(null);
   const [chatMessages, setChatMessages] = useState([]);
-
-  const patientMessage =
-    "Hello, doctor. I've been feeling unwell for the past few days. I have a persistent cough and a fever...";
-
-  const options = [
-    "Do you think you have pneumonia?",
-    "Have you eaten anything unusual that might have caused this?",
-    "Can you describe your cough? Is it dry, or are you producing phlegm?",
-  ];
+  const [activeMode, setActiveMode] = useState("chat");
 
   // Callback from ChatInterface when the exam is submitted.
   // It saves the temporary data and switches to the submission view.
@@ -38,10 +29,10 @@ const Page = () => {
     setStep(1);
   };
 
-  // onEditAnswer callback: switch back to the chat/exam view.
-  // The temporary data is passed into ChatInterface so the student can continue editing.
+  // onEditAnswer callback: switch to the exam view without restarting the page.
   const handleEditAnswer = () => {
     setSubmitted(false);
+    setActiveMode("exam");
   };
 
   // Handlers for the submission multi‑step navigation.
@@ -67,17 +58,10 @@ const Page = () => {
           <div className="flex h-full">
             <div className="w-[100%]">
               <ChatInterface
-                patientMessage={patientMessage}
-                options={options}
-                onOptionSelect={(option) => setSelectedOption(option)}
                 onExamSubmitComplete={handleExamSubmitComplete}
-                // When starting for the first time, temporary data is not provided,
-                // so ChatInterface will load default values and show the three option blocks.
-                // In case of Edit Answer, the temporary data (if any) is passed.
-                initialMessages={
-                  chatMessages && chatMessages.length > 0 ? chatMessages : undefined
-                }
                 initialExamData={examData ? examData : undefined}
+                activeMode={activeMode}
+                setActiveMode={setActiveMode}
               />
             </div>
             <div className="flex-1">
@@ -107,7 +91,7 @@ const Page = () => {
               <ChatHistory
                 active={step === 3}
                 onPrevious={step === 3 ? handlePrevious : undefined}
-                onEditAnswer={step === 3 ? handleEditAnswer : undefined}
+                onEditAnswer={handleEditAnswer}
                 examData={examData}
                 chatHistory={chatMessages}
               />

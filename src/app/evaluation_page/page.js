@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Navbar from "../components/Navbar2";
 import ScoreEvaluation from "../components/evaluation/ScoreEvaluation";
 import ConversationAnalysis from "../components/evaluation/ConversationAnalysis";
@@ -10,6 +11,7 @@ export default function Page() {
   const [llmOutput, setLlmOutput] = useState(null);
   const [showConversationAnalysis, setShowConversationAnalysis] =
     useState(false);
+  const searchParams = useSearchParams();
 
   // On component mount, fetch the JSON file from the public folder.
   useEffect(() => {
@@ -21,6 +23,9 @@ export default function Page() {
       .then((data) => {
         console.log("JSON file fetched successfully:", data);
         setLlmOutput(data);
+        if (searchParams.get("view") === "conversation") {
+          setShowConversationAnalysis(true);
+        }
       })
       .catch((error) => {
         console.error("Error fetching JSON file:", error);
@@ -31,7 +36,7 @@ export default function Page() {
           conversationData: [], // Add default conversation data
         });
       });
-  }, []);
+  }, [searchParams]);
 
   // Display a loading state until the JSON file is fetched.
   if (!llmOutput) {

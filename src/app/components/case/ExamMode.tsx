@@ -21,7 +21,6 @@ type ExamModeProps = {
 const ExamMode: React.FC<ExamModeProps> = ({
   examData,
   onExamDataChange,
-  onBackToChat,
   onSubmitExam,
   showSubmitPopup,
   setShowSubmitPopup,
@@ -81,13 +80,7 @@ const ExamMode: React.FC<ExamModeProps> = ({
           />
         </label>
       </div>
-      <div className="flex justify-between mt-4">
-        <button
-          className="bg-gray-700 text-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-800"
-          onClick={onBackToChat}
-        >
-          Back to Chat
-        </button>
+      <div className="flex justify-end mt-4">
         <button
           className="bg-red-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-700"
           onClick={onSubmitExam}

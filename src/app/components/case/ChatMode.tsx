@@ -9,11 +9,8 @@ type ChatModeProps = {
   patientName: string;
   messages: Message[];
   inputText: string;
-  options: string[];
-  chatStarted: boolean;
   onSendMessage: () => void;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onOptionSelect: (option: string) => void;
   onKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 };
 
@@ -21,11 +18,8 @@ const ChatMode: React.FC<ChatModeProps> = ({
   patientName,
   messages,
   inputText,
-  options,
-  chatStarted,
   onSendMessage,
   onInputChange,
-  onOptionSelect,
   onKeyPress,
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -60,39 +54,24 @@ const ChatMode: React.FC<ChatModeProps> = ({
         ))}
         <div ref={messagesEndRef} />
       </div>
-      {!chatStarted && (
-        <div className="flex flex-col gap-2 mt-4">
-          {options.map((option, index) => (
-            <button
-              key={index}
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600"
-              onClick={() => onOptionSelect(option)}
-            >
-              {option}
-            </button>
-          ))}
+      <div className="flex flex-col gap-3 border-t pt-2">
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            className="flex-1 border rounded-lg p-2"
+            placeholder="Type a message..."
+            value={inputText}
+            onChange={onInputChange}
+            onKeyPress={onKeyPress}
+          />
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600"
+            onClick={onSendMessage}
+          >
+            Send
+          </button>
         </div>
-      )}
-      {chatStarted && (
-        <div className="flex flex-col gap-3 border-t pt-2">
-          <div className="flex items-center gap-2">
-            <input
-              type="text"
-              className="flex-1 border rounded-lg p-2"
-              placeholder="Type a message..."
-              value={inputText}
-              onChange={onInputChange}
-              onKeyPress={onKeyPress}
-            />
-            <button
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600"
-              onClick={onSendMessage}
-            >
-              Send
-            </button>
-          </div>
-        </div>
-      )}
+      </div>
     </>
   );
 };
