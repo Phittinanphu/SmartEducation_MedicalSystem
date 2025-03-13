@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import io from "socket.io-client";
 import ChatMode from "./ChatMode";
 import ExamMode from "./ExamMode";
+import PatientInfo from "./Patientinfo";
 
 type Message = { sender: string; text: string };
 
@@ -94,64 +95,67 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   };
 
   return (
-    <div className="absolute top-10 left-10 bg-white rounded-lg shadow-lg p-6 w-[40%] h-[69%] flex flex-col relative">
-      {/* Mode buttons arranged side by side */}
-      <div className="flex items-center gap-2 mb-4">
-        <button
-          className={`px-4 py-2 rounded-lg shadow-md ${
-            activeMode === "chat"
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200 text-black"
-          }`}
-          disabled
-        >
-          Chat
-        </button>
-        <button
-          className={`px-4 py-2 rounded-lg shadow-md ${
-            activeMode === "exam"
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200 text-black"
-          }`}
-          disabled
-        >
-          Exam
-        </button>
-      </div>
-      {activeMode === "chat" ? (
-        <>
-          <ChatMode
-            patientName={patientName}
-            messages={messages}
-            inputText={inputText}
-            onSendMessage={handleSendMessage}
-            onInputChange={(e) => setInputText(e.target.value)}
-            onKeyPress={handleKeyPress}
-          />
+    <div className="absolute top-10 left-10 bg-white rounded-lg shadow-lg p-6 w-[70%] h-[69%] flex flex-row relative">
+      <PatientInfo />
+      <div className="flex flex-col w-full ml-4">
+        {/* Mode buttons arranged side by side */}
+        <div className="flex items-center gap-2 mb-4">
           <button
-            className="bg-red-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-700 mt-4"
-            onClick={() => setActiveMode("exam")}
+            className={`px-4 py-2 rounded-lg shadow-md ${
+              activeMode === "chat"
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 text-black"
+            }`}
+            disabled
           >
-            Complete Chat
+            Chat
           </button>
-        </>
-      ) : (
-        <ExamMode
-          examData={examData}
-          onExamDataChange={handleExamDataChange}
-          onBackToChat={() => {}}
-          onSubmitExam={() => setShowExamSubmitPopup(true)}
-          showSubmitPopup={showExamSubmitPopup}
-          setShowSubmitPopup={setShowExamSubmitPopup}
-          onConfirmSubmit={() => {
-            setShowExamSubmitPopup(false);
-            if (onExamSubmitComplete) {
-              onExamSubmitComplete(examData, messages);
-            }
-          }}
-        />
-      )}
-      <div ref={messagesEndRef} />
+          <button
+            className={`px-4 py-2 rounded-lg shadow-md ${
+              activeMode === "exam"
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 text-black"
+            }`}
+            disabled
+          >
+            Exam
+          </button>
+        </div>
+        {activeMode === "chat" ? (
+          <>
+            <ChatMode
+              patientName={patientName}
+              messages={messages}
+              inputText={inputText}
+              onSendMessage={handleSendMessage}
+              onInputChange={(e) => setInputText(e.target.value)}
+              onKeyPress={handleKeyPress}
+            />
+            <button
+              className="bg-red-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-700 mt-4"
+              onClick={() => setActiveMode("exam")}
+            >
+              Complete Chat
+            </button>
+          </>
+        ) : (
+          <ExamMode
+            examData={examData}
+            onExamDataChange={handleExamDataChange}
+            onBackToChat={() => {}}
+            onSubmitExam={() => setShowExamSubmitPopup(true)}
+            showSubmitPopup={showExamSubmitPopup}
+            setShowSubmitPopup={setShowExamSubmitPopup}
+            onConfirmSubmit={() => {
+              setShowExamSubmitPopup(false);
+              if (onExamSubmitComplete) {
+                onExamSubmitComplete(examData, messages);
+              }
+            }}
+          />
+        )}
+        <div ref={messagesEndRef} />
+      </div>
     </div>
   );
 };

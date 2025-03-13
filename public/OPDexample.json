@@ -1,0 +1,32 @@
+{
+    "Patient_Info": {
+    "Name": "John Bloodborne",
+    "HN": "123456789",
+    "Age": 35,
+    "Sex": "Male",
+    "Blood_Type": "AB+",
+    "National_ID": "11013XXXXXXXX",
+    "Birthdate": "01/24/2002"
+    },
+    "Visit_Info": {
+    "Date_of_Treatment": "03/12/2025",
+    "Doctor": "Dr. Han Mahoree",
+    "Chief_Complaint": "Severe pain while urinating",
+    "Medical_Condition": "Type 2 Diabetes Mellitus (DM)",
+    "Drug_Allergy": "Penicillin"
+    },
+    "Vital_Signs": {
+    "Weight_kg": 75,
+    "Height_cm": 175,
+    "BMI": 24.5,
+    "BP": {
+        "Systolic": 120,
+        "Diastolic": 80
+    }
+    },
+    "Lifestyle": {
+    "Drink": "No",
+    "Smoke": "Former smoker"
+    }
+  }
+  
