@@ -4,10 +4,23 @@ const PatientInfo: React.FC = () => {
   const [patientData, setPatientData] = useState<any>(null);
 
   useEffect(() => {
-    fetch("/OPDexample.json")
-      .then((response) => response.json())
-      .then((data) => setPatientData(data))
-      .catch((error) => console.error("Error fetching patient data:", error));
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/api/endpoint", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ request: "patient_info" }),
+        });
+        const data = await response.json();
+        setPatientData(data);
+      } catch (error) {
+        console.error("Error fetching patient data:", error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   if (!patientData) {
