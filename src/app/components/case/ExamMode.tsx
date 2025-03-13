@@ -21,7 +21,6 @@ type ExamModeProps = {
 const ExamMode: React.FC<ExamModeProps> = ({
   examData,
   onExamDataChange,
-  onBackToChat,
   onSubmitExam,
   showSubmitPopup,
   setShowSubmitPopup,
