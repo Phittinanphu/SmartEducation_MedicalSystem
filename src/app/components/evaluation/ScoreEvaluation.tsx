@@ -524,10 +524,14 @@ const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({
 
   return (
     <div className="flex w-full">
+      <div className="w-1/3 p-4">
+        <PatientInfo /> {/* Render PatientInfo component */}
+      </div>
       <div className="flex-1 p-6">
         {/* Header with larger text; entire header on one line */}
         <h2 className="text-3xl font-bold mb-4">
-          Performance Per Concept{" "}
+          Performance Per Concept
+          <br />
           <span className="text-xl font-normal text-red-600">
             (Case: {currentCase})
           </span>
@@ -536,12 +540,21 @@ const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({
         {/* Display highest and lowest performance domains */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center mb-6">
           <div className="mr-6 mb-2 sm:mb-0">
-            <strong>Highest Performance</strong>:<br />
-            Your highest score is in <b>{highestDomain?.label}</b>
+            <strong>Highest Performance</strong>:
+            <br />
+            Your highest score is in{" "}
+            <b className="text-green-500">
+              <br />
+              {highestDomain?.label}
+            </b>
           </div>
           <div>
             <strong>Lowest Performance</strong>:<br />
-            Your lowest score is in <b>{lowestDomain?.label}</b>
+            Your lowest score is in{" "}
+            <b className="text-red-600">
+              <br />
+              {lowestDomain?.label}
+            </b>
           </div>
         </div>
 
@@ -572,20 +585,22 @@ const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({
                       className="mt-3 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                       onClick={() => toggleDomain(domainKey)}
                     >
-                      {openDomains.includes(domainKey) ? "Hide" : "View"} Evaluation
-                      Metrics
+                      {openDomains.includes(domainKey) ? "Hide" : "View"}{" "}
+                      Evaluation Metrics
                     </button>
                     {/* Detailed evaluation metrics for the domain */}
                     {openDomains.includes(domainKey) && (
                       <div className="mt-4 p-4 bg-gray-100 rounded-lg">
                         <ul className="list-disc list-inside">
                           {evaluationMetrics[currentCase][domainKey] &&
-                          evaluationMetrics[currentCase][domainKey].length > 0 ? (
+                          evaluationMetrics[currentCase][domainKey].length >
+                            0 ? (
                             evaluationMetrics[currentCase][domainKey].map(
                               (metric, idx) => {
                                 const studentScore =
                                   (metricScores[domainKey] &&
-                                    metricScores[domainKey][metric.id]) ?? 0;
+                                    metricScores[domainKey][metric.id]) ??
+                                  0;
                                 return (
                                   <li key={idx} className="mb-2">
                                     <strong>{metric.id}.</strong>{" "}
@@ -596,18 +611,18 @@ const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({
                                     </span>
                                     {/* Discrete bars for this metric */}
                                     <div className="flex space-x-1 mt-1">
-                                      {Array.from({ length: metric.maxScore }).map(
-                                        (_, i) => (
-                                          <div
-                                            key={i}
-                                            className={`w-4 h-4 rounded ${
-                                              studentScore > i
-                                                ? "bg-green-500"
-                                                : "bg-gray-300"
-                                            }`}
-                                          />
-                                        )
-                                      )}
+                                      {Array.from({
+                                        length: metric.maxScore,
+                                      }).map((_, i) => (
+                                        <div
+                                          key={i}
+                                          className={`w-4 h-4 rounded ${
+                                            studentScore > i
+                                              ? "bg-green-500"
+                                              : "bg-gray-300"
+                                          }`}
+                                        />
+                                      ))}
                                     </div>
                                   </li>
                                 );
@@ -625,9 +640,6 @@ const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({
                 </Card>
               );
             })}
-          </div>
-          <div className="w-1/3 p-4">
-            <PatientInfo /> {/* Render PatientInfo component */}
           </div>
         </div>
 

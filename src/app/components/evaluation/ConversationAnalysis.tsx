@@ -35,6 +35,9 @@ const ConversationAnalysis: React.FC<ConversationAnalysisProps> = ({
 
   return (
     <div className="flex w-full">
+      <div className="w-1/3 p-4">
+        <PatientInfo /> {/* Render PatientInfo component */}
+      </div>
       <div className="flex-1 p-6">
         <div
           style={{
@@ -89,9 +92,6 @@ const ConversationAnalysis: React.FC<ConversationAnalysisProps> = ({
                   </div>
                 </div>
               ))}
-            </div>
-            <div className="w-1/3 p-4">
-              <PatientInfo /> {/* Render PatientInfo component */}
             </div>
           </div>
         </div>
