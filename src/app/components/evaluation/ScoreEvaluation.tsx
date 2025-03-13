@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PatientInfo from "../case/Patientinfo"; // Import PatientInfo component
 
 // ---------------------------------------------------
 // TYPES & INTERFACES
@@ -522,126 +523,131 @@ const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({
   };
 
   return (
-    <div className="p-6">
-      {/* Header with larger text; entire header on one line */}
-      <h2 className="text-3xl font-bold mb-4">
-        Performance Per Concept{" "}
-        <span className="text-xl font-normal text-red-600">
-          (Case: {currentCase})
-        </span>
-      </h2>
+    <div className="flex w-full">
+      <div className="flex-1 p-6">
+        {/* Header with larger text; entire header on one line */}
+        <h2 className="text-3xl font-bold mb-4">
+          Performance Per Concept{" "}
+          <span className="text-xl font-normal text-red-600">
+            (Case: {currentCase})
+          </span>
+        </h2>
 
-      {/* Display highest and lowest performance domains */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center mb-6">
-        <div className="mr-6 mb-2 sm:mb-0">
-          <strong>Highest Performance</strong>:<br />
-          Your highest score is in <b>{highestDomain?.label}</b>
+        {/* Display highest and lowest performance domains */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center mb-6">
+          <div className="mr-6 mb-2 sm:mb-0">
+            <strong>Highest Performance</strong>:<br />
+            Your highest score is in <b>{highestDomain?.label}</b>
+          </div>
+          <div>
+            <strong>Lowest Performance</strong>:<br />
+            Your lowest score is in <b>{lowestDomain?.label}</b>
+          </div>
         </div>
-        <div>
-          <strong>Lowest Performance</strong>:<br />
-          Your lowest score is in <b>{lowestDomain?.label}</b>
+
+        <div className="flex">
+          <div className="flex-1 space-y-4">
+            {domainEntries.map(({ domainKey, label, score, max }) => {
+              // Compute percentage for the overall domain progress bar.
+              const percentage = max > 0 ? Math.round((score / max) * 100) : 0;
+              return (
+                <Card key={domainKey}>
+                  <CardContent>
+                    {/* Domain header with label and score/max displayed inline */}
+                    <div className="flex justify-between items-center">
+                      <div className="font-semibold">{label}</div>
+                      <div className="text-sm">
+                        {score} / {max}
+                      </div>
+                    </div>
+                    {/* Overall domain progress bar (green) */}
+                    <div className="mt-2 bg-gray-200 w-full h-3 rounded-full">
+                      <div
+                        className="bg-green-500 h-3 rounded-full"
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
+                    {/* Toggle button for evaluation metrics */}
+                    <button
+                      className="mt-3 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                      onClick={() => toggleDomain(domainKey)}
+                    >
+                      {openDomains.includes(domainKey) ? "Hide" : "View"} Evaluation
+                      Metrics
+                    </button>
+                    {/* Detailed evaluation metrics for the domain */}
+                    {openDomains.includes(domainKey) && (
+                      <div className="mt-4 p-4 bg-gray-100 rounded-lg">
+                        <ul className="list-disc list-inside">
+                          {evaluationMetrics[currentCase][domainKey] &&
+                          evaluationMetrics[currentCase][domainKey].length > 0 ? (
+                            evaluationMetrics[currentCase][domainKey].map(
+                              (metric, idx) => {
+                                const studentScore =
+                                  (metricScores[domainKey] &&
+                                    metricScores[domainKey][metric.id]) ?? 0;
+                                return (
+                                  <li key={idx} className="mb-2">
+                                    <strong>{metric.id}.</strong>{" "}
+                                    {metric.description} –{" "}
+                                    <span className="text-red-800 inline whitespace-nowrap">
+                                      Score: {studentScore} / {metric.maxScore}{" "}
+                                      points
+                                    </span>
+                                    {/* Discrete bars for this metric */}
+                                    <div className="flex space-x-1 mt-1">
+                                      {Array.from({ length: metric.maxScore }).map(
+                                        (_, i) => (
+                                          <div
+                                            key={i}
+                                            className={`w-4 h-4 rounded ${
+                                              studentScore > i
+                                                ? "bg-green-500"
+                                                : "bg-gray-300"
+                                            }`}
+                                          />
+                                        )
+                                      )}
+                                    </div>
+                                  </li>
+                                );
+                              }
+                            )
+                          ) : (
+                            <li>
+                              No evaluation metrics available for this section.
+                            </li>
+                          )}
+                        </ul>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+          <div className="w-1/3 p-4">
+            <PatientInfo /> {/* Render PatientInfo component */}
+          </div>
         </div>
-      </div>
 
-      {/* Render each domain */}
-      <div className="space-y-4">
-        {domainEntries.map(({ domainKey, label, score, max }) => {
-          // Compute percentage for the overall domain progress bar.
-          const percentage = max > 0 ? Math.round((score / max) * 100) : 0;
-          return (
-            <Card key={domainKey}>
-              <CardContent>
-                {/* Domain header with label and score/max displayed inline */}
-                <div className="flex justify-between items-center">
-                  <div className="font-semibold">{label}</div>
-                  <div className="text-sm">
-                    {score} / {max}
-                  </div>
-                </div>
-                {/* Overall domain progress bar (green) */}
-                <div className="mt-2 bg-gray-200 w-full h-3 rounded-full">
-                  <div
-                    className="bg-green-500 h-3 rounded-full"
-                    style={{ width: `${percentage}%` }}
-                  />
-                </div>
-                {/* Toggle button for evaluation metrics */}
-                <button
-                  className="mt-3 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                  onClick={() => toggleDomain(domainKey)}
-                >
-                  {openDomains.includes(domainKey) ? "Hide" : "View"} Evaluation
-                  Metrics
-                </button>
-                {/* Detailed evaluation metrics for the domain */}
-                {openDomains.includes(domainKey) && (
-                  <div className="mt-4 p-4 bg-gray-100 rounded-lg">
-                    <ul className="list-disc list-inside">
-                      {evaluationMetrics[currentCase][domainKey] &&
-                      evaluationMetrics[currentCase][domainKey].length > 0 ? (
-                        evaluationMetrics[currentCase][domainKey].map(
-                          (metric, idx) => {
-                            const studentScore =
-                              (metricScores[domainKey] &&
-                                metricScores[domainKey][metric.id]) ??
-                              0;
-                            return (
-                              <li key={idx} className="mb-2">
-                                <strong>{metric.id}.</strong>{" "}
-                                {metric.description} –{" "}
-                                <span className="text-red-800 inline whitespace-nowrap">
-                                  Score: {studentScore} / {metric.maxScore}{" "}
-                                  points
-                                </span>
-                                {/* Discrete bars for this metric */}
-                                <div className="flex space-x-1 mt-1">
-                                  {Array.from({ length: metric.maxScore }).map(
-                                    (_, i) => (
-                                      <div
-                                        key={i}
-                                        className={`w-4 h-4 rounded ${
-                                          studentScore > i
-                                            ? "bg-green-500"
-                                            : "bg-gray-300"
-                                        }`}
-                                      />
-                                    )
-                                  )}
-                                </div>
-                              </li>
-                            );
-                          }
-                        )
-                      ) : (
-                        <li>
-                          No evaluation metrics available for this section.
-                        </li>
-                      )}
-                    </ul>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* Overall total score card */}
-      <div className="mt-6">
-        <Card>
-          <CardContent>
-            <h3 className="text-lg font-semibold">Total Score</h3>
-            <p className="text-2xl font-bold">
-              {totalScore} / {totalMaxPoints}
-            </p>
-            <button
-              className="mt-3 px-4 py-2 bg-orange-400 text-white rounded-lg hover:bg-orange-500"
-              onClick={onShowConversationAnalysis}
-            >
-              Show Conversation Analysis
-            </button>
-          </CardContent>
-        </Card>
+        {/* Overall total score card */}
+        <div className="mt-4">
+          <Card>
+            <CardContent>
+              <h3 className="text-lg font-semibold">Total Score</h3>
+              <p className="text-2xl font-bold">
+                {totalScore} / {totalMaxPoints}
+              </p>
+              <button
+                className="mt-3 px-4 py-2 bg-orange-400 text-white rounded-lg hover:bg-orange-500"
+                onClick={onShowConversationAnalysis}
+              >
+                Show Conversation Analysis
+              </button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

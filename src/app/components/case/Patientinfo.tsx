@@ -30,7 +30,7 @@ const PatientInfo: React.FC = () => {
   const { Patient_Info, Visit_Info, Vital_Signs, Lifestyle } = patientData;
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-4 w-[30%]">
+    <div className="bg-white rounded-lg shadow-lg p-4 w-full">
       <h2 className="text-xl font-bold mb-4">Patient Portfolio</h2>
       <div className="mb-4">
         <h3 className="font-semibold text-blue-500">Patient Information</h3>
