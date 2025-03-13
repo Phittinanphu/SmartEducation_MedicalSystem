@@ -99,9 +99,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           className={`px-4 py-2 rounded-lg shadow-md ${
             activeMode === "chat"
               ? "bg-blue-500 text-white"
-              : "bg-gray-200 text-black hover:bg-gray-300"
+              : "bg-gray-200 text-black"
           }`}
-          onClick={() => setActiveMode("chat")}
+          disabled
         >
           Chat
         </button>
@@ -109,27 +109,35 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           className={`px-4 py-2 rounded-lg shadow-md ${
             activeMode === "exam"
               ? "bg-blue-500 text-white"
-              : "bg-gray-200 text-black hover:bg-gray-300"
+              : "bg-gray-200 text-black"
           }`}
-          onClick={() => setActiveMode("exam")}
+          disabled
         >
           Exam
         </button>
       </div>
       {activeMode === "chat" ? (
-        <ChatMode
-          patientName={patientName}
-          messages={messages}
-          inputText={inputText}
-          onSendMessage={handleSendMessage}
-          onInputChange={(e) => setInputText(e.target.value)}
-          onKeyPress={handleKeyPress}
-        />
+        <>
+          <ChatMode
+            patientName={patientName}
+            messages={messages}
+            inputText={inputText}
+            onSendMessage={handleSendMessage}
+            onInputChange={(e) => setInputText(e.target.value)}
+            onKeyPress={handleKeyPress}
+          />
+          <button
+            className="bg-red-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-700 mt-4"
+            onClick={() => setActiveMode("exam")}
+          >
+            Complete Chat
+          </button>
+        </>
       ) : (
         <ExamMode
           examData={examData}
           onExamDataChange={handleExamDataChange}
-          onBackToChat={() => setActiveMode("chat")}
+          onBackToChat={() => {}}
           onSubmitExam={() => setShowExamSubmitPopup(true)}
           showSubmitPopup={showExamSubmitPopup}
           setShowSubmitPopup={setShowExamSubmitPopup}
