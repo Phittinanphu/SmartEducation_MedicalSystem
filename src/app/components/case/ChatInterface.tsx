@@ -8,7 +8,7 @@ import Patient2D from "../Patient2D"; // ✅ ตรวจสอบ path นี�
 type Message = { sender: string; text: string };
 
 type ExamDataType = {
-  patientName: string;
+  patientName: string; 
   age: string;
   symptoms: string;
   diagnosis: string;
@@ -116,7 +116,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     setExamData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // ✅ ฟังก์ชันวิเคราะห์อารมณ์ข้อความ
   const updatePatientMood = (text: string) => {
     const lowerText = text.toLowerCase();
     if (lowerText.includes("angry") || lowerText.includes("mad")) setPatientMood("angry");
@@ -176,10 +175,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       )}
       <div ref={messagesEndRef} />
 
-      {/* ✅ แสดงอารมณ์ของผู้ป่วยตามแชท */}
-      <div className="absolute top-0 right-[-500px] w-[500px] h-auto">
+            <div className="absolute top-[100px] right-[-520px] w-[700px] h-auto scale-150 translate-x-8">
         <Patient2D mood={patientMood} />
       </div>
+
     </div>
   );
 };
