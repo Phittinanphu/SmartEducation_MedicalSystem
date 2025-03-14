@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Navbar from "../components/Navbar2";
 import ScoreEvaluation from "../components/evaluation/ScoreEvaluation";
 import ConversationAnalysis from "../components/evaluation/ConversationAnalysis";
+import PatientInfo from "../components/case/Patientinfo"; // Add this import
 
 export default function Page() {
   // State to hold JSON input read from the file.
@@ -13,32 +14,45 @@ export default function Page() {
     useState(false);
   const searchParams = useSearchParams();
 
-  // On component mount, fetch the JSON file from the public folder.
+  // On component mount, fetch the data from the FastAPI endpoint.
   useEffect(() => {
-    fetch("/evaluation.json")
-      .then((res) => {
-        if (!res.ok) throw new Error("Network response was not ok");
-        return res.json();
-      })
-      .then((data) => {
-        console.log("JSON file fetched successfully:", data);
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/api/evaluation", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ request: "evaluation" }), // Send the appropriate payload
+        });
+
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(`Network response was not ok: ${text}`);
+        }
+
+        const data = await response.json();
+        console.log("Data fetched successfully:", data);
         setLlmOutput(data);
+
         if (searchParams.get("view") === "conversation") {
           setShowConversationAnalysis(true);
         }
-      })
-      .catch((error) => {
-        console.error("Error fetching JSON file:", error);
+      } catch (error) {
+        console.error("Error fetching data:", error);
         console.log("Using default values.");
         setLlmOutput({
           case: "Unknown Case",
           evaluationMetricScores: {},
           conversationData: [], // Add default conversation data
         });
-      });
+      }
+    };
+
+    fetchData();
   }, [searchParams]);
 
-  // Display a loading state until the JSON file is fetched.
+  // Display a loading state until the data is fetched.
   if (!llmOutput) {
     return <div>Loading...</div>;
   }
@@ -48,18 +62,29 @@ export default function Page() {
     <div className="bg-blue-100 min-h-screen">
       <Navbar />
       {/* Add space between Navbar and ConversationAnalysis */}
-      <div className="mt-4" style={{ maxWidth: "800px", margin: "0 auto" }}>
-        {showConversationAnalysis ? (
-          <ConversationAnalysis
-            data={llmOutput.conversationData}
-            onShowEvaluationMetrics={() => setShowConversationAnalysis(false)}
-          />
-        ) : (
-          <ScoreEvaluation
-            inputData={llmOutput}
-            onShowConversationAnalysis={() => setShowConversationAnalysis(true)}
-          />
-        )}
+      <div className="mt-4" style={{ maxWidth: "1000px", margin: "0 auto" }}>
+        <div className="flex w-full">
+          <div className="w-1/3 p-4">
+            <PatientInfo /> {/* Render PatientInfo component */}
+          </div>
+          <div className="flex-1">
+            {showConversationAnalysis ? (
+              <ConversationAnalysis
+                data={llmOutput.conversationData}
+                onShowEvaluationMetrics={() =>
+                  setShowConversationAnalysis(false)
+                }
+              />
+            ) : (
+              <ScoreEvaluation
+                inputData={llmOutput}
+                onShowConversationAnalysis={() =>
+                  setShowConversationAnalysis(true)
+                }
+              />
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

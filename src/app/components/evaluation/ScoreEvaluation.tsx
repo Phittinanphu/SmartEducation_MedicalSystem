@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import PatientInfo from "../case/Patientinfo"; // Import PatientInfo component
 
 // ---------------------------------------------------
 // TYPES & INTERFACES
@@ -524,9 +523,6 @@ const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({
 
   return (
     <div className="flex w-full">
-      <div className="w-1/3 p-4">
-        <PatientInfo /> {/* Render PatientInfo component */}
-      </div>
       <div className="flex-1 p-6">
         {/* Header with larger text; entire header on one line */}
         <h2 className="text-3xl font-bold mb-4">

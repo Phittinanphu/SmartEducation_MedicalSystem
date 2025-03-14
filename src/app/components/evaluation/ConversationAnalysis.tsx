@@ -1,6 +1,5 @@
 // ConversationAnalysis.tsx
 import React from "react";
-import PatientInfo from "../case/Patientinfo"; // Import PatientInfo component
 
 interface ConversationItem {
   question: string; // Student's question
@@ -35,9 +34,6 @@ const ConversationAnalysis: React.FC<ConversationAnalysisProps> = ({
 
   return (
     <div className="flex w-full">
-      <div className="w-1/3 p-4">
-        <PatientInfo /> {/* Render PatientInfo component */}
-      </div>
       <div className="flex-1 p-6">
         <div
           style={{

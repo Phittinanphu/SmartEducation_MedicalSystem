@@ -138,7 +138,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   };
 
   return (
-    <div className="absolute top-10 left-10 bg-white rounded-lg shadow-lg p-6 w-[70%] h-[69%] flex flex-row relative">
+    <div className="absolute top-10 left-10 bg-white rounded-lg shadow-lg p-6 w-[80%] h-[90%] flex flex-row relative">
       <PatientInfo />
       <div className="flex flex-col w-full ml-4">
         {/* Mode buttons arranged side by side */}
@@ -198,7 +198,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           />
         )}
         <div ref={messagesEndRef} />
-        <div className="absolute top-[100px] right-[-300px] w-[300px] h-auto scale-150 translate-x-10">
+        <div className="absolute top-[160px] right-[-300px] w-[300px] h-auto scale-150 translate-x-10">
           <Patient2D mood={patientMood} />
         </div>
       </div>
