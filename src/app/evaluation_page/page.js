@@ -13,32 +13,45 @@ export default function Page() {
     useState(false);
   const searchParams = useSearchParams();
 
-  // On component mount, fetch the JSON file from the public folder.
+  // On component mount, fetch the data from the FastAPI endpoint.
   useEffect(() => {
-    fetch("/evaluation.json")
-      .then((res) => {
-        if (!res.ok) throw new Error("Network response was not ok");
-        return res.json();
-      })
-      .then((data) => {
-        console.log("JSON file fetched successfully:", data);
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/api/evaluation", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ request: "evaluation" }), // Send the appropriate payload
+        });
+
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(`Network response was not ok: ${text}`);
+        }
+
+        const data = await response.json();
+        console.log("Data fetched successfully:", data);
         setLlmOutput(data);
+
         if (searchParams.get("view") === "conversation") {
           setShowConversationAnalysis(true);
         }
-      })
-      .catch((error) => {
-        console.error("Error fetching JSON file:", error);
+      } catch (error) {
+        console.error("Error fetching data:", error);
         console.log("Using default values.");
         setLlmOutput({
           case: "Unknown Case",
           evaluationMetricScores: {},
           conversationData: [], // Add default conversation data
         });
-      });
+      }
+    };
+
+    fetchData();
   }, [searchParams]);
 
-  // Display a loading state until the JSON file is fetched.
+  // Display a loading state until the data is fetched.
   if (!llmOutput) {
     return <div>Loading...</div>;
   }
