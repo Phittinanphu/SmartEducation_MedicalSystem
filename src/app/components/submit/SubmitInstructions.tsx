@@ -12,11 +12,11 @@ const SubmitInstructions: React.FC<SubmitInstructionsProps> = ({ onNext, onPrevi
       className="bg-green-300 p-6 rounded-2xl shadow-lg mb-6"
       style={{ width: "883px", height: "215px" }}
     >
-      <h2 className="font-bold text-lg mb-2">Submit Chat History</h2>
+      <h2 className="font-bold text-lg mb-2 text-blue-700">Submission</h2>
       <p className="font-semibold">Instruction</p>
       <ul className="list-disc pl-5 text-sm">
-        <li>“Please review your conversation with the patient before submission.”</li>
-        <li>“Ensure all necessary details are included, and edit if needed.”</li>
+        <li>“Please review your conversation and exam answer before submission.”</li>
+        <li>“Ensure all necessary details are included”</li>
         <li>“Once submitted, you will not be able to make changes.”</li>
       </ul>
       {active && (
