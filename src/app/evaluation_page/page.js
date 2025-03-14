@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Navbar from "../components/Navbar2";
 import ScoreEvaluation from "../components/evaluation/ScoreEvaluation";
 import ConversationAnalysis from "../components/evaluation/ConversationAnalysis";
+import PatientInfo from "../components/case/Patientinfo"; // Add this import
 
 export default function Page() {
   // State to hold JSON input read from the file.
@@ -61,18 +62,29 @@ export default function Page() {
     <div className="bg-blue-100 min-h-screen">
       <Navbar />
       {/* Add space between Navbar and ConversationAnalysis */}
-      <div className="mt-4" style={{ maxWidth: "800px", margin: "0 auto" }}>
-        {showConversationAnalysis ? (
-          <ConversationAnalysis
-            data={llmOutput.conversationData}
-            onShowEvaluationMetrics={() => setShowConversationAnalysis(false)}
-          />
-        ) : (
-          <ScoreEvaluation
-            inputData={llmOutput}
-            onShowConversationAnalysis={() => setShowConversationAnalysis(true)}
-          />
-        )}
+      <div className="mt-4" style={{ maxWidth: "1000px", margin: "0 auto" }}>
+        <div className="flex w-full">
+          <div className="w-1/3 p-4">
+            <PatientInfo /> {/* Render PatientInfo component */}
+          </div>
+          <div className="flex-1">
+            {showConversationAnalysis ? (
+              <ConversationAnalysis
+                data={llmOutput.conversationData}
+                onShowEvaluationMetrics={() =>
+                  setShowConversationAnalysis(false)
+                }
+              />
+            ) : (
+              <ScoreEvaluation
+                inputData={llmOutput}
+                onShowConversationAnalysis={() =>
+                  setShowConversationAnalysis(true)
+                }
+              />
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
