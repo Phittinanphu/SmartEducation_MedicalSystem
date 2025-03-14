@@ -4,6 +4,7 @@ import io from "socket.io-client";
 import ChatMode from "./ChatMode";
 import ExamMode from "./ExamMode";
 import PatientInfo from "./Patientinfo";
+import Patient2D from "../Patient2D"; // ✅ Import Patient2D
 
 type Message = { sender: string; text: string };
 
@@ -17,28 +18,35 @@ type ExamDataType = {
 
 type ChatInterfaceProps = {
   patientName?: string;
+  patientMessage: string;
+  options: string[];
   onOptionSelect: (option: string) => void;
   onExamSubmitComplete?: (examData: ExamDataType, messages: Message[]) => void;
+  initialMessages?: Message[];
   initialExamData?: ExamDataType;
-  activeMode: "chat" | "exam";
-  setActiveMode: (mode: "chat" | "exam") => void;
 };
 
 const socket = io("http://localhost:5000");
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
   patientName = "Johnson William",
+  patientMessage,
+  options,
+  onOptionSelect,
   onExamSubmitComplete,
+  initialMessages,
   initialExamData,
-  activeMode,
-  setActiveMode,
 }) => {
   const router = useRouter();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  // Initialize state with props if provided.
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [chatStarted, setChatStarted] = useState<boolean>(!!initialMessages);
+  const [messages, setMessages] = useState<Message[]>(
+    initialMessages
+      ? initialMessages
+      : [{ sender: "patient", text: patientMessage }]
+  );
   const [inputText, setInputText] = useState("");
+  const [activeMode, setActiveMode] = useState<"chat" | "exam">("chat");
   const [examData, setExamData] = useState<ExamDataType>(
     initialExamData
       ? initialExamData
@@ -51,8 +59,17 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         }
   );
   const [showExamSubmitPopup, setShowExamSubmitPopup] = useState(false);
+  const [patientMood, setPatientMood] = useState<
+    "angry" | "happy" | "normal" | "sad" | "scared"
+  >("normal");
 
-  // When initialExamData prop changes, update the examData state.
+  useEffect(() => {
+    if (initialMessages) {
+      setMessages(initialMessages);
+      setChatStarted(true);
+    }
+  }, [initialMessages]);
+
   useEffect(() => {
     if (initialExamData) {
       setExamData(initialExamData);
@@ -62,6 +79,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   useEffect(() => {
     socket.on("response", (data: string) => {
       setMessages((prev) => [...prev, { sender: "patient", text: data }]);
+      updatePatientMood(data); // ✅ อัปเดตอารมณ์ของผู้ป่วยตามข้อความที่ได้รับ
     });
 
     return () => {
@@ -79,6 +97,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     if (inputText.trim() !== "") {
       setMessages((prev) => [...prev, { sender: "student", text: inputText }]);
       socket.emit("message", inputText);
+      updatePatientMood(inputText); // ✅ อัปเดตอารมณ์ของผู้ป่วยตามข้อความที่ส่ง
       setInputText("");
     }
   };
@@ -89,9 +108,33 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   };
 
-  // Exam mode handler
   const handleExamDataChange = (field: keyof ExamDataType, value: string) => {
     setExamData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const updatePatientMood = (text: string) => {
+    const lowerText = text.toLowerCase();
+    if (lowerText.includes("angry") || lowerText.includes("mad"))
+      setPatientMood("angry");
+    else if (
+      lowerText.includes("happy") ||
+      lowerText.includes("good") ||
+      lowerText.includes("relieved")
+    )
+      setPatientMood("happy");
+    else if (
+      lowerText.includes("sad") ||
+      lowerText.includes("depressed") ||
+      lowerText.includes("cry")
+    )
+      setPatientMood("sad");
+    else if (
+      lowerText.includes("scared") ||
+      lowerText.includes("afraid") ||
+      lowerText.includes("nervous")
+    )
+      setPatientMood("scared");
+    else setPatientMood("normal");
   };
 
   return (
@@ -142,7 +185,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           <ExamMode
             examData={examData}
             onExamDataChange={handleExamDataChange}
-            onBackToChat={() => {}}
+            onBackToChat={() => setActiveMode("chat")}
             onSubmitExam={() => setShowExamSubmitPopup(true)}
             showSubmitPopup={showExamSubmitPopup}
             setShowSubmitPopup={setShowExamSubmitPopup}
@@ -155,6 +198,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           />
         )}
         <div ref={messagesEndRef} />
+        <div className="absolute top-[100px] right-[-300px] w-[300px] h-auto scale-150 translate-x-10">
+          <Patient2D mood={patientMood} />
+        </div>
       </div>
     </div>
   );

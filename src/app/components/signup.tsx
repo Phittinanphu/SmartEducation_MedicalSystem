@@ -17,14 +17,7 @@ const SignUp = () => {
 
   const handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    if (
-      !name ||
-      !studentId ||
-      !university ||
-      !email ||
-      !password ||
-      !confirmPassword
-    ) {
+    if (!name || !studentId || !university || !email || !password || !confirmPassword) {
       alert("Please fill in all fields.");
       return;
     }
