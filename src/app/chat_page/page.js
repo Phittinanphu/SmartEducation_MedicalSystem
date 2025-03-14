@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import Navbar2 from "../components/Navbar2";
-import ChatBackground from "../components/case/background";
 import SubmitBackground from "../components/submit/Background";
 import ChatInterface from "../components/case/ChatInterface";
 import SubmitInstructions from "../components/submit/SubmitInstructions";
@@ -54,21 +53,16 @@ const Page = () => {
       <Navbar2 />
       {!submitted ? (
         // Chat/Exam view
-        <ChatBackground>
-          <div className="flex h-full">
-            <div className="w-[100%]">
-              <ChatInterface
-                onExamSubmitComplete={handleExamSubmitComplete}
-                initialExamData={examData ? examData : undefined}
-                activeMode={activeMode}
-                setActiveMode={setActiveMode}
-              />
-            </div>
-            <div className="flex-1">
-              {/* Patient animation area goes here */}
-            </div>
+        <div className="flex h-full bg-blue-100">
+          <div className="w-full h-full">
+            <ChatInterface
+              onExamSubmitComplete={handleExamSubmitComplete}
+              initialExamData={examData ? examData : undefined}
+              activeMode={activeMode}
+              setActiveMode={setActiveMode}
+            />
           </div>
-        </ChatBackground>
+        </div>
       ) : (
         // Submission multi‑step view
         <SubmitBackground>

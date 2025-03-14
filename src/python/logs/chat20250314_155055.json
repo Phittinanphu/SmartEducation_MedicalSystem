@@ -46,5 +46,13 @@
     {
         "role": "assistant",
         "content": "\n\nIf you're feeling nervous, it\u2019s understandable! Please let me know how I can help or if there\u2019s anything specific you\u2019d like to discuss."
+    },
+    {
+        "role": "user",
+        "content": "i"
+    },
+    {
+        "role": "assistant",
+        "content": "\n\nI understand you're feeling nervous. If there's anything specific you'd like to discuss or any questions you have, feel free to share!"
     }
 ]
