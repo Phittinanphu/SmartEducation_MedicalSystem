@@ -4,16 +4,12 @@ import io from "socket.io-client";
 import ChatMode from "./ChatMode";
 import ExamMode from "./ExamMode";
 import PatientInfo from "./Patientinfo";
-import React, { useState } from "react";
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
-import PatientModel from "../components/PatientModel";
 import Patient2D from "../Patient2D"; // ✅ Import Patient2D
 
 type Message = { sender: string; text: string };
 
 type ExamDataType = {
-  patientName: string; 
+  patientName: string;
   age: string;
   symptoms: string;
   diagnosis: string;
@@ -45,7 +41,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [chatStarted, setChatStarted] = useState<boolean>(!!initialMessages);
   const [messages, setMessages] = useState<Message[]>(
-    initialMessages ? initialMessages : [{ sender: "patient", text: patientMessage }]
+    initialMessages
+      ? initialMessages
+      : [{ sender: "patient", text: patientMessage }]
   );
   const [inputText, setInputText] = useState("");
   const [activeMode, setActiveMode] = useState<"chat" | "exam">("chat");
@@ -61,7 +59,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         }
   );
   const [showExamSubmitPopup, setShowExamSubmitPopup] = useState(false);
-  const [patientMood, setPatientMood] = useState<"angry" | "happy" | "normal" | "sad" | "scared">("normal");
+  const [patientMood, setPatientMood] = useState<
+    "angry" | "happy" | "normal" | "sad" | "scared"
+  >("normal");
 
   useEffect(() => {
     if (initialMessages) {
@@ -93,15 +93,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   }, [messages]);
 
-  const handleOptionSelect = (option: string) => {
-    setChatStarted(true);
-    setMessages((prev) => [...prev, { sender: "student", text: option }]);
-    socket.emit("message", option);
-    onOptionSelect(option);
-
-    updatePatientMood(option); // ✅ อัปเดตอารมณ์ของผู้ป่วยตามตัวเลือกที่เลือก
-  };
-
   const handleSendMessage = () => {
     if (inputText.trim() !== "") {
       setMessages((prev) => [...prev, { sender: "student", text: inputText }]);
@@ -123,10 +114,26 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   const updatePatientMood = (text: string) => {
     const lowerText = text.toLowerCase();
-    if (lowerText.includes("angry") || lowerText.includes("mad")) setPatientMood("angry");
-    else if (lowerText.includes("happy") || lowerText.includes("good") || lowerText.includes("relieved")) setPatientMood("happy");
-    else if (lowerText.includes("sad") || lowerText.includes("depressed") || lowerText.includes("cry")) setPatientMood("sad");
-    else if (lowerText.includes("scared") || lowerText.includes("afraid") || lowerText.includes("nervous")) setPatientMood("scared");
+    if (lowerText.includes("angry") || lowerText.includes("mad"))
+      setPatientMood("angry");
+    else if (
+      lowerText.includes("happy") ||
+      lowerText.includes("good") ||
+      lowerText.includes("relieved")
+    )
+      setPatientMood("happy");
+    else if (
+      lowerText.includes("sad") ||
+      lowerText.includes("depressed") ||
+      lowerText.includes("cry")
+    )
+      setPatientMood("sad");
+    else if (
+      lowerText.includes("scared") ||
+      lowerText.includes("afraid") ||
+      lowerText.includes("nervous")
+    )
+      setPatientMood("scared");
     else setPatientMood("normal");
   };
 
@@ -178,7 +185,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           <ExamMode
             examData={examData}
             onExamDataChange={handleExamDataChange}
-            onBackToChat={() => {}}
+            onBackToChat={() => setActiveMode("chat")}
             onSubmitExam={() => setShowExamSubmitPopup(true)}
             showSubmitPopup={showExamSubmitPopup}
             setShowSubmitPopup={setShowExamSubmitPopup}
@@ -191,65 +198,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           />
         )}
         <div ref={messagesEndRef} />
-      </div>
-  const handleSpeak = (text: string) => {
-    setSpeech(text);
-    const utterance = new SpeechSynthesisUtterance(text);
-    speechSynthesis.speak(utterance);
-  };
-
-  return (
-    <div className="absolute top-10 left-10 bg-white rounded-lg shadow-lg p-6 w-[40%] h-[69%] flex flex-col relative">
-      <div className="flex items-center gap-2 mb-4">
-        <button
-          className={`px-4 py-2 rounded-lg shadow-md ${
-            activeMode === "chat" ? "bg-blue-500 text-white" : "bg-gray-200 text-black hover:bg-gray-300"
-          }`}
-          onClick={() => setActiveMode("chat")}
-        >
-          Chat
-        </button>
-        <button
-          className={`px-4 py-2 rounded-lg shadow-md ${
-            activeMode === "exam" ? "bg-blue-500 text-white" : "bg-gray-200 text-black hover:bg-gray-300"
-          }`}
-          onClick={() => setActiveMode("exam")}
-        >
-          Exam
-        </button>
-      </div>
-      {activeMode === "chat" ? (
-        <ChatMode
-          patientName={patientName}
-          messages={messages}
-          inputText={inputText}
-          options={options}
-          chatStarted={chatStarted}
-          onSendMessage={handleSendMessage}
-          onInputChange={(e) => setInputText(e.target.value)}
-          onOptionSelect={handleOptionSelect}
-          onKeyPress={handleKeyPress}
-        />
-      ) : (
-        <ExamMode
-          examData={examData}
-          onExamDataChange={handleExamDataChange}
-          onBackToChat={() => setActiveMode("chat")}
-          onSubmitExam={() => setShowExamSubmitPopup(true)}
-          showSubmitPopup={showExamSubmitPopup}
-          setShowSubmitPopup={setShowExamSubmitPopup}
-          onConfirmSubmit={() => {
-            setShowExamSubmitPopup(false);
-            if (onExamSubmitComplete) {
-              onExamSubmitComplete(examData, messages);
-            }
-          }}
-        />
-      )}
-      <div ref={messagesEndRef} />
-
-        <div className="absolute top-[100px] right-[-500px] w-[700px] h-auto scale-150 translate-x-10">
-        <Patient2D mood={patientMood} />
+        <div className="absolute top-[100px] right-[-300px] w-[300px] h-auto scale-150 translate-x-10">
+          <Patient2D mood={patientMood} />
+        </div>
       </div>
     </div>
   );
