@@ -3,7 +3,6 @@ import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import pool, { query, generateUUID } from '@/app/lib/postgresql';
 import bcrypt from 'bcryptjs';
-import { v4 as uuidv4 } from 'uuid';
 
 /**
  * NextAuth.js Configuration
@@ -134,20 +133,16 @@ const handler = NextAuth({
               [profile.email]
             );
             
-            let userId;
             if (existingUser.rows.length === 0) {
               // Create new user in users table
               const names = profile.name.split(' ');
               const firstName = names[0] || '';
               const lastName = names.slice(1).join(' ') || '';
               
-              const newUser = await client.query(
-                'INSERT INTO users (first_name, last_name, email, password, student_id, dob) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
+              await client.query(
+                'INSERT INTO users (first_name, last_name, email, password, student_id, dob) VALUES ($1, $2, $3, $4, $5, $6)',
                 [firstName, lastName, profile.email, '', '', '1900-01-01']
               );
-              userId = newUser.rows[0].id;
-            } else {
-              userId = existingUser.rows[0].id;
             }
 
             // Check if Google account exists
