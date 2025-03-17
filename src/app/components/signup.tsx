@@ -3,16 +3,22 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import { CheckCircleIcon, ExclamationCircleIcon } from "@heroicons/react/24/solid";
+import { signIn } from "next-auth/react";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [studentId, setStudentId] = useState("");
   const [university, setUniversity] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const router = useRouter();
 
   const handleSubmit = (e: { preventDefault: () => void }) => {
@@ -21,12 +27,47 @@ const SignUp = () => {
       alert("Please fill in all fields.");
       return;
     }
+    
     if (password !== confirmPassword) {
-      alert("Passwords do not match.");
+      setError("Passwords do not match.");
       return;
     }
-    alert("Sign-up successful! Redirecting to login...");
-    router.push("/login");
+    
+    try {
+      setIsLoading(true);
+      
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          studentId,
+          dob,
+          email,
+          password
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Registration failed');
+      }
+      
+      setSuccess("Registration successful! Redirecting to login...");
+      
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
+      
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -41,7 +82,12 @@ const SignUp = () => {
           <h2 className="text-xl font-bold mt-4">Smart Healthcare Asst.</h2>
         </div>
 
-        <h3 className="text-lg font-semibold mt-6 text-center">Sign up</h3>
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-md flex items-center">
+            <ExclamationCircleIcon className="h-5 w-5 mr-2" />
+            {error}
+          </div>
+        )}
 
         <form className="mt-4 space-y-4" onSubmit={handleSubmit}>
           <input
@@ -123,13 +169,15 @@ const SignUp = () => {
 
         <div className="text-center my-4 text-gray-500">or continue with</div>
 
-        <div className="flex justify-center">
-          <button className="border rounded-full p-2 hover:bg-gray-100">
-            <img src="/google-icon.png" alt="Google" className="w-6 h-6" />
-          </button>
-        </div>
+        <button 
+          className="w-full flex items-center justify-center border border-gray-300 bg-white text-gray-700 py-2 rounded-md font-semibold hover:bg-gray-50 transition"
+          onClick={handleGoogleSignIn}
+          disabled={isLoading}
+        >
+          <img src="/google-icon.png" alt="Google" className="w-5 h-5 mr-2" />
+          {isLoading ? 'Signing in...' : 'Sign up with Google'}
+        </button>
 
-        {/* Redirect to Login */}
         <div className="text-center mt-4">
           <span className="text-gray-500">Already have an account? </span>
           <Link href="/login" className="text-blue-600 hover:underline">

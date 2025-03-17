@@ -66,9 +66,13 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
     } catch (error) {
       console.error("Submission error:", error);
       // Display error message to state for rendering in UI
-      setErrorMessage(error.message || "Failed to submit data. Please try again later.");
-      // Also show an alert for immediate notification
-      alert(error.message || "Failed to submit data. Please try again later.");
+      if (error instanceof Error) {
+        setErrorMessage(error.message || "Failed to submit data. Please try again later.");
+        alert(error.message || "Failed to submit data. Please try again later.");
+      } else {
+        setErrorMessage("Failed to submit data. Please try again later.");
+        alert("Failed to submit data. Please try again later.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -172,7 +176,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
               {examData ? (
                 <div className="space-y-4">
                   <p>
-                    <strong>Patient's Name:</strong> {examData.patientName}
+                    <strong>Patient&apos;s Name:</strong> {examData.patientName}
                   </p>
                   <p>
                     <strong>Age:</strong> {examData.age}
