@@ -3,6 +3,7 @@ import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import pool, { query } from '@/app/lib/postgres';
 import bcrypt from 'bcryptjs';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * NextAuth.js Configuration
@@ -107,16 +108,20 @@ const handler = NextAuth({
               [profile.email]
             );
             
+            let userId;
             if (existingUser.rows.length === 0) {
               // Create new user in users table
               const names = profile.name.split(' ');
               const firstName = names[0] || '';
               const lastName = names.slice(1).join(' ') || '';
               
-              await client.query(
-                'INSERT INTO users (first_name, last_name, email, password, student_id, dob) VALUES ($1, $2, $3, $4, $5, $6)',
+              const newUser = await client.query(
+                'INSERT INTO users (first_name, last_name, email, password, student_id, dob) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
                 [firstName, lastName, profile.email, '', '', '1900-01-01']
               );
+              userId = newUser.rows[0].id;
+            } else {
+              userId = existingUser.rows[0].id;
             }
 
             // Check if Google account exists
@@ -126,12 +131,15 @@ const handler = NextAuth({
             );
 
             if (existingGoogleAccount.rows.length === 0) {
-              // Create new Google account
+              // Generate a new UUID
+              const uid = uuidv4();
+              
+              // Create new Google account with UUID
               await client.query(
                 `INSERT INTO userdata.google_accounts 
-                (google_id, email, first_name, last_name, last_login_at) 
-                VALUES ($1, $2, $3, $4, NOW())`,
-                [profile.sub, profile.email, profile.given_name, profile.family_name]
+                (uid, google_id, email, first_name, last_name, last_login_at) 
+                VALUES ($1, $2, $3, $4, $5, NOW())`,
+                [uid, profile.sub, profile.email, profile.given_name, profile.family_name]
               );
             } else {
               // Update last login time
