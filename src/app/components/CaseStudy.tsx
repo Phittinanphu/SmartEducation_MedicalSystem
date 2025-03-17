@@ -5,10 +5,33 @@ import Link from "next/link";
 
 const CaseStudyScreen: React.FC = () => {
   const router = useRouter();
+  const userId = "103639250702071263360"; // User ID
 
   // Handle navigation when Start button is clicked
-  const handleStart = () => {
-    router.push("/case-studies"); // Navigate to the study cases page
+  const handleStart = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/chat/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: userId, // Ensure User ID is sent with the correct key
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error:", errorData);
+        return;
+      }
+
+      const data = await response.json();
+      console.log(data); // Log the response to the console
+      router.push("/chat_page"); // Navigate to the study cases page
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
@@ -29,19 +52,15 @@ const CaseStudyScreen: React.FC = () => {
         <h1 className="text-4xl font-bold text-black mt-2">Study cases</h1>
 
         {/* Start Button */}
-        <Link href="/chat_page">
-          <button
-            onClick={handleStart}
-            className="mt-6 bg-red-600 text-white text-lg font-semibold px-8 py-3 rounded-lg hover:bg-red-700 transition duration-300"
-          >
-            Start
-          </button>
-        </Link>
-        </div>
+        <button
+          onClick={handleStart}
+          className="mt-6 bg-red-600 text-white text-lg font-semibold px-8 py-3 rounded-lg hover:bg-red-700 transition duration-300"
+        >
+          Start
+        </button>
       </div>
+    </div>
   );
 };
 
 export default CaseStudyScreen;
-
-

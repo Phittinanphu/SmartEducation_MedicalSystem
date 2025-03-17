@@ -35,70 +35,70 @@ const PatientInfo: React.FC = () => {
       <div className="mb-4">
         <h3 className="font-semibold text-blue-500">Patient Information</h3>
         <p>
-          <strong>Name:</strong> {Patient_Info.Name}
+          <strong>Name:</strong> {Patient_Info?.Name}
         </p>
         <p>
-          <strong>HN:</strong> {Patient_Info.HN}
+          <strong>HN:</strong> {Patient_Info?.HN}
         </p>
         <p>
-          <strong>Age:</strong> {Patient_Info.Age}
+          <strong>Age:</strong> {Patient_Info?.Age}
         </p>
         <p>
-          <strong>Sex:</strong> {Patient_Info.Sex}
+          <strong>Sex:</strong> {Patient_Info?.Sex}
         </p>
         <p>
-          <strong>Blood Type:</strong> {Patient_Info.Blood_Type}
+          <strong>Blood Type:</strong> {Patient_Info?.Blood_Type}
         </p>
         <p>
-          <strong>National ID:</strong> {Patient_Info.National_ID}
+          <strong>National ID:</strong> {Patient_Info?.National_ID}
         </p>
         <p>
-          <strong>Birthdate:</strong> {Patient_Info.Birthdate}
+          <strong>Birthdate:</strong> {Patient_Info?.Birthdate}
         </p>
       </div>
       <div className="mb-4">
         <h3 className="font-semibold text-blue-500">Visit Information</h3>
         <p>
-          <strong>Date of Treatment:</strong> {Visit_Info.Date_of_Treatment}
+          <strong>Date of Treatment:</strong> {Visit_Info?.Date_of_Treatment}
         </p>
         <p>
-          <strong>Doctor:</strong> {Visit_Info.Doctor}
+          <strong>Doctor:</strong> {Visit_Info?.Doctor}
         </p>
         <p>
           <strong>Chief Complaint:</strong>
-          <br /> {Visit_Info.Chief_Complaint}
+          <br /> {Visit_Info?.Chief_Complaint}
         </p>
         <p>
           <strong>Medical Condition:</strong>
-          <br /> {Visit_Info.Medical_Condition}
+          <br /> {Visit_Info?.Medical_Condition}
         </p>
         <p>
-          <strong>Drug Allergy:</strong> {Visit_Info.Drug_Allergy}
+          <strong>Drug Allergy:</strong> {Visit_Info?.Drug_Allergy}
         </p>
       </div>
       <div className="mb-4">
         <h3 className="font-semibold text-blue-500">Vital Signs</h3>
         <p>
-          <strong>Weight:</strong> {Vital_Signs.Weight_kg} kg
+          <strong>Weight:</strong> {Vital_Signs?.Weight_kg} kg
         </p>
         <p>
-          <strong>Height:</strong> {Vital_Signs.Height_cm} cm
+          <strong>Height:</strong> {Vital_Signs?.Height_cm} cm
         </p>
         <p>
-          <strong>BMI:</strong> {Vital_Signs.BMI}
+          <strong>BMI:</strong> {Vital_Signs?.BMI}
         </p>
         <p>
-          <strong>BP:</strong> {Vital_Signs.BP.Systolic}/
-          {Vital_Signs.BP.Diastolic}
+          <strong>BP:</strong> {Vital_Signs?.BP?.Systolic}/
+          {Vital_Signs?.BP?.Diastolic}
         </p>
       </div>
       <div className="mb-4">
         <h3 className="font-semibold text-blue-500">Lifestyle</h3>
         <p>
-          <strong>Drink:</strong> {Lifestyle.Drink}
+          <strong>Drink:</strong> {Lifestyle?.Drink}
         </p>
         <p>
-          <strong>Smoke:</strong> {Lifestyle.Smoke}
+          <strong>Smoke:</strong> {Lifestyle?.Smoke}
         </p>
       </div>
     </div>
