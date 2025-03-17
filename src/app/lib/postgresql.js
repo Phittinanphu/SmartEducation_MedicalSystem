@@ -131,6 +131,20 @@ export async function getUserByGoogleId(googleId) {
 }
 
 /**
+ * Gets a user by email address
+ * @param {string} email - User's email address
+ * @returns {Promise<Object|null>} User object or null if not found
+ */
+export async function getUserByEmail(email) {
+  const result = await query(
+    'SELECT * FROM userdata.google_accounts WHERE email = $1',
+    [email]
+  )
+  
+  return result.rows[0] || null
+}
+
+/**
  * Ensures all Google users have UUIDs
  * @returns {Promise<number>} Number of users updated with UUIDs
  */

@@ -10,8 +10,10 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@types/js-cookie": "^3.0.6",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.4.7",
+    "js-cookie": "^3.0.5",
     "lucide-react": "^0.475.0",
     "my-next-app": "file:",
     "next": "^15.2.0-canary.51",

@@ -1,9 +1,8 @@
 import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import pool, { query } from '@/app/lib/postgres';
+import pool, { query, generateUUID } from '@/app/lib/postgresql';
 import bcrypt from 'bcryptjs';
-import { v4 as uuidv4 } from 'uuid';
 
 /**
  * NextAuth.js Configuration
@@ -80,21 +79,40 @@ const handler = NextAuth({
     })
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account, profile }) {
+      // Initial sign in
+      if (account && profile) {
+        if (account.provider === 'google') {
+          // Store the UUID from Google sign-in in the token
+          token.uid = profile.uid;
+          token.googleId = profile.sub;
+        }
+      }
+      
       if (user) {
         token.id = user.id;
         token.studentId = user.studentId;
       }
+      
       return token;
     },
     async session({ session, token }) {
       if (token) {
+        // Add the user ID and student ID to the session
         session.user.id = token.id;
         session.user.studentId = token.studentId;
+        
+        // Add the UUID from the token to the session
+        if (token.uid) {
+          session.user.uid = token.uid;
+        }
+        if (token.googleId) {
+          session.user.googleId = token.googleId;
+        }
       }
       return session;
     },
-    async signIn({ account, profile }) {
+    async signIn({ account, profile, user }) {
       if (account.provider === 'google') {
         try {
           // Start a transaction
@@ -108,20 +126,16 @@ const handler = NextAuth({
               [profile.email]
             );
             
-            let userId;
             if (existingUser.rows.length === 0) {
               // Create new user in users table
               const names = profile.name.split(' ');
               const firstName = names[0] || '';
               const lastName = names.slice(1).join(' ') || '';
               
-              const newUser = await client.query(
-                'INSERT INTO users (first_name, last_name, email, password, student_id, dob) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
+              await client.query(
+                'INSERT INTO users (first_name, last_name, email, password, student_id, dob) VALUES ($1, $2, $3, $4, $5, $6)',
                 [firstName, lastName, profile.email, '', '', '1900-01-01']
               );
-              userId = newUser.rows[0].id;
-            } else {
-              userId = existingUser.rows[0].id;
             }
 
             // Check if Google account exists
@@ -131,22 +145,40 @@ const handler = NextAuth({
             );
 
             if (existingGoogleAccount.rows.length === 0) {
-              // Generate a new UUID
-              const uid = uuidv4();
+              // Generate a UUID for the new Google account
+              const uid = generateUUID();
+              console.log('Generated new UUID:', uid);
               
               // Create new Google account with UUID
-              await client.query(
+              const result = await client.query(
                 `INSERT INTO userdata.google_accounts 
-                (uid, google_id, email, first_name, last_name, last_login_at) 
-                VALUES ($1, $2, $3, $4, $5, NOW())`,
-                [uid, profile.sub, profile.email, profile.given_name, profile.family_name]
+                (google_id, email, first_name, last_name, last_login_at, uid) 
+                VALUES ($1, $2, $3, $4, NOW(), $5)
+                RETURNING *`,
+                [profile.sub, profile.email, profile.given_name, profile.family_name, uid]
               );
+              
+              // Add the UUID to the profile and user objects
+              profile.uid = uid;
+              if (user) user.uid = uid;
+              
+              console.log('Created new Google account with UUID:', uid);
             } else {
+              // Get the existing UUID
+              const googleAccount = existingGoogleAccount.rows[0];
+              const uid = googleAccount.uid;
+              
+              console.log('Found existing Google account with UUID:', uid);
+              
               // Update last login time
               await client.query(
                 'UPDATE userdata.google_accounts SET last_login_at = NOW() WHERE google_id = $1',
                 [profile.sub]
               );
+              
+              // Add the UUID to the profile and user objects
+              profile.uid = uid;
+              if (user) user.uid = uid;
             }
 
             await client.query('COMMIT');
