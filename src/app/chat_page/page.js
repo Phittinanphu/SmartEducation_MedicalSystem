@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Navbar2 from "../components/Navbar2";
 import SubmitBackground from "../components/submit/Background";
 import ChatInterface from "../components/case/ChatInterface";
@@ -8,6 +9,19 @@ import PatientDetails from "../components/submit/PatientDetails";
 import ChatHistory from "../components/submit/ChatHistory";
 
 const Page = () => {
+  const searchParams = useSearchParams();
+
+  const patientData = {
+    Age: searchParams.get("Age"),
+    Name: searchParams.get("Name"),
+    Occupation: searchParams.get("Occupation"),
+    Reason: searchParams.get("Reason"),
+    Sex: searchParams.get("Sex"),
+    Symptoms: searchParams.get("Symptoms"),
+  };
+
+  const caseId = searchParams.get("case_id");
+
   // Tracks whether the exam submission process is complete.
   const [submitted, setSubmitted] = useState(false);
   // Step state for the submission multi‑step view:
@@ -60,6 +74,8 @@ const Page = () => {
               initialExamData={examData ? examData : undefined}
               activeMode={activeMode}
               setActiveMode={setActiveMode}
+              patientData={patientData}
+              caseId={caseId}
             />
           </div>
         </div>

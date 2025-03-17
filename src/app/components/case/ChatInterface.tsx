@@ -24,6 +24,15 @@ type ChatInterfaceProps = {
   onExamSubmitComplete?: (examData: ExamDataType, messages: Message[]) => void;
   initialMessages?: Message[];
   initialExamData?: ExamDataType;
+  patientData: {
+    Age: string;
+    Name: string;
+    Occupation: string;
+    Reason: string;
+    Sex: string;
+    Symptoms: string;
+  };
+  caseId: string;
 };
 
 const socket = io("http://localhost:5000");
@@ -36,6 +45,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   onExamSubmitComplete,
   initialMessages,
   initialExamData,
+  patientData,
+  caseId,
 }) => {
   const router = useRouter();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -96,7 +107,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const handleSendMessage = () => {
     if (inputText.trim() !== "") {
       setMessages((prev) => [...prev, { sender: "student", text: inputText }]);
-      socket.emit("message", inputText);
+      socket.emit("message", { text: inputText, caseId }); // Send message with caseId
       updatePatientMood(inputText); // ✅ อัปเดตอารมณ์ของผู้ป่วยตามข้อความที่ส่ง
       setInputText("");
     }
@@ -139,7 +150,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   return (
     <div className="absolute top-10 left-10 bg-white rounded-lg shadow-lg p-6 w-[80%] h-[90%] flex flex-row relative">
-      <PatientInfo />
+      <PatientInfo patientData={patientData} />
       <div className="flex flex-col w-full ml-4">
         {/* Mode buttons arranged side by side */}
         <div className="flex items-center gap-2 mb-4">
