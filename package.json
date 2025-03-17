@@ -12,6 +12,7 @@
     "@heroicons/react": "^2.2.0",
     "@types/js-cookie": "^3.0.6",
     "bcryptjs": "^2.4.3",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
     "js-cookie": "^3.0.5",
     "@react-three/drei": "^10.0.4",
