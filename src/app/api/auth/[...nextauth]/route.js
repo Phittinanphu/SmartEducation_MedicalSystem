@@ -92,6 +92,10 @@ const handler = NextAuth({
       if (user) {
         token.id = user.id;
         token.studentId = user.studentId;
+        // Ensure any uid from user object is in the token
+        if (user.uid) {
+          token.uid = user.uid;
+        }
       }
       
       return token;
@@ -109,6 +113,9 @@ const handler = NextAuth({
         if (token.googleId) {
           session.user.googleId = token.googleId;
         }
+        
+        // Set cookie here to ensure it's always set immediately
+        // This won't work directly here - we'll add client-side code
       }
       return session;
     },
@@ -161,6 +168,10 @@ const handler = NextAuth({
               // Add the UUID to the profile and user objects
               profile.uid = uid;
               if (user) user.uid = uid;
+              
+              // Implement special handling for first-time login
+              // Store as a JWT cookie with httpOnly: false so client JS can access
+              // This won't work directly here - we'll add client-side code
               
               console.log('Created new Google account with UUID:', uid);
             } else {
