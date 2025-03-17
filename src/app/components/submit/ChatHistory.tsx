@@ -13,6 +13,7 @@ interface ChatHistoryProps {
   chatHistory: Array<{ sender: string; text: string }>;
   onPrevious: () => void;
   onEditAnswer: (section: string) => void;
+  caseId: string;
 }
 
 const ChatHistory: React.FC<ChatHistoryProps> = ({
@@ -20,12 +21,13 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   chatHistory,
   onPrevious,
   onEditAnswer,
+  caseId,
 }) => {
   const [showChatModal, setShowChatModal] = useState(false);
   const [showExamModal, setShowExamModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
-  // Function to handle saving data to MongoDB using the temporary data
+
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
@@ -41,7 +43,14 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
       });
       if (examResponse.ok && chatResponse.ok) {
         console.log("Data saved successfully");
-        router.push("/submission_success");
+
+        // Navigate to the submission success page with data as query parameters
+        const queryParams = new URLSearchParams({
+          caseId: caseId,
+          answer: examData?.diagnosis || "",
+        }).toString();
+
+        router.push(`/submission_success?${queryParams}`);
       } else {
         console.error("Error saving data");
       }

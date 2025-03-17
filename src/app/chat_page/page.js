@@ -7,6 +7,7 @@ import ChatInterface from "../components/case/ChatInterface";
 import SubmitInstructions from "../components/submit/SubmitInstructions";
 import PatientDetails from "../components/submit/PatientDetails";
 import ChatHistory from "../components/submit/ChatHistory";
+import SubmitSuccessScreen from "../components/submit/SubmitSuccess";
 
 const Page = () => {
   const searchParams = useSearchParams();
@@ -106,6 +107,13 @@ const Page = () => {
                 onEditAnswer={handleEditAnswer}
                 examData={examData}
                 chatHistory={chatMessages}
+                caseId={caseId}
+              />
+            )}
+            {step === 4 && (
+              <SubmitSuccessScreen
+                caseId={caseId}
+                answer={examData.diagnosis}
               />
             )}
           </div>
