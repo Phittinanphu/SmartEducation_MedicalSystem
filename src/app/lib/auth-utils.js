@@ -30,7 +30,7 @@ export async function verifyAuthentication() {
 export async function getGoogleAccountData(email) {
   try {
     const result = await query(
-      'SELECT * FROM userdata.google_accounts WHERE email = $1',
+      'SELECT *, uid::text AS uid FROM userdata.google_accounts WHERE email = $1',
       [email]
     );
     

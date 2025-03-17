@@ -1,0 +1,71 @@
+/* Dashboard styles */
+
+.container {
+	min-height: 100vh;
+	background-color: #f8fafc;
+}
+
+.header {
+	position: sticky;
+	top: 0;
+	background-color: white;
+	z-index: 10;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+	font-weight: bold;
+	font-size: 1.25rem;
+	color: #1e40af;
+}
+
+.cardGrid {
+	display: grid;
+	grid-template-columns: repeat(1, 1fr);
+	gap: 1rem;
+}
+
+@media (min-width: 640px) {
+	.cardGrid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (min-width: 1024px) {
+	.cardGrid {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+
+.card {
+	background-color: white;
+	border-radius: 0.5rem;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.statCard {
+	background-color: white;
+	border-radius: 0.5rem;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	padding: 1rem;
+}
+
+.welcomeSection {
+	background: linear-gradient(to right, #1e40af, #3b82f6);
+	color: white;
+}
+
+.welcomeText {
+	font-size: 1.5rem;
+	font-weight: 600;
+}
+
+.welcomeDescription {
+	color: rgba(255, 255, 255, 0.9);
+} 

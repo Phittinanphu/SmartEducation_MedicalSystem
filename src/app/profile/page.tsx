@@ -14,6 +14,7 @@ interface GoogleAccountData {
   created_at: string;
   updated_at: string;
   last_login_at: string;
+  uid: string;
 }
 
 export default function ProfilePage() {
@@ -105,6 +106,10 @@ export default function ProfilePage() {
                   <div>
                     <p className="text-sm text-gray-500">Google ID</p>
                     <p className="font-medium text-xs truncate">{googleData.google_id}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">UUID</p>
+                    <p className="font-medium text-xs truncate">{googleData.uid || 'Not available'}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Last Login</p>
