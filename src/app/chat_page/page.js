@@ -95,6 +95,8 @@ const Page = () => {
                 active={step === 2}
                 onNext={step === 2 ? handleNext : undefined}
                 onPrevious={step === 2 ? handlePrevious : undefined}
+                patientData={patientData}
+                caseId={caseId}
               />
             )}
             {step >= 3 && (
