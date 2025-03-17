@@ -26,7 +26,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const router = useRouter();
-  // Function to handle saving data to MongoDB using the temporary data
+  // Function to handle saving data to PostgreSQL using the temporary data
   const handleSubmit = async () => {
 
     setIsSubmitting(true);
@@ -49,7 +49,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
           if (errorData.message || errorData.error) {
             errorDetail = `Failed to save exam data: ${errorData.message || errorData.error}`;
           }
-        } catch (parseError) {
+        } catch {
           // If response can't be parsed as JSON, use status text
           errorDetail = `Failed to save exam data: ${examResponse.statusText || `Status ${examResponse.status}`}`;
         }
@@ -72,7 +72,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
           if (errorData.message || errorData.error) {
             errorDetail = `Failed to save chat history: ${errorData.message || errorData.error}`;
           }
-        } catch (parseError) {
+        } catch {
           // If response can't be parsed as JSON, use status text
           errorDetail = `Failed to save chat history: ${chatResponse.statusText || `Status ${chatResponse.status}`}`;
         }
@@ -83,12 +83,16 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
       console.log("Data saved successfully");
       router.push("/submission_success");
       
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Submission error:", error);
       // Display error message to state for rendering in UI
-      setErrorMessage(error.message || "Failed to submit data. Please try again later.");
-      // Also show an alert for immediate notification
-      alert(error.message || "Failed to submit data. Please try again later.");
+      if (error instanceof Error) {
+        setErrorMessage(error.message || "Failed to submit data. Please try again later.");
+        alert(error.message || "Failed to submit data. Please try again later.");
+      } else {
+        setErrorMessage("Failed to submit data. Please try again later.");
+        alert("Failed to submit data. Please try again later.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -125,9 +129,6 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
         </button>
         <div className="flex gap-2">
           <button
-            // When Edit Answer is clicked, immediately call onEditAnswer.
-            // The parent component should then render the chat/exam view,
-            // passing in the temporary data so that previous chat history and exam answers are loaded.
             onClick={onEditAnswer}
             className="bg-yellow-500 text-white px-6 py-2 rounded-lg transition transform hover:bg-yellow-600 hover:scale-105"
           >
@@ -201,7 +202,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
               {examData ? (
                 <div className="space-y-4">
                   <p>
-                    <strong>Patient's Name:</strong> {examData.patientName}
+                    <strong>Patient&apos;s Name:</strong> {examData.patientName}
                   </p>
                   <p>
                     <strong>Age:</strong> {examData.age}
