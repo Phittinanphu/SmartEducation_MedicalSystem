@@ -1,14 +1,52 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { v4 as uuidv4 } from "uuid";
 
 const CaseStudyScreen: React.FC = () => {
   const router = useRouter();
+  const userId = uuidv4(); // Generate a valid UUID
+  const [caseId, setCaseId] = useState(null);
 
-  // Handle navigation when Start button is clicked
-  const handleStart = () => {
-    router.push("/case-studies"); // Navigate to the study cases page
+  // Fetch patient data and navigate to chat page when Start button is clicked
+  const handleStart = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/chat/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          owner: userId, // Ensure User ID is sent with the correct key
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error:", errorData);
+        return;
+      }
+
+      const data = await response.json();
+      console.log(data); // Log the response to the console
+      setCaseId(data.case_id); // Store case_id
+
+      // Navigate to the chat page with patient data as query parameters
+      const queryParams = new URLSearchParams({
+        case_id: data.case_id,
+        Age: data.patient_data.Age,
+        Name: data.patient_data.Name,
+        Occupation: data.patient_data.Occupation,
+        Reason: data.patient_data.Reason,
+        Sex: data.patient_data.Sex,
+        Symptoms: data.patient_data.Symptoms,
+      }).toString();
+
+      router.push(`/chat_page?${queryParams}`);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
@@ -29,19 +67,15 @@ const CaseStudyScreen: React.FC = () => {
         <h1 className="text-4xl font-bold text-black mt-2">Study cases</h1>
 
         {/* Start Button */}
-        <Link href="/chat_page">
-          <button
-            onClick={handleStart}
-            className="mt-6 bg-red-600 text-white text-lg font-semibold px-8 py-3 rounded-lg hover:bg-red-700 transition duration-300"
-          >
-            Start
-          </button>
-        </Link>
-        </div>
+        <button
+          onClick={handleStart}
+          className="mt-6 bg-red-600 text-white text-lg font-semibold px-8 py-3 rounded-lg hover:bg-red-700 transition duration-300"
+        >
+          Start
+        </button>
       </div>
+    </div>
   );
 };
 
 export default CaseStudyScreen;
-
-
