@@ -151,6 +151,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     else setPatientMood("normal");
   };
 
+  const handleExamSubmit = () => {
+    if (onExamSubmitComplete) {
+      onExamSubmitComplete(examData, messages);
+    }
+    // Navigate to submit success page with caseId and diagnosis
+    router.push(`/submit/success?caseId=${caseId}&answer=${encodeURIComponent(examData.diagnosis)}`);
+  };
+
   return (
     <div className="absolute top-10 left-10 bg-white rounded-lg shadow-lg p-6 w-[80%] h-[90%] flex flex-row relative">
       <PatientInfo patientData={patientData} />
@@ -203,12 +211,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             onSubmitExam={() => setShowExamSubmitPopup(true)}
             showSubmitPopup={showExamSubmitPopup}
             setShowSubmitPopup={setShowExamSubmitPopup}
-            onConfirmSubmit={() => {
-              setShowExamSubmitPopup(false);
-              if (onExamSubmitComplete) {
-                onExamSubmitComplete(examData, messages);
-              }
-            }}
+            onConfirmSubmit={handleExamSubmit}
           />
         )}
         <div ref={messagesEndRef} />
