@@ -2,11 +2,11 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { v4 as uuidv4 } from "uuid";
+import Cookies from 'js-cookie';
 
 const CaseStudyScreen: React.FC = () => {
   const router = useRouter();
-  const userId = uuidv4(); // Generate a valid UUID
+  const userId = Cookies.get('user_id'); // Generate a valid UUID
   const [caseId, setCaseId] = useState(null);
 
   // Fetch patient data and navigate to chat page when Start button is clicked

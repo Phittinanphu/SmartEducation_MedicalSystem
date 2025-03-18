@@ -93,7 +93,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const handleSendMessage = async () => {
     if (inputText.trim() !== "") {
       setMessages((prev) => [...prev, { sender: "student", text: inputText }]);
-      updatePatientMood(inputText); // ✅ อัปเดตอารมณ์ของผู้ป่วยตามข้อความที่ส่ง
+      // updatePatientMood(inputText); // ✅ อัปเดตอารมณ์ของผู้ป่วยตามข้อความที่ส่ง
       setInputText("");
 
       try {
@@ -109,7 +109,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           ...prev,
           { sender: "patient", text: data.response },
         ]);
-        updatePatientMood(data.response); // ✅ อัปเดตอารมณ์ของผู้ป่วยตามข้อความที่ได้รับ
+        // updatePatientMood(data.response); // ✅ อัปเดตอารมณ์ของผู้ป่วยตามข้อความที่ได้รับ
       } catch (error) {
         console.error("Error sending message to FastAPI:", error);
       }
