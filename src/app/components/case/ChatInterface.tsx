@@ -156,8 +156,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     if (onExamSubmitComplete) {
       onExamSubmitComplete(examData, messages);
     }
-    // Navigate to submit success page with caseId and diagnosis
-    router.push(`/submit/success?caseId=${caseId}&answer=${encodeURIComponent(examData.diagnosis)}`);
   };
 
   return (
