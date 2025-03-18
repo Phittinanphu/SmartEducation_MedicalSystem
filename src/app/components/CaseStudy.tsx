@@ -8,11 +8,12 @@ const CaseStudyScreen: React.FC = () => {
   const router = useRouter();
   const userId = Cookies.get('user_id'); // Generate a valid UUID
   const [caseId, setCaseId] = useState(null);
+  const BE_DNS = process.env.NEXT_PUBLIC_BE_DNS;
 
   // Fetch patient data and navigate to chat page when Start button is clicked
   const handleStart = async () => {
     try {
-      const response = await fetch("http://localhost:8000/chat/create", {
+      const response = await fetch(`${BE_DNS}/chat/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

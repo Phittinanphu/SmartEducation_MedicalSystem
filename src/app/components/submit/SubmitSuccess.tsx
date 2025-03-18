@@ -13,11 +13,12 @@ const SubmitSuccessScreen: React.FC<SubmitSuccessProps> = ({
 }) => {
   const router = useRouter();
   const [diagnosis, setDiagnosis] = useState("");
+  const BE_IP = process.env.NEXT_PUBLIC_BE_IP;
 
   useEffect(() => {
     const sendCompletion = async () => {
       try {
-        const response = await fetch("http://localhost:8000/chat/complete", {
+        const response = await fetch(`${BE_IP}/chat/complete`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

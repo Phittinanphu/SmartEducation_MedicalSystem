@@ -46,6 +46,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   caseId,
 }) => {
   const router = useRouter();
+  const BE_DNS = process.env.NEXT_PUBLIC_BE_DNS;
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [chatStarted, setChatStarted] = useState<boolean>(!!initialMessages);
   const [messages, setMessages] = useState<Message[]>(
@@ -97,7 +98,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       setInputText("");
 
       try {
-        const response = await fetch("http://localhost:8000/chat/continue", {
+        const response = await fetch(`${BE_DNS}/chat/continue`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
