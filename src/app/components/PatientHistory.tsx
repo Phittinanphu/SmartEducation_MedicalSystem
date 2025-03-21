@@ -154,6 +154,13 @@ const PatientHistory: React.FC = () => {
                   <p className="text-sm">
                     <span className="font-bold text-red-500">Disease:</span> {item.disease || 'Not specified'}
                   </p>
+                  <p className="text-sm">
+                    <span className="font-bold text-blue-500">Case ID:</span> {item.case_id}
+                    <span className="text-xs text-gray-500 ml-2 cursor-pointer hover:text-blue-500" 
+                          onClick={() => {navigator.clipboard.writeText(item.case_id); alert("Case ID copied!");}}>
+                      (Copy)
+                    </span>
+                  </p>
                   <p className="text-xs text-gray-500">Chat Date: {formattedDate}</p>
                   <p className="text-xs text-gray-500">
                     Status: {item.done ? 'Completed' : 'In Progress'}
