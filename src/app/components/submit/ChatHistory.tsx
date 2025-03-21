@@ -27,33 +27,39 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   const [showExamModal, setShowExamModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const BE_IP = process.env.NEXT_PUBLIC_BE_IP;
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
-      const examResponse = await fetch("/apiExam", {
+      // Send the completion request
+      const completionResponse = await fetch(`${BE_IP}/chat/complete`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ examAnswers: examData }),
-      });
-      const chatResponse = await fetch("/apiChat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chatHistory: chatHistory }),
-      });
-      if (examResponse.ok && chatResponse.ok) {
-        console.log("Data saved successfully");
-
-        // Navigate to the submission success page with data as query parameters
-        const queryParams = new URLSearchParams({
-          caseId: caseId,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          case_id: caseId,
           answer: examData?.diagnosis || "",
-        }).toString();
+        }),
+      });
 
-        router.push(`/submission_success?${queryParams}`);
-      } else {
-        console.error("Error saving data");
+      if (!completionResponse.ok) {
+        const errorData = await completionResponse.json();
+        console.error("Error:", errorData);
+        return;
       }
+
+      const completionData = await completionResponse.json();
+      console.log("Completion response:", completionData);
+
+      // Navigate to the submission success page with the caseId and diagnosis using query params
+      const queryParams = new URLSearchParams({
+        caseId: caseId,
+        studentAnswer: examData?.diagnosis || "",
+        correctAnswer: completionData.disease || "",
+      }).toString();
+      router.push(`/submission_success?${queryParams}`);
     } catch (error) {
       console.error("Submission error:", error);
     } finally {

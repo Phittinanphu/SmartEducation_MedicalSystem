@@ -2,11 +2,11 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 
 const CaseStudyScreen: React.FC = () => {
   const router = useRouter();
-  const userId = Cookies.get('user_id'); // Generate a valid UUID
+  const userId = Cookies.get("user_id"); // Generate a valid UUID
   const [caseId, setCaseId] = useState(null);
   const BE_DNS = process.env.NEXT_PUBLIC_BE_DNS;
 

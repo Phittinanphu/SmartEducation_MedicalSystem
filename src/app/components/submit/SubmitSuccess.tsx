@@ -4,15 +4,17 @@ import { useRouter } from "next/navigation";
 
 interface SubmitSuccessProps {
   caseId: string;
-  answer: string;
+  studentAnswer: string;
+  correctAnswer: string;
 }
 
 const SubmitSuccessScreen: React.FC<SubmitSuccessProps> = ({
   caseId,
-  answer,
+  studentAnswer,
+  correctAnswer,
 }) => {
   const router = useRouter();
-  const [diagnosis, setDiagnosis] = useState("");
+  const [diagnosis, setDiagnosis] = useState(correctAnswer);
   const BE_IP = process.env.NEXT_PUBLIC_BE_IP;
 
   useEffect(() => {
@@ -25,7 +27,7 @@ const SubmitSuccessScreen: React.FC<SubmitSuccessProps> = ({
           },
           body: JSON.stringify({
             case_id: caseId,
-            answer: answer,
+            answer: studentAnswer,
           }),
         });
 
@@ -37,14 +39,14 @@ const SubmitSuccessScreen: React.FC<SubmitSuccessProps> = ({
 
         const data = await response.json();
         console.log("Completion response:", data);
-        setDiagnosis(data.diagnosis);
+        setDiagnosis(data.diagnosis); // Update diagnosis with the value from the response
       } catch (error) {
         console.error("Error sending completion request:", error);
       }
     };
 
     sendCompletion();
-  }, [caseId, answer]);
+  }, [caseId, studentAnswer]);
 
   const HandleViewAnswer = () => {
     router.push("/evaluation_page");
@@ -76,8 +78,7 @@ const SubmitSuccessScreen: React.FC<SubmitSuccessProps> = ({
           Submission Successful
         </h1>
         <p className="text-2xl text-black mt-4">
-          <strong>Correct Answer:</strong>{" "}
-          <span style={{ color: "red" }}>{diagnosis}</span>
+          <strong>Correct Answer:</strong> <span className="text-red-500">{correctAnswer}</span>
         </p>
 
         {/* Button */}
