@@ -48,16 +48,81 @@ const SubmitSuccessScreen: React.FC<SubmitSuccessProps> = ({
     sendCompletion();
   }, [caseId, studentAnswer]);
 
-  const HandleViewAnswer = () => {
-    router.push("/evaluation_page");
+  const HandleViewAnswer = async () => {
+    try {
+      const response = await fetch(`${BE_IP}/chat/complete`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          case_id: caseId,
+          answer: studentAnswer,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error:", errorData);
+        return;
+      }
+
+      const data = await response.json();
+      console.log("Completion response:", data);
+
+      const queryParams = new URLSearchParams({
+        caseId: caseId,
+        studentAnswer: studentAnswer,
+        correctAnswer: data.disease,
+        score: data.score,
+        evaluationMetricScores: JSON.stringify(data.evaluationMetricScores),
+      }).toString();
+
+      router.push(`/evaluation_page?${queryParams}`);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   const HandleBackToHome = () => {
     router.push("/main");
   };
 
-  const HandleViewConversation = () => {
-    router.push("/evaluation_page?view=conversation");
+  const HandleViewConversation = async () => {
+    try {
+      const response = await fetch(`${BE_IP}/chat/complete`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          case_id: caseId,
+          answer: studentAnswer,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error:", errorData);
+        return;
+      }
+
+      const data = await response.json();
+      console.log("Completion response:", data);
+
+      const queryParams = new URLSearchParams({
+        caseId: caseId,
+        studentAnswer: studentAnswer,
+        correctAnswer: data.disease,
+        view: "conversation",
+        score: data.score,
+        evaluationMetricScores: JSON.stringify(data.evaluationMetricScores),
+      }).toString();
+
+      router.push(`/evaluation_page?${queryParams}`);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
@@ -78,7 +143,8 @@ const SubmitSuccessScreen: React.FC<SubmitSuccessProps> = ({
           Submission Successful
         </h1>
         <p className="text-2xl text-black mt-4">
-          <strong>Correct Answer:</strong> <span className="text-red-500">{correctAnswer}</span>
+          <strong>Correct Answer:</strong>{" "}
+          <span className="text-red-500">{correctAnswer}</span>
         </p>
 
         {/* Button */}

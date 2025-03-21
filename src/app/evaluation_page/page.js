@@ -18,20 +18,23 @@ export default function Page() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/evaluation", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ request: "evaluation" }), // Send the appropriate payload
-        });
+        const caseId = searchParams.get("caseId");
+        const studentAnswer = searchParams.get("studentAnswer");
+        const correctAnswer = searchParams.get("correctAnswer");
+        const score = searchParams.get("score");
+        const evaluationMetricScores = searchParams.get(
+          "evaluationMetricScores"
+        );
 
-        if (!response.ok) {
-          const text = await response.text();
-          throw new Error(`Network response was not ok: ${text}`);
-        }
+        const data = {
+          case: caseId,
+          studentAnswer: studentAnswer,
+          correctAnswer: correctAnswer,
+          score: score,
+          evaluationMetricScores: JSON.parse(evaluationMetricScores),
+          conversationData: [], // Add default conversation data
+        };
 
-        const data = await response.json();
         console.log("Data fetched successfully:", data);
         setLlmOutput(data);
 
