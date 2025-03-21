@@ -46,6 +46,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   caseId,
 }) => {
   const router = useRouter();
+  const BE_DNS = process.env.NEXT_PUBLIC_BE_DNS;
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [chatStarted, setChatStarted] = useState<boolean>(!!initialMessages);
   const [messages, setMessages] = useState<Message[]>(
@@ -93,11 +94,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const handleSendMessage = async () => {
     if (inputText.trim() !== "") {
       setMessages((prev) => [...prev, { sender: "student", text: inputText }]);
-      updatePatientMood(inputText); // ✅ อัปเดตอารมณ์ของผู้ป่วยตามข้อความที่ส่ง
+      // updatePatientMood(inputText); // ✅ อัปเดตอารมณ์ของผู้ป่วยตามข้อความที่ส่ง
       setInputText("");
 
       try {
-        const response = await fetch("http://localhost:8000/chat/continue", {
+        const response = await fetch(`${BE_DNS}/chat/continue`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -109,7 +110,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           ...prev,
           { sender: "patient", text: data.response },
         ]);
-        updatePatientMood(data.response); // ✅ อัปเดตอารมณ์ของผู้ป่วยตามข้อความที่ได้รับ
+        // updatePatientMood(data.response); // ✅ อัปเดตอารมณ์ของผู้ป่วยตามข้อความที่ได้รับ
       } catch (error) {
         console.error("Error sending message to FastAPI:", error);
       }
@@ -149,6 +150,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     )
       setPatientMood("scared");
     else setPatientMood("normal");
+  };
+
+  const handleExamSubmit = () => {
+    if (onExamSubmitComplete) {
+      onExamSubmitComplete(examData, messages);
+    }
   };
 
   return (
@@ -203,12 +210,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             onSubmitExam={() => setShowExamSubmitPopup(true)}
             showSubmitPopup={showExamSubmitPopup}
             setShowSubmitPopup={setShowExamSubmitPopup}
-            onConfirmSubmit={() => {
-              setShowExamSubmitPopup(false);
-              if (onExamSubmitComplete) {
-                onExamSubmitComplete(examData, messages);
-              }
-            }}
+            onConfirmSubmit={handleExamSubmit}
           />
         )}
         <div ref={messagesEndRef} />
