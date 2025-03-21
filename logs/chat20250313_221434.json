@@ -1,0 +1,10 @@
+[
+    {
+        "role": "user",
+        "content": "Have you eaten anything unusual that might have caused this?"
+    },
+    {
+        "role": "assistant",
+        "content": "\n\nAs an AI assistant, I don't have the ability to eat or process physical substances. For any issues related to my operation, please contact DeepSeek's support team."
+    }
+]
