@@ -1,0 +1,18 @@
+[
+    {
+        "role": "user",
+        "content": "rhgterhterh"
+    },
+    {
+        "role": "assistant",
+        "content": "\n\nIt seems like your message might be a random string of characters or possibly a typo. Could you clarify or provide more context so I can assist you better? \ud83d\ude0a"
+    },
+    {
+        "role": "user",
+        "content": "hi"
+    },
+    {
+        "role": "assistant",
+        "content": "\n\nHello! How can I assist you today? \ud83d\ude0a"
+    }
+]

@@ -37,15 +37,10 @@ interface ScoreEvaluationProps {
 
 // Maximum overall scores per domain for each case.
 const domainMaxScores: Record<string, { [key in DomainKey]: number }> = {
-  "Peptic ulcer disease": {
-    domain1: 20,
-    domain2: 30,
-    domain3: 30,
-    domain4: 20,
-  },
-  "Acute pancreatitis": { domain1: 20, domain2: 60, domain3: 30, domain4: 20 },
-  "Food poisoning": { domain1: 20, domain2: 60, domain3: 30, domain4: 20 },
-  "Renal stone": { domain1: 20, domain2: 60, domain3: 30, domain4: 20 },
+  "Peptic ulcer disease": {domain1: 20, domain2: 30, domain3: 30, domain4: 20 },
+  "Acute pancreatitis": { domain1: 20, domain2: 30, domain3: 30, domain4: 20 },
+  "Food poisoning": { domain1: 20, domain2: 30, domain3: 30, domain4: 20 },
+  "Renal stone": { domain1: 20, domain2: 30, domain3: 30, domain4: 20 },
   "Unknown Case": { domain1: 20, domain2: 30, domain3: 30, domain4: 20 },
 };
 
@@ -334,7 +329,7 @@ const evaluationMetrics: Record<
       { id: "4.1", description: "Diagnosis: Food poisoning", maxScore: 20 },
     ],
   },
-  "Renal stone": {
+  "Kidney stones": {
     domain1: [
       {
         id: "1.1",
@@ -397,7 +392,7 @@ const evaluationMetrics: Record<
       },
     ],
     domain4: [
-      { id: "4.1", description: "Diagnosis: Renal stone", maxScore: 20 },
+      { id: "4.1", description: "Diagnosis: Kidney stones", maxScore: 20 },
     ],
   },
   "Unknown Case": {

@@ -1,46 +1,37 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 interface PatientDetailsProps {
   onNext: () => void;
   onPrevious: () => void;
   active: boolean;
+  patientData: {
+    Age: string;
+    Name: string;
+    Occupation: string;
+    Reason: string;
+    Sex: string;
+    Symptoms: string;
+  };
+  caseId: string;
 }
 
 const PatientDetails: React.FC<PatientDetailsProps> = ({
   onNext,
   onPrevious,
   active,
+  patientData,
+  caseId,
 }) => {
-  const [patientData, setPatientData] = useState<any>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("http://localhost:8000/api/endpoint", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ request: "patient_info" }),
-        });
-        const data = await response.json();
-        setPatientData(data.Patient_Info);
-      } catch (error) {
-        console.error("Error fetching patient data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
   if (!patientData) {
     return <div>Loading...</div>;
   }
 
+  const { Age, Name, Occupation, Sex } = patientData;
+
   return (
     <div
       className="bg-green-300 p-6 rounded-2xl shadow-lg mb-6"
-      style={{ width: "883px", height: "240px" }} // Exact width & height from Figma
+      style={{ width: "883px", height: "265px" }} // Exact width & height from Figma
     >
       <h2 className="font-bold text-lg">Patient Details Section</h2>
       <div className="flex items-center mb-2">
@@ -49,13 +40,16 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({
       </div>
       <ul className="list-disc pl-5 text-lg">
         <li>
-          <strong>Patient Name:</strong> {patientData.Name}
+          <strong>Patient Name:</strong> {Name}
         </li>
         <li>
-          <strong>Age:</strong> {patientData.Age}
+          <strong>Age:</strong> {Age}
         </li>
         <li>
-          <strong>Sex:</strong> {patientData.Sex}
+          <strong>Sex:</strong> {Sex}
+        </li>
+        <li>
+          <strong>Occupation:</strong> {Occupation}
         </li>
       </ul>
       {active && (

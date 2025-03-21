@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import io from "socket.io-client";
 import ChatMode from "./ChatMode";
 import ExamMode from "./ExamMode";
 import PatientInfo from "./Patientinfo";
@@ -24,9 +23,16 @@ type ChatInterfaceProps = {
   onExamSubmitComplete?: (examData: ExamDataType, messages: Message[]) => void;
   initialMessages?: Message[];
   initialExamData?: ExamDataType;
+  patientData: {
+    Age: string;
+    Name: string;
+    Occupation: string;
+    Reason: string;
+    Sex: string;
+    Symptoms: string;
+  };
+  caseId: string;
 };
-
-const socket = io("http://localhost:5000");
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
   patientName = "Johnson William",
@@ -36,8 +42,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   onExamSubmitComplete,
   initialMessages,
   initialExamData,
+  patientData,
+  caseId,
 }) => {
   const router = useRouter();
+  const BE_DNS = process.env.NEXT_PUBLIC_BE_DNS;
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [chatStarted, setChatStarted] = useState<boolean>(!!initialMessages);
   const [messages, setMessages] = useState<Message[]>(
@@ -77,28 +86,34 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   }, [initialExamData]);
 
   useEffect(() => {
-    socket.on("response", (data: string) => {
-      setMessages((prev) => [...prev, { sender: "patient", text: data }]);
-      updatePatientMood(data); // ✅ อัปเดตอารมณ์ของผู้ป่วยตามข้อความที่ได้รับ
-    });
-
-    return () => {
-      socket.off("response");
-    };
-  }, []);
-
-  useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (inputText.trim() !== "") {
       setMessages((prev) => [...prev, { sender: "student", text: inputText }]);
-      socket.emit("message", inputText);
-      updatePatientMood(inputText); // ✅ อัปเดตอารมณ์ของผู้ป่วยตามข้อความที่ส่ง
+      // updatePatientMood(inputText); // ✅ อัปเดตอารมณ์ของผู้ป่วยตามข้อความที่ส่ง
       setInputText("");
+
+      try {
+        const response = await fetch(`${BE_DNS}/chat/continue`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ case_id: caseId, message: inputText }),
+        });
+        const data = await response.json();
+        setMessages((prev) => [
+          ...prev,
+          { sender: "patient", text: data.response },
+        ]);
+        // updatePatientMood(data.response); // ✅ อัปเดตอารมณ์ของผู้ป่วยตามข้อความที่ได้รับ
+      } catch (error) {
+        console.error("Error sending message to FastAPI:", error);
+      }
     }
   };
 
@@ -137,9 +152,15 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     else setPatientMood("normal");
   };
 
+  const handleExamSubmit = () => {
+    if (onExamSubmitComplete) {
+      onExamSubmitComplete(examData, messages);
+    }
+  };
+
   return (
     <div className="absolute top-10 left-10 bg-white rounded-lg shadow-lg p-6 w-[80%] h-[90%] flex flex-row relative">
-      <PatientInfo />
+      <PatientInfo patientData={patientData} />
       <div className="flex flex-col w-full ml-4">
         {/* Mode buttons arranged side by side */}
         <div className="flex items-center gap-2 mb-4">
@@ -189,12 +210,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             onSubmitExam={() => setShowExamSubmitPopup(true)}
             showSubmitPopup={showExamSubmitPopup}
             setShowSubmitPopup={setShowExamSubmitPopup}
-            onConfirmSubmit={() => {
-              setShowExamSubmitPopup(false);
-              if (onExamSubmitComplete) {
-                onExamSubmitComplete(examData, messages);
-              }
-            }}
+            onConfirmSubmit={handleExamSubmit}
           />
         )}
         <div ref={messagesEndRef} />

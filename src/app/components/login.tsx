@@ -7,20 +7,77 @@ import Card from "./card";
 import Input from "./input"; // Import your custom Input component
 import Button from "./button";
 import { CardContent } from "./card";
+// Import for Google Auth
+import { signIn } from "next-auth/react";
+
+interface FormEvent extends React.FormEvent<HTMLFormElement> {
+  preventDefault: () => void;
+}
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");    // For storing email input
   const [password, setPassword] = useState(""); // For storing password input
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter(); // Next.js router for navigation
 
-  const handleLogin = () => {
-    // Check if both email and password are provided
-    if (email && password) {
-      // If both fields are filled, navigate to "/main"
-      router.push("/main");
-    } else {
-      alert("กรุณากรอกข้อมูลให้ครบ");
+  /**
+   * Handles Google Sign-In authentication using NextAuth.js
+   */
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    setError("");
+    try {
+      const result = await signIn('google', { 
+        callbackUrl: '/main',
+        redirect: false 
+      });
+      
+      if (result?.error) {
+        throw new Error(result.error);
+      }
+      
+      router.push('/main');
+    } catch (err) {
+      console.error('Google sign-in error:', err);
+      setError('An error occurred with Google sign-in. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLogin = async (e: FormEvent) => {
+    e.preventDefault();
+    setError("");
+    
+    if (!email || !password) {
+      setError("Please enter both email and password");
+      return;
+    }
+    
+    try {
+      setIsLoading(true);
+      
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      });
+      
+      if (result?.error) {
+        throw new Error(result.error);
+      }
+      
+      router.push('/main');
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message || 'Failed to login. Please try again.');
+      } else {
+        setError('Failed to login. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -44,13 +101,21 @@ const LoginPage = () => {
           <h2 className="mt-4 text-2xl font-bold">Smart Healthcare Asst.</h2>
           <p className="text-gray-600">Login</p>
 
-          <div className="mt-6 space-y-4">
+          <form onSubmit={handleLogin} className="mt-6 space-y-4">
+            {error && (
+              <div className="p-2 text-sm text-red-600 bg-red-50 rounded-md">
+                {error}
+              </div>
+            )}
+            
             <Input
               type="email"
               placeholder="Email"
               className="w-full"
               value={email}
               onChange={handleEmailChange}
+              disabled={isLoading}
+              required
             />
             <div className="relative">
               <Input
@@ -59,11 +124,14 @@ const LoginPage = () => {
                 className="w-full"
                 value={password}
                 onChange={handlePasswordChange}
+                disabled={isLoading}
+                required
               />
               <button
                 type="button"
                 className="absolute right-3 top-3 text-gray-500"
                 onClick={() => setShowPassword(!showPassword)}
+                disabled={isLoading}
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
@@ -71,26 +139,32 @@ const LoginPage = () => {
             <div className="text-right text-sm text-blue-500 cursor-pointer">
               Forgot Password?
             </div>
-          </div>
-
-          <Button
-            className="mt-4 w-full bg-blue-600 text-white hover:bg-blue-700"
-            onClick={handleLogin}
-          >
-            Sign in
-          </Button>
+          
+            <Button
+              type="submit"
+              className="mt-4 w-full bg-blue-600 text-white hover:bg-blue-700"
+              disabled={isLoading}
+            >
+              {isLoading ? "Signing in..." : "Sign in"}
+            </Button>
+          </form>
 
           <div className="my-4 text-gray-500">or continue with</div>
 
-          <Button className="flex w-full items-center justify-center border border-gray-300 bg-white text-gray-700 hover:bg-gray-100">
-            <FaGoogle className="mr-2" /> Google
+          <Button 
+            className="flex w-full items-center justify-center border border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
+            onClick={handleGoogleSignIn}
+            disabled={isLoading}
+          >
+            <FaGoogle className="mr-2" /> {isLoading ? "Signing in..." : "Sign in with Google"}
           </Button>
 
           <p className="mt-4 text-sm text-gray-600">
-            Don't have an account yet?{" "}
+            Don&apos;t have an account yet?{" "}
             <span
               className="text-blue-500 cursor-pointer"
               onClick={() => router.push("/signup")}
+              style={{ pointerEvents: isLoading ? 'none' : 'auto' }}
             >
               Sign up
             </span>
