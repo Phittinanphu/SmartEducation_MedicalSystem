@@ -54,9 +54,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       ? initialMessages
       : [{ sender: "patient", text: patientMessage }]
   );
-const [inputText, setInputText] = useState("");
-const [socket, setSocket] = useState<any>(null);
-const [activeMode, setActiveMode] = useState<"chat" | "exam">("chat");
+  const [inputText, setInputText] = useState("");
+  const [activeMode, setActiveMode] = useState<"chat" | "exam">("chat");
   const [examData, setExamData] = useState<ExamDataType>(
     initialExamData
       ? initialExamData
@@ -117,8 +116,7 @@ const [activeMode, setActiveMode] = useState<"chat" | "exam">("chat");
       }
     }
     setInputText("");
-}
-};
+  };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
