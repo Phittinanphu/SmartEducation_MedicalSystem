@@ -9,6 +9,8 @@ function App() {
   const caseId = searchParams.get("caseId");
   const studentAnswer = searchParams.get("studentAnswer");
   const correctAnswer = searchParams.get("correctAnswer");
+  const score = searchParams.get("score");
+  const evaluationMetricScores = searchParams.get("evaluationMetricScores");
 
   return (
     <div>
@@ -17,6 +19,8 @@ function App() {
         caseId={caseId}
         studentAnswer={studentAnswer}
         correctAnswer={correctAnswer}
+        score={score}
+        evaluationMetricScores={evaluationMetricScores}
       />
     </div>
   );

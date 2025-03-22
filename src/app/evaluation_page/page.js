@@ -36,7 +36,10 @@ export default function Page() {
         };
 
         console.log("Data fetched successfully:", data);
-        setLlmOutput(data);
+        setLlmOutput({
+          ...data,
+          evaluationMetricScores: JSON.parse(evaluationMetricScores),
+        });
 
         if (searchParams.get("view") === "conversation") {
           setShowConversationAnalysis(true);

@@ -61,10 +61,13 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
         caseId: caseId,
         studentAnswer: examData?.diagnosis || "",
         correctAnswer: completionData.disease || "",
+        score: completionData.score || "",  
+        evaluationMetricScores: JSON.stringify(completionData.evaluationMetricScores) || "",
       }).toString();
       router.push(`/submission_success?${queryParams}`);
     } catch (error) {
       console.error("Submission error:", error);
+
       // Display error message to state for rendering in UI
       if (error instanceof Error) {
         setErrorMessage(error.message || "Failed to submit data. Please try again later.");

@@ -1,128 +1,51 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
 
 interface SubmitSuccessProps {
   caseId: string;
   studentAnswer: string;
   correctAnswer: string;
+  score: string;
+  evaluationMetricScores: string;
 }
 
 const SubmitSuccessScreen: React.FC<SubmitSuccessProps> = ({
   caseId,
   studentAnswer,
   correctAnswer,
+  score,
+  evaluationMetricScores,
 }) => {
   const router = useRouter();
-  const [diagnosis, setDiagnosis] = useState(correctAnswer);
-  const BE_IP = process.env.NEXT_PUBLIC_BE_IP;
 
-  useEffect(() => {
-    const sendCompletion = async () => {
-      try {
-        const response = await fetch(`${BE_IP}/chat/complete`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            case_id: caseId,
-            answer: studentAnswer,
-          }),
-        });
+  const HandleViewAnswer = () => {
+    const queryParams = new URLSearchParams({
+      caseId: caseId,
+      studentAnswer: studentAnswer,
+      correctAnswer: correctAnswer,
+      score: score,
+      evaluationMetricScores: evaluationMetricScores,
+    }).toString();
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.error("Error:", errorData);
-          return;
-        }
-
-        const data = await response.json();
-        console.log("Completion response:", data);
-        setDiagnosis(data.diagnosis); // Update diagnosis with the value from the response
-      } catch (error) {
-        console.error("Error sending completion request:", error);
-      }
-    };
-
-    sendCompletion();
-  }, [caseId, studentAnswer]);
-
-  const HandleViewAnswer = async () => {
-    try {
-      const response = await fetch(`${BE_IP}/chat/complete`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          case_id: caseId,
-          answer: studentAnswer,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Error:", errorData);
-        return;
-      }
-
-      const data = await response.json();
-      console.log("Completion response:", data);
-
-      const queryParams = new URLSearchParams({
-        caseId: caseId,
-        studentAnswer: studentAnswer,
-        correctAnswer: data.disease,
-        score: data.score,
-        evaluationMetricScores: JSON.stringify(data.evaluationMetricScores),
-      }).toString();
-
-      router.push(`/evaluation_page?${queryParams}`);
-    } catch (error) {
-      console.error("Error:", error);
-    }
+    router.push(`/evaluation_page?${queryParams}`);
   };
 
   const HandleBackToHome = () => {
     router.push("/main");
   };
 
-  const HandleViewConversation = async () => {
-    try {
-      const response = await fetch(`${BE_IP}/chat/complete`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          case_id: caseId,
-          answer: studentAnswer,
-        }),
-      });
+  const HandleViewConversation = () => {
+    const queryParams = new URLSearchParams({
+      caseId: caseId,
+      studentAnswer: studentAnswer,
+      correctAnswer: correctAnswer,
+      view: "conversation",
+      score: score,
+      evaluationMetricScores: evaluationMetricScores,
+    }).toString();
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Error:", errorData);
-        return;
-      }
-
-      const data = await response.json();
-      console.log("Completion response:", data);
-
-      const queryParams = new URLSearchParams({
-        caseId: caseId,
-        studentAnswer: studentAnswer,
-        correctAnswer: data.disease,
-        view: "conversation",
-        score: data.score,
-        evaluationMetricScores: JSON.stringify(data.evaluationMetricScores),
-      }).toString();
-
-      router.push(`/evaluation_page?${queryParams}`);
-    } catch (error) {
-      console.error("Error:", error);
-    }
+    router.push(`/evaluation_page?${queryParams}`);
   };
 
   return (
