@@ -130,11 +130,12 @@ const handler = NextAuth({
             await client.query("BEGIN");
 
             // Check if user exists in users table
-            await query("SELECT * FROM users WHERE email = $1", [
-              profile.email,
-            ]);
+            const userResult = await query(
+              "SELECT * FROM users WHERE email = $1",
+              [profile.email]
+            );
 
-            if (result.rows.length === 0) {
+            if (userResult.rows.length === 0) {
               // Create new user in users table
               const names = profile.name.split(" ");
               const firstName = names[0] || "";
@@ -147,12 +148,12 @@ const handler = NextAuth({
             }
 
             // Check if Google account exists
-            await query(
+            const googleResult = await query(
               "SELECT * FROM userdata.google_accounts WHERE google_id = $1",
               [profile.sub]
             );
 
-            if (result.rows.length === 0) {
+            if (googleResult.rows.length === 0) {
               // Generate a UUID for the new Google account
               const uid = generateUUID();
               console.log("Generated new UUID:", uid);
@@ -176,14 +177,10 @@ const handler = NextAuth({
               profile.uid = uid;
               if (user) user.uid = uid;
 
-              // Implement special handling for first-time login
-              // Store as a JWT cookie with httpOnly: false so client JS can access
-              // This won't work directly here - we'll add client-side code
-
               console.log("Created new Google account with UUID:", uid);
             } else {
               // Get the existing UUID
-              const googleAccount = result.rows[0];
+              const googleAccount = googleResult.rows[0];
               const uid = googleAccount.uid;
 
               console.log("Found existing Google account with UUID:", uid);
