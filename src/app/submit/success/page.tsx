@@ -2,8 +2,9 @@
 
 import { useSearchParams } from "next/navigation";
 import SubmitSuccessScreen from "@/app/components/submit/SubmitSuccess";
+import { Suspense } from "react";
 
-export default function SubmitSuccessPage() {
+function SubmitSuccessContent() {
   const searchParams = useSearchParams();
   const caseId = searchParams.get("caseId");
   const studentAnswer = searchParams.get("studentAnswer");
@@ -39,5 +40,19 @@ export default function SubmitSuccessPage() {
       score={score}
       evaluationMetricScores={evaluationMetricScores}
     />
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen bg-blue-100">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
+        </div>
+      }
+    >
+      <SubmitSuccessContent />
+    </Suspense>
   );
 }

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import { signIn } from "next-auth/react";
+import Image from "next/image";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -86,9 +87,11 @@ const SignUp = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-blue-50">
       <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-6">
         <div className="flex flex-col items-center">
-          <img
+          <Image
             src="/logo.png"
             alt="Smart Healthcare Logo"
+            width={96}
+            height={96}
             className="w-24 h-24"
           />
           <h2 className="text-xl font-bold mt-4">Smart Healthcare Asst.</h2>
@@ -193,7 +196,13 @@ const SignUp = () => {
           onClick={handleGoogleSignIn}
           disabled={isLoading}
         >
-          <img src="/google-icon.png" alt="Google" className="w-5 h-5 mr-2" />
+          <Image
+            src="/google-icon.png"
+            alt="Google"
+            width={20}
+            height={20}
+            className="w-5 h-5 mr-2"
+          />
           {isLoading ? "Signing in..." : "Sign up with Google"}
         </button>
 

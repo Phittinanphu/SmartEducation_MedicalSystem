@@ -8,8 +8,9 @@ import SubmitInstructions from "../components/submit/SubmitInstructions";
 import PatientDetails from "../components/submit/PatientDetails";
 import ChatHistory from "../components/submit/ChatHistory";
 import SubmitSuccessScreen from "../components/submit/SubmitSuccess";
+import { Suspense } from "react";
 
-const Page = () => {
+function ChatContent() {
   const searchParams = useSearchParams();
 
   const patientData = {
@@ -120,6 +121,20 @@ const Page = () => {
         </SubmitBackground>
       )}
     </div>
+  );
+}
+
+const Page = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen bg-blue-100">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
+        </div>
+      }
+    >
+      <ChatContent />
+    </Suspense>
   );
 };
 

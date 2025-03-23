@@ -2,6 +2,7 @@
 import React from "react";
 import { useRouter } from "next/navigation"; // Import useRouter from next/navigation
 import Navbar from "../components/Navbar2"; // ✅ Import Navbar
+import Image from "next/image";
 
 const Report = ({ patientName }: { patientName: string }) => {
   const router = useRouter(); // Initialize router
@@ -47,7 +48,13 @@ const Report = ({ patientName }: { patientName: string }) => {
               className="flex items-center space-x-2 bg-gray-200 px-4 py-2 rounded-md hover:bg-gray-300"
             >
               <span>Download</span>
-              <img src="/file.svg" alt="PDF Icon" className="w-5 h-5" />
+              <Image
+                src="/file.svg"
+                alt="PDF Icon"
+                width={20}
+                height={20}
+                className="w-5 h-5"
+              />
             </a>
           </div>
 

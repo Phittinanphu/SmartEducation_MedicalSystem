@@ -1,10 +1,18 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import Report from "../components/report";
+import { Suspense } from "react";
+
+function ReportContent() {
+  const searchParams = useSearchParams();
+  const patientName = searchParams.get("patient") || "Unknown Patient";
+  return <Report patientName={patientName} />;
+}
 
 export default function ReportPage() {
-  const searchParams = useSearchParams();
-  const patientName = searchParams.get("patient") || "Unknown Patient"; // รับค่าจาก URL เช่น ?patient=James%20Carter
-
-  return <Report patientName={patientName} />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ReportContent />
+    </Suspense>
+  );
 }

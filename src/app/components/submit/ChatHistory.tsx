@@ -26,7 +26,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const router = useRouter();
-  const BE_IP = process.env.NEXT_PUBLIC_BE_IP;
+  const BE_IP = process.env.NEXT_PUBLIC_BE_DNS;
 
   const handleSubmit = async () => {
     setIsSubmitting(true);

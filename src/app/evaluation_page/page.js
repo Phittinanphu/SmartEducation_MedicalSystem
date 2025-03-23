@@ -7,8 +7,9 @@ import ScoreEvaluation from "../components/evaluation/ScoreEvaluation";
 import ConversationAnalysis from "../components/evaluation/ConversationAnalysis";
 import PatientInfo from "../components/case/PatientinfoEVA";
 import Cookies from "js-cookie";
+import { Suspense } from "react";
 
-export default function Page() {
+function EvaluationContent() {
   const [llmOutput, setLlmOutput] = useState(null);
   const [showConversationAnalysis, setShowConversationAnalysis] =
     useState(false);
@@ -188,5 +189,19 @@ export default function Page() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen bg-blue-100">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
+        </div>
+      }
+    >
+      <EvaluationContent />
+    </Suspense>
   );
 }

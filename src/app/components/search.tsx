@@ -1,7 +1,8 @@
-"use client";  // Ensure this is at the top of the file
+"use client"; // Ensure this is at the top of the file
 import React from "react";
-import { useRouter } from "next/navigation";  // Use "next/navigation" in App Router
+import { useRouter } from "next/navigation"; // Use "next/navigation" in App Router
 import { Search } from "lucide-react";
+import Image from "next/image";
 
 const SearchSection: React.FC = () => {
   const router = useRouter();
@@ -16,13 +17,21 @@ const SearchSection: React.FC = () => {
       <div className="max-w-6xl mx-auto flex items-center justify-between px-6">
         {/* Left Section: Logo */}
         <div className="flex-shrink-0">
-          <img src="/Logo2.png" alt="Healthcare Logo" className="w-[534px] h-[513px]" />
+          <Image
+            src="/Logo2.png"
+            alt="Healthcare Logo"
+            width={534}
+            height={513}
+            className="w-[534px] h-[513px]"
+          />
         </div>
 
         {/* Right Section: Search and Features */}
         <div className="flex flex-col flex-grow pl-6">
           <h1 className="text-5xl font-bold">Smart Healthcare Asst.</h1>
-          <p className="text-3xl text-gray-700 mt-5">Learn & Practice Medicine</p>
+          <p className="text-3xl text-gray-700 mt-5">
+            Learn & Practice Medicine
+          </p>
 
           {/* Search Bar */}
           <div className="relative mt-4 w-[520px] max-w-full">
@@ -62,9 +71,3 @@ const SearchSection: React.FC = () => {
 };
 
 export default SearchSection;
-
-
-
-
-
-

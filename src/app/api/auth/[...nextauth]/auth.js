@@ -26,7 +26,7 @@ export const authOptions = {
     // ... other providers ...
   ],
   callbacks: {
-    async signIn({ user, account }) {
+    async signIn({ user, account, profile }) {
       if (account.provider === "google") {
         try {
           // Save the Google user to our database with UUID generation
@@ -50,7 +50,7 @@ export const authOptions = {
       return true;
     },
 
-    async jwt({ token, user, account, profile }) {
+    async jwt({ token, user, account }) {
       // Initial sign in
       if (account && user) {
         return {

@@ -21,7 +21,7 @@ interface ProfileData {
 const PatientHistory: React.FC = () => {
   const router = useRouter();
   const { data: session } = useSession();
-  const [historyItems, setHistoryItems] = useState<HistoryItem[]>([]);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,7 +45,7 @@ const PatientHistory: React.FC = () => {
         if (!response.ok) throw new Error("Failed to fetch history data");
         const data = await response.json();
 
-        setHistoryItems(data);
+        setHistory(data);
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "An unknown error occurred"
@@ -96,7 +96,7 @@ const PatientHistory: React.FC = () => {
         if (!item.symptom && (profileData.symptoms || profileData.symptom)) {
           symptoms = profileData.symptoms || profileData.symptom;
         }
-      } catch (_) {
+      } catch {
         // If profile is a filename reference (like patient.json)
         if (
           typeof item.profile === "string" &&
@@ -126,7 +126,7 @@ const PatientHistory: React.FC = () => {
     return <div className="p-6 text-center text-red-500">Error: {error}</div>;
   }
 
-  if (historyItems.length === 0) {
+  if (history.length === 0) {
     return <div className="p-6 text-center text-white">No history found</div>;
   }
 
@@ -136,7 +136,7 @@ const PatientHistory: React.FC = () => {
         Patient Chat History
       </h2>
       <div className="space-y-4">
-        {historyItems.map((item) => {
+        {history.map((item) => {
           // Get profile data using our helper function
           const profileData = getProfileData(item);
 

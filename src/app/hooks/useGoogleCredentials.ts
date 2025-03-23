@@ -101,50 +101,43 @@ export function useGoogleCredentials(): UseGoogleCredentialsReturn {
     }
   }
 
-  // Comprehensive function to get the UUID from all possible sources
-  const getUUID = async (): Promise<string | null> => {
-    // Check sources in order of preference
-    
-    // 1. From session if available
-    if (session?.user?.uid) {
-      return session.user.uid
-    }
-    
-    // 2. From cookie if available
-    const cookieUUID = Cookies.get('user_id')
-    if (cookieUUID) {
-      return cookieUUID
-    }
-    
-    // 3. From sessionStorage if available
-    if (typeof window !== 'undefined') {
-      const sessionUUID = sessionStorage.getItem('user_uuid')
-      if (sessionUUID) {
-        return sessionUUID
-      }
-    }
-    
-    // 4. As last resort, fetch from server if we have identifiers
-    if (session?.user?.id || session?.user?.email) {
-      return await fetchUUIDFromServer()
-    }
-    
-    return null
-  }
-
-  // Function to refresh credentials - can be called from components when needed
-  const refreshCredentials = async () => {
-    setIsLoading(true)
-    await updateCredentials()
-    setIsLoading(false)
-  }
-
   // The main function to update credentials with all available data
   const updateCredentials = useCallback(async () => {
+    // Comprehensive function to get the UUID from all possible sources
+    const getUUID = async (): Promise<string | null> => {
+      // Check sources in order of preference
+      
+      // 1. From session if available
+      if (session?.user?.uid) {
+        return session.user.uid;
+      }
+      
+      // 2. From cookie if available
+      const cookieUUID = Cookies.get('user_id');
+      if (cookieUUID) {
+        return cookieUUID;
+      }
+      
+      // 3. From sessionStorage if available
+      if (typeof window !== 'undefined') {
+        const sessionUUID = sessionStorage.getItem('user_uuid');
+        if (sessionUUID) {
+          return sessionUUID;
+        }
+      }
+      
+      // 4. As last resort, fetch from server if we have identifiers
+      if (session?.user?.id || session?.user?.email) {
+        return await fetchUUIDFromServer();
+      }
+      
+      return null;
+    };
+
     // Check if authenticated with NextAuth
     if (status === 'authenticated' && session?.user) {
       // Get UUID from all possible sources
-      const uuid = await getUUID()
+      const uuid = await getUUID();
       
       // Build credentials object
       const credentials: GoogleCredentials = {
@@ -153,23 +146,30 @@ export function useGoogleCredentials(): UseGoogleCredentialsReturn {
         picture: session.user.image || null,
         googleId: session.user.id || null,
         uuid: uuid,
-      }
+      };
       
-      setGoogleCredentials(credentials)
-      setIsAuthenticated(true)
+      setGoogleCredentials(credentials);
+      setIsAuthenticated(true);
       
       // Always store UUID if we have it (handles first-time login case)
       if (uuid) {
-        storeUUID(uuid)
+        storeUUID(uuid);
       }
       
-      return credentials
+      return credentials;
     }
     
-    setIsAuthenticated(false)
-    setGoogleCredentials(null)
-    return null
-  }, [session, status])
+    setIsAuthenticated(false);
+    setGoogleCredentials(null);
+    return null;
+  }, [session, status]);
+
+  // Function to refresh credentials - can be called from components when needed
+  const refreshCredentials = async () => {
+    setIsLoading(true)
+    await updateCredentials()
+    setIsLoading(false)
+  }
 
   // Effect to run on mount and session change
   useEffect(() => {

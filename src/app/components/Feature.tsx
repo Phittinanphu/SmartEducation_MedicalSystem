@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Patient2D from "./Patient2D";
+import Image from "next/image";
 
 const FeatureSection: React.FC = () => {
   const [mood, setMood] = useState<
@@ -12,9 +13,11 @@ const FeatureSection: React.FC = () => {
       <div className="flex flex-col md:flex-row justify-center gap-12 px-6">
         {/* Case Studies Card */}
         <div className="w-full md:w-1/3 bg-white p-6 rounded-lg shadow-lg">
-          <img
+          <Image
             src="/case-studies.png"
             alt="Case Studies"
+            width={400}
+            height={300}
             className="w-full rounded-md"
           />
           <p className="mt-4 text-xl font-semibold text-gray-800">
@@ -24,9 +27,11 @@ const FeatureSection: React.FC = () => {
 
         {/* Chat History Card */}
         <div className="w-full md:w-1/3 bg-white p-6 rounded-lg shadow-lg">
-          <img
+          <Image
             src="/chat-history.png"
             alt="Chat History"
+            width={400}
+            height={300}
             className="w-full rounded-md"
           />
           <p className="mt-4 text-xl font-semibold text-gray-800">

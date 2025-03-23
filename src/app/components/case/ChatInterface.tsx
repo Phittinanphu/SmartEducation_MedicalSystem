@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
 import ChatMode from "./ChatMode";
 import ExamMode from "./ExamMode";
 import PatientInfo from "./Patientinfo";
@@ -18,8 +17,6 @@ type ExamDataType = {
 type ChatInterfaceProps = {
   patientName?: string;
   patientMessage: string;
-  options: string[];
-  onOptionSelect: (option: string) => void;
   onExamSubmitComplete?: (examData: ExamDataType, messages: Message[]) => void;
   initialMessages?: Message[];
   initialExamData?: ExamDataType;
@@ -37,8 +34,6 @@ type ChatInterfaceProps = {
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
   patientName = "Johnson William",
   patientMessage,
-  options,
-  onOptionSelect,
   onExamSubmitComplete,
   initialMessages,
   initialExamData,
@@ -66,9 +61,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         }
   );
   const [showExamSubmitPopup, setShowExamSubmitPopup] = useState(false);
-  const [patientMood, setPatientMood] = useState<
-    "angry" | "happy" | "normal" | "sad" | "scared"
-  >("normal");
 
   useEffect(() => {
     if (initialMessages) {
@@ -121,31 +113,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   const handleExamDataChange = (field: keyof ExamDataType, value: string) => {
     setExamData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const updatePatientMood = (text: string) => {
-    const lowerText = text.toLowerCase();
-    if (lowerText.includes("angry") || lowerText.includes("mad"))
-      setPatientMood("angry");
-    else if (
-      lowerText.includes("happy") ||
-      lowerText.includes("good") ||
-      lowerText.includes("relieved")
-    )
-      setPatientMood("happy");
-    else if (
-      lowerText.includes("sad") ||
-      lowerText.includes("depressed") ||
-      lowerText.includes("cry")
-    )
-      setPatientMood("sad");
-    else if (
-      lowerText.includes("scared") ||
-      lowerText.includes("afraid") ||
-      lowerText.includes("nervous")
-    )
-      setPatientMood("scared");
-    else setPatientMood("normal");
   };
 
   const handleExamSubmit = () => {
@@ -211,7 +178,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         )}
         <div ref={messagesEndRef} />
         <div className="absolute top-[160px] right-[-300px] w-[300px] h-auto scale-150 translate-x-10">
-          <Patient2D mood={patientMood} />
+          <Patient2D mood="normal" />
         </div>
       </div>
     </div>
