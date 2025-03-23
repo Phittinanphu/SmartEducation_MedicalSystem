@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
-import { CheckCircleIcon, ExclamationCircleIcon } from "@heroicons/react/24/solid";
+import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import { signIn } from "next-auth/react";
 
 const SignUp = () => {
@@ -18,56 +18,68 @@ const SignUp = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [, setSuccess] = useState("");
   const router = useRouter();
 
-  const handleSubmit = (e: { preventDefault: () => void }) => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    if (!name || !studentId || !university || !email || !password || !confirmPassword) {
+    if (
+      !firstName ||
+      !lastName ||
+      !studentId ||
+      !university ||
+      !email ||
+      !password ||
+      !confirmPassword
+    ) {
       alert("Please fill in all fields.");
       return;
     }
-    
+
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
-    
+
     try {
       setIsLoading(true);
-      
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
+
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           firstName,
           lastName,
           studentId,
-          dob,
           email,
-          password
+          password,
         }),
       });
-      
+
       const data = await response.json();
-      
+
       if (!response.ok) {
-        throw new Error(data.message || 'Registration failed');
+        throw new Error(data.message || "Registration failed");
       }
-      
+
       setSuccess("Registration successful! Redirecting to login...");
-      
+
       setTimeout(() => {
         router.push("/login");
       }, 2000);
-      
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+      setError(
+        err instanceof Error ? err.message : "An unexpected error occurred"
+      );
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleGoogleSignIn = async () => {
+    await signIn("google");
   };
 
   return (
@@ -92,10 +104,17 @@ const SignUp = () => {
         <form className="mt-4 space-y-4" onSubmit={handleSubmit}>
           <input
             type="text"
-            placeholder="Name - Surname"
+            placeholder="First Name"
+            className="w-full px-4 py-2 border rounded-md mb-2"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Last Name"
             className="w-full px-4 py-2 border rounded-md"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
           />
           <input
             type="text"
@@ -169,13 +188,13 @@ const SignUp = () => {
 
         <div className="text-center my-4 text-gray-500">or continue with</div>
 
-        <button 
+        <button
           className="w-full flex items-center justify-center border border-gray-300 bg-white text-gray-700 py-2 rounded-md font-semibold hover:bg-gray-50 transition"
           onClick={handleGoogleSignIn}
           disabled={isLoading}
         >
           <img src="/google-icon.png" alt="Google" className="w-5 h-5 mr-2" />
-          {isLoading ? 'Signing in...' : 'Sign up with Google'}
+          {isLoading ? "Signing in..." : "Sign up with Google"}
         </button>
 
         <div className="text-center mt-4">

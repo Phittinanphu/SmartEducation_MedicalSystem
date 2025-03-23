@@ -153,7 +153,7 @@ export default function Page() {
     };
 
     fetchData();
-  }, [searchParams]);
+  }, [searchParams, BE_DNS]);
 
   // Show processing... if required data is missing
   if (!llmOutput || !patientData) {

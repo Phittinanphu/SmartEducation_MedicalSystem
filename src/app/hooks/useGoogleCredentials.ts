@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import Cookies from 'js-cookie'
+import type { DefaultSession } from 'next-auth'
 
 /**
  * GoogleCredentials type definition
@@ -34,26 +35,29 @@ export type UseGoogleCredentialsReturn = {
  * 
  * @returns {UseGoogleCredentialsReturn} Google credentials and authentication state
  */
+
+interface ExtendedUser {
+  id: string | null
+  uid: string | null
+  name?: string | null
+  email?: string | null
+  image?: string | null
+}
+
+declare module 'next-auth' {
+  interface Session {
+    user: ExtendedUser & DefaultSession['user']
+  }
+}
+
 export function useGoogleCredentials(): UseGoogleCredentialsReturn {
   const { data: session, status } = useSession()
   const [googleCredentials, setGoogleCredentials] = useState<GoogleCredentials | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
-  // Check if this is a first-time login by looking for a flag in sessionStorage
-  const isFirstTimeLogin = () => {
-    if (typeof window === 'undefined') return false
-    return !sessionStorage.getItem('has_logged_in_before')
-  }
-
-  // Mark that the user has logged in before
-  const markAsLoggedInBefore = () => {
-    if (typeof window === 'undefined') return
-    sessionStorage.setItem('has_logged_in_before', 'true')
-  }
-
   // Fetch UUID from server if not available in session
-  const fetchUUIDFromServer = async (googleId, email) => {
+  const fetchUUIDFromServer = async () => {
     try {
       // Call your API endpoint that retrieves UUID based on Google ID or email
       const response = await fetch('/api/get-user-uuid')
@@ -72,7 +76,7 @@ export function useGoogleCredentials(): UseGoogleCredentialsReturn {
   }
 
   // Store UUID in both cookie and sessionStorage
-  const storeUUID = (uuid) => {
+  const storeUUID = (uuid: string): boolean => {
     if (!uuid) return false
     
     try {
@@ -122,7 +126,7 @@ export function useGoogleCredentials(): UseGoogleCredentialsReturn {
     
     // 4. As last resort, fetch from server if we have identifiers
     if (session?.user?.id || session?.user?.email) {
-      return await fetchUUIDFromServer(session.user.id, session.user.email)
+      return await fetchUUIDFromServer()
     }
     
     return null
@@ -136,7 +140,7 @@ export function useGoogleCredentials(): UseGoogleCredentialsReturn {
   }
 
   // The main function to update credentials with all available data
-  const updateCredentials = async () => {
+  const updateCredentials = useCallback(async () => {
     // Check if authenticated with NextAuth
     if (status === 'authenticated' && session?.user) {
       // Get UUID from all possible sources
@@ -157,7 +161,6 @@ export function useGoogleCredentials(): UseGoogleCredentialsReturn {
       // Always store UUID if we have it (handles first-time login case)
       if (uuid) {
         storeUUID(uuid)
-        markAsLoggedInBefore()
       }
       
       return credentials
@@ -166,7 +169,7 @@ export function useGoogleCredentials(): UseGoogleCredentialsReturn {
     setIsAuthenticated(false)
     setGoogleCredentials(null)
     return null
-  }
+  }, [session, status])
 
   // Effect to run on mount and session change
   useEffect(() => {
@@ -177,7 +180,7 @@ export function useGoogleCredentials(): UseGoogleCredentialsReturn {
     }
     
     initializeCredentials()
-  }, [session, status])
+  }, [session, status, updateCredentials])
 
   // Return the hook values
   return {

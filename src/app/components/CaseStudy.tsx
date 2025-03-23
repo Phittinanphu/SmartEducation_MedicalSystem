@@ -1,14 +1,11 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import Cookies from "js-cookie";
 
 const CaseStudyScreen: React.FC = () => {
   const router = useRouter();
   const userId = Cookies.get("user_id"); // Generate a valid UUID
-  const [caseId, setCaseId] = useState(null);
-  const BE_DNS = process.env.NEXT_PUBLIC_BE_DNS;
 
   // Fetch patient data and navigate to chat page when Start button is clicked
   const handleStart = async () => {
@@ -31,7 +28,6 @@ const CaseStudyScreen: React.FC = () => {
 
       const data = await response.json();
       console.log(data); // Log the response to the console
-      setCaseId(data.case_id); // Store case_id
 
       // Navigate to the chat page with patient data as query parameters
       const queryParams = new URLSearchParams({

@@ -21,7 +21,7 @@ const Report = ({ patientName }: { patientName: string }) => {
       <div className="flex flex-col items-center justify-center mt-6">
         <div className="max-w-3xl w-full bg-white shadow-lg rounded-lg p-6">
           <h2 className="text-2xl font-bold text-center">
-            {patientName}'s Report
+            {patientName}&apos;s Report
           </h2>
           <p className="text-center text-green-600 font-semibold mt-2">
             ✅ The correct answer
@@ -53,7 +53,9 @@ const Report = ({ patientName }: { patientName: string }) => {
 
           {/* ✅ แสดง PDF ในหน้า */}
           <div className="mt-6 border p-4 rounded-md bg-gray-50">
-            <h3 className="text-xl font-semibold">{patientName}'s Diagnosis</h3>
+            <h3 className="text-xl font-semibold">
+              {patientName}&apos;s Diagnosis
+            </h3>
             <iframe
               src={pdfFileName}
               width="100%"
