@@ -12,7 +12,6 @@ interface ChatHistoryProps {
   } | null;
   chatHistory: Array<{ sender: string; text: string }>;
   onPrevious: () => void;
-  onEditAnswer: (section: string) => void;
   caseId: string;
 }
 
@@ -20,7 +19,6 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   examData,
   chatHistory,
   onPrevious,
-  onEditAnswer,
   caseId,
 }) => {
   const [showChatModal, setShowChatModal] = useState(false);
@@ -28,12 +26,12 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const router = useRouter();
-  const BE_IP = process.env.NEXT_PUBLIC_BE_IP;
+  const BE_IP = process.env.NEXT_PUBLIC_BE_DNS;
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
     setErrorMessage(null);
-    
+
     try {
       // Send the completion request
       const completionResponse = await fetch(`${BE_IP}/chat/complete`, {
@@ -61,14 +59,22 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
         caseId: caseId,
         studentAnswer: examData?.diagnosis || "",
         correctAnswer: completionData.disease || "",
+        score: completionData.score || "",
+        evaluationMetricScores:
+          JSON.stringify(completionData.evaluationMetricScores) || "",
       }).toString();
       router.push(`/submission_success?${queryParams}`);
     } catch (error) {
       console.error("Submission error:", error);
+
       // Display error message to state for rendering in UI
       if (error instanceof Error) {
-        setErrorMessage(error.message || "Failed to submit data. Please try again later.");
-        alert(error.message || "Failed to submit data. Please try again later.");
+        setErrorMessage(
+          error.message || "Failed to submit data. Please try again later."
+        );
+        alert(
+          error.message || "Failed to submit data. Please try again later."
+        );
       } else {
         setErrorMessage("Failed to submit data. Please try again later.");
         alert("Failed to submit data. Please try again later.");

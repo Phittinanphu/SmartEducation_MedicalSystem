@@ -1,25 +1,35 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import Cookies from "js-cookie";
 
 const CaseStudyScreen: React.FC = () => {
   const router = useRouter();
-  const userId = Cookies.get("user_id"); // Generate a valid UUID
-  const [caseId, setCaseId] = useState(null);
+  const userId = Cookies.get("user_id");
   const BE_DNS = process.env.NEXT_PUBLIC_BE_DNS;
 
   // Fetch patient data and navigate to chat page when Start button is clicked
   const handleStart = async () => {
     try {
+      if (!BE_DNS) {
+        console.error(
+          "Backend DNS not configured. Please check your environment variables."
+        );
+        return;
+      }
+
+      if (!userId) {
+        console.error("User ID not found. Please log in again.");
+        return;
+      }
+
       const response = await fetch(`${BE_DNS}/chat/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          owner: userId, // Ensure User ID is sent with the correct key
+          owner: userId,
         }),
       });
 
@@ -30,8 +40,7 @@ const CaseStudyScreen: React.FC = () => {
       }
 
       const data = await response.json();
-      console.log(data); // Log the response to the console
-      setCaseId(data.case_id); // Store case_id
+      console.log("Response data:", data);
 
       // Navigate to the chat page with patient data as query parameters
       const queryParams = new URLSearchParams({
@@ -46,7 +55,7 @@ const CaseStudyScreen: React.FC = () => {
 
       router.push(`/chat_page?${queryParams}`);
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error during case study creation:", error);
     }
   };
 
@@ -54,7 +63,7 @@ const CaseStudyScreen: React.FC = () => {
     <div
       className="relative flex items-center justify-center min-h-screen w-full bg-cover bg-center"
       style={{
-        backgroundImage: `url('/hospital-background.png')`, // Replace with actual image path
+        backgroundImage: `url('/hospital-background.png')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}

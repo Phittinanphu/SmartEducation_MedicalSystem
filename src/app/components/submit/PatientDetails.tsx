@@ -12,7 +12,6 @@ interface PatientDetailsProps {
     Sex: string;
     Symptoms: string;
   };
-  caseId: string;
 }
 
 const PatientDetails: React.FC<PatientDetailsProps> = ({
@@ -20,7 +19,6 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({
   onPrevious,
   active,
   patientData,
-  caseId,
 }) => {
   if (!patientData) {
     return <div>Loading...</div>;

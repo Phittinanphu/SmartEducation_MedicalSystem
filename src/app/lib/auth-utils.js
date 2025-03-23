@@ -1,12 +1,16 @@
+"use client";
+
 /**
  * Authentication Utilities
- * 
+ *
  * This file contains utility functions for working with authentication
  * and Google sign-in in the medical website application.
  */
 
-import { getSession, signOut } from 'next-auth/react';
-import { query } from './postgres';
+import { getSession, signOut } from "next-auth/react";
+import { query } from "./postgres";
+import { useSession } from "next-auth/react";
+import { useState, useEffect } from "react";
 
 /**
  * Verifies if a user is authenticated
@@ -17,7 +21,7 @@ export async function verifyAuthentication() {
     const session = await getSession();
     return session;
   } catch (error) {
-    console.error('Error verifying authentication:', error);
+    console.error("Error verifying authentication:", error);
     return null;
   }
 }
@@ -30,13 +34,13 @@ export async function verifyAuthentication() {
 export async function getGoogleAccountData(email) {
   try {
     const result = await query(
-      'SELECT *, uid::text AS uid FROM userdata.google_accounts WHERE email = $1',
+      "SELECT *, uid::text AS uid FROM userdata.google_accounts WHERE email = $1",
       [email]
     );
-    
+
     return result.rows[0] || null;
   } catch (error) {
-    console.error('Error fetching Google account data:', error);
+    console.error("Error fetching Google account data:", error);
     return null;
   }
 }
@@ -49,12 +53,12 @@ export async function getGoogleAccountData(email) {
 export async function updateGoogleLoginTimestamp(googleId) {
   try {
     await query(
-      'UPDATE userdata.google_accounts SET last_login_at = NOW() WHERE google_id = $1',
+      "UPDATE userdata.google_accounts SET last_login_at = NOW() WHERE google_id = $1",
       [googleId]
     );
     return true;
   } catch (error) {
-    console.error('Error updating login timestamp:', error);
+    console.error("Error updating login timestamp:", error);
     return false;
   }
 }
@@ -67,11 +71,11 @@ export async function updateGoogleLoginTimestamp(googleId) {
 export async function logoutUser(router) {
   try {
     await signOut({ redirect: false });
-    router.push('/login');
+    router.push("/login");
   } catch (error) {
-    console.error('Error during logout:', error);
+    console.error("Error during logout:", error);
     // Force redirect to login even if there's an error
-    router.push('/login');
+    router.push("/login");
   }
 }
 
@@ -83,13 +87,53 @@ export async function logoutUser(router) {
 export async function isGoogleUser(email) {
   try {
     const result = await query(
-      'SELECT COUNT(*) FROM userdata.google_accounts WHERE email = $1',
+      "SELECT COUNT(*) FROM userdata.google_accounts WHERE email = $1",
       [email]
     );
-    
+
     return result.rows[0].count > 0;
   } catch (error) {
-    console.error('Error checking if user is Google authenticated:', error);
+    console.error("Error checking if user is Google authenticated:", error);
     return false;
   }
-} 
+}
+
+/**
+ * Custom hook to handle authentication state
+ * @returns {object} Auth state with user and loading status
+ */
+export function useAuth() {
+  const { data: session, status } = useSession();
+  const [user, setUser] = useState(null);
+  const loading = status === "loading";
+
+  useEffect(() => {
+    if (session?.user) {
+      setUser(session.user);
+    } else {
+      setUser(null);
+    }
+  }, [session]);
+
+  return { user, loading };
+}
+
+/**
+ * Extract user profile information from the user object
+ * @param {object} user - User object from session
+ * @returns {object} Formatted user profile
+ */
+export function getUserProfile(user) {
+  if (!user) return null;
+
+  return {
+    id: user.id || user.sub || "Not available",
+    name:
+      user.name ||
+      `${user.firstName || ""} ${user.lastName || ""}`.trim() ||
+      "Not available",
+    email: user.email || "Not available",
+    googleId: user.googleId || user.sub || null,
+    provider: user.provider || (user.sub ? "Google" : "Email/Password"),
+  };
+}

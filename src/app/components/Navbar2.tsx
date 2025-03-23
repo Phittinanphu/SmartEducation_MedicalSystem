@@ -1,13 +1,20 @@
 "use client";
 import Link from "next/link";
 import React from "react";
+import Image from "next/image";
 
 const Navbar: React.FC = () => {
   return (
     <nav className="flex items-center justify-between px-8 py-4 bg-white shadow-md">
       {/* Logo & Title */}
       <div className="flex items-center space-x-3">
-        <img src="/Logo.png" alt="Logo" className="h-[102px] w-[102px]" />
+        <Image
+          src="/Logo.png"
+          alt="Logo"
+          width={102}
+          height={102}
+          className="h-[102px] w-[102px]"
+        />
         <span className="text-xl font-semibold">Smart Healthcare Asst.</span>
       </div>
 
@@ -25,7 +32,6 @@ const Navbar: React.FC = () => {
           Contact
         </a>
       </div>
-
 
       {/* Profile Icon */}
       <Link href="/profile">

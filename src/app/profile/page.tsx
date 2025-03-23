@@ -1,9 +1,14 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { getGoogleAccountData, isGoogleUser, logoutUser } from '../lib/auth-utils';
+import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import {
+  getGoogleAccountData,
+  isGoogleUser,
+  logoutUser,
+} from "../lib/auth-utils";
+import Image from "next/image";
 
 interface GoogleAccountData {
   id: number;
@@ -26,8 +31,8 @@ export default function ProfilePage() {
 
   useEffect(() => {
     // Redirect to login if not authenticated
-    if (status === 'unauthenticated') {
-      router.push('/login');
+    if (status === "unauthenticated") {
+      router.push("/login");
       return;
     }
 
@@ -46,12 +51,12 @@ export default function ProfilePage() {
       setLoading(false);
     }
 
-    if (status === 'authenticated') {
+    if (status === "authenticated") {
       fetchData();
     }
   }, [session, status, router]);
 
-  if (status === 'loading' || loading) {
+  if (status === "loading" || loading) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-blue-100 p-4">
         <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8 text-center">
@@ -74,9 +79,11 @@ export default function ProfilePage() {
     <div className="flex min-h-screen flex-col items-center justify-center bg-blue-100 p-4">
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
         <div className="text-center mb-8">
-          <img
+          <Image
             src="/logo.png"
             alt="Smart Healthcare Assistant"
+            width={64}
+            height={64}
             className="mx-auto h-16 w-16"
           />
           <h2 className="mt-4 text-2xl font-bold">User Profile</h2>
@@ -86,7 +93,9 @@ export default function ProfilePage() {
         {session?.user && (
           <div className="space-y-6">
             <div className="border-b pb-4">
-              <h3 className="text-lg font-medium text-gray-800 mb-2">Basic Information</h3>
+              <h3 className="text-lg font-medium text-gray-800 mb-2">
+                Basic Information
+              </h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-gray-500">Name</p>
@@ -101,22 +110,28 @@ export default function ProfilePage() {
 
             {isGoogle && googleData && (
               <div className="border-b pb-4">
-                <h3 className="text-lg font-medium text-gray-800 mb-2">Google Account Details</h3>
+                <h3 className="text-lg font-medium text-gray-800 mb-2">
+                  Google Account Details
+                </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-gray-500">Google ID</p>
-                    <p className="font-medium text-xs truncate">{googleData.google_id}</p>
+                    <p className="font-medium text-xs truncate">
+                      {googleData.google_id}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">UUID</p>
-                    <p className="font-medium text-xs truncate">{googleData.uid || 'Not available'}</p>
+                    <p className="font-medium text-xs truncate">
+                      {googleData.uid || "Not available"}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Last Login</p>
                     <p className="font-medium">
-                      {googleData.last_login_at 
-                        ? new Date(googleData.last_login_at).toLocaleString() 
-                        : 'Never'}
+                      {googleData.last_login_at
+                        ? new Date(googleData.last_login_at).toLocaleString()
+                        : "Never"}
                     </p>
                   </div>
                   <div>
@@ -134,10 +149,12 @@ export default function ProfilePage() {
             )}
 
             <div>
-              <h3 className="text-lg font-medium text-gray-800 mb-2">Account Actions</h3>
+              <h3 className="text-lg font-medium text-gray-800 mb-2">
+                Account Actions
+              </h3>
               <div className="flex flex-col space-y-2">
                 <button
-                  onClick={() => router.push('/main')}
+                  onClick={() => router.push("/main")}
                   className="bg-blue-600 text-white py-2 rounded-md font-semibold transition hover:bg-blue-700"
                 >
                   Go to Dashboard
@@ -155,4 +172,4 @@ export default function ProfilePage() {
       </div>
     </div>
   );
-} 
+}

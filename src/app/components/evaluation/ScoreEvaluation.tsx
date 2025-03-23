@@ -4,11 +4,6 @@ import React, { useState, useEffect } from "react";
 // TYPES & INTERFACES
 // ---------------------------------------------------
 
-// Overall evaluation data uses only the case name (domain scores are computed from metric scores)
-interface EvaluationData {
-  case: string;
-}
-
 // Domain keys alias.
 export type DomainKey = "domain1" | "domain2" | "domain3" | "domain4";
 
@@ -34,15 +29,6 @@ interface ScoreEvaluationProps {
 // ---------------------------------------------------
 // CONFIGURATION DATA
 // ---------------------------------------------------
-
-// Maximum overall scores per domain for each case.
-const domainMaxScores: Record<string, { [key in DomainKey]: number }> = {
-  "Peptic ulcer disease": {domain1: 20, domain2: 30, domain3: 30, domain4: 20 },
-  "Acute pancreatitis": { domain1: 20, domain2: 30, domain3: 30, domain4: 20 },
-  "Food poisoning": { domain1: 20, domain2: 30, domain3: 30, domain4: 20 },
-  "Renal stone": { domain1: 20, domain2: 30, domain3: 30, domain4: 20 },
-  "Unknown Case": { domain1: 20, domain2: 30, domain3: 30, domain4: 20 },
-};
 
 // Labels for each domain.
 const domainLabels: Record<DomainKey, string> = {

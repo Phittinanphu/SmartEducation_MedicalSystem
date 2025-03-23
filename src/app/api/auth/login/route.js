@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server';
-import bcrypt from 'bcrypt';
-import { query, pool } from '@/app/lib/postgres';
+import { NextResponse } from "next/server";
+import bcrypt from "bcrypt";
+import { query } from "@/app/lib/postgres";
 
 export async function POST(request) {
   try {
@@ -9,7 +9,7 @@ export async function POST(request) {
     // Validate inputs
     if (!email || !password) {
       return NextResponse.json(
-        { success: false, message: 'Email and password are required' },
+        { success: false, message: "Email and password are required" },
         { status: 400 }
       );
     }
@@ -18,20 +18,20 @@ export async function POST(request) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return NextResponse.json(
-        { success: false, message: 'Invalid email format' },
+        { success: false, message: "Invalid email format" },
         { status: 400 }
       );
     }
 
     // Find user by email
     const userResult = await query(
-      'SELECT id, email, password, first_name, last_name FROM users WHERE email = $1',
+      "SELECT id, email, password, first_name, last_name FROM users WHERE email = $1",
       [email]
     );
 
     if (userResult.rows.length === 0) {
       return NextResponse.json(
-        { success: false, message: 'Invalid email or password' },
+        { success: false, message: "Invalid email or password" },
         { status: 401 }
       );
     }
@@ -43,7 +43,7 @@ export async function POST(request) {
 
     if (!passwordMatch) {
       return NextResponse.json(
-        { success: false, message: 'Invalid email or password' },
+        { success: false, message: "Invalid email or password" },
         { status: 401 }
       );
     }
@@ -61,20 +61,18 @@ export async function POST(request) {
     // const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '24h' });
     // return NextResponse.json({ success: true, token, user: userResponse });
 
-    return NextResponse.json({ 
-      success: true, 
-      message: 'Login successful',
+    return NextResponse.json({
+      success: true,
+      message: "Login successful",
       user: userResponse,
       // Simple token for demo purposes
-      token: `user_${user.id}_${Date.now()}`
+      token: `user_${user.id}_${Date.now()}`,
     });
-    
   } catch (error) {
-    console.error('Login error:', error);
+    console.error("Login error:", error);
     return NextResponse.json(
-      { success: false, message: 'Internal server error' },
+      { success: false, message: "Internal server error" },
       { status: 500 }
     );
   }
 }
-

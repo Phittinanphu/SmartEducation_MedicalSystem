@@ -11,18 +11,15 @@ const nextConfig = {
         dns: false,
         tls: false,
         pg: false,
-      }
+        "pg-native": false,
+      };
     }
-    
-    return config
+
+    return config;
   },
   // Enable strict mode for React
   reactStrictMode: true,
-  swcMinify: true,
-  // Don't polyfill unnecessary Node.js modules
-  experimental: {
-    serverComponentsExternalPackages: ['pg']
-  }
-}
+  serverExternalPackages: ["pg"],
+};
 
-module.exports = nextConfig 
+module.exports = nextConfig;

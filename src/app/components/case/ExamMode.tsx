@@ -31,7 +31,7 @@ const ExamMode: React.FC<ExamModeProps> = ({
       <div className="flex flex-col gap-4 mt-4 flex-1 overflow-y-auto">
         <h2 className="text-xl font-bold text-center">Exam Section</h2>
         <label>
-          <span className="font-semibold">Patient's Name:</span>
+          <span className="font-semibold">Patient&apos;s Name:</span>
           <input
             type="text"
             className="border rounded-lg p-2 w-full"
