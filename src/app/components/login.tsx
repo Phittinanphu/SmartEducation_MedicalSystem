@@ -94,7 +94,7 @@ const LoginPage = () => {
       <Card className="w-full max-w-md bg-white shadow-lg rounded-2xl">
         <CardContent className="p-8 text-center">
           <Image
-            src="/logo.png"
+            src="/Logo2.png"
             alt="Smart Healthcare Assistant"
             width={64}
             height={64}
