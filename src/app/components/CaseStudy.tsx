@@ -51,6 +51,7 @@ const CaseStudyScreen: React.FC = () => {
         Reason: data.patient_data.Reason,
         Sex: data.patient_data.Sex,
         Symptoms: data.patient_data.Symptoms,
+        mood: "normal", // Default mood - you can change based on symptoms if desired
       }).toString();
 
       router.push(`/chat_page?${queryParams}`);

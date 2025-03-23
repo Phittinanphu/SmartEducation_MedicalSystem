@@ -13,6 +13,16 @@ interface ChatHistoryProps {
   chatHistory: Array<{ sender: string; text: string }>;
   onPrevious: () => void;
   caseId: string;
+  active: boolean;
+  onEditAnswer: () => void;
+  patientData?: {
+    Age?: string;
+    Name?: string;
+    Occupation?: string;
+    Reason?: string;
+    Sex?: string;
+    Symptoms?: string;
+  };
 }
 
 const ChatHistory: React.FC<ChatHistoryProps> = ({
@@ -20,6 +30,9 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   chatHistory,
   onPrevious,
   caseId,
+  active,
+  onEditAnswer,
+  patientData,
 }) => {
   const [showChatModal, setShowChatModal] = useState(false);
   const [showExamModal, setShowExamModal] = useState(false);
@@ -33,6 +46,9 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
     setErrorMessage(null);
 
     try {
+      // Log the patient data we're working with
+      console.log("Patient data in ChatHistory before submit:", patientData);
+
       // Send the completion request
       const completionResponse = await fetch(`${BE_IP}/chat/complete`, {
         method: "POST",
@@ -81,6 +97,15 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
         };
       }
 
+      // Properly stringify the patient data
+      let patientDataString = "{}";
+      try {
+        patientDataString = JSON.stringify(patientData || {});
+        console.log("Stringified patient data:", patientDataString);
+      } catch (error) {
+        console.error("Error stringifying patient data:", error);
+      }
+
       // Navigate to the submission success page with the caseId and diagnosis using query params
       const queryParams = new URLSearchParams({
         caseId: caseId,
@@ -88,11 +113,14 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
         correctAnswer: completionData.disease || "",
         score: completionData.score?.toString() || "0",
         evaluationMetricScores: JSON.stringify(evaluationData),
+        patientData: patientDataString,
       }).toString();
-      console.log(
-        "Passing evaluationMetricScores to success page:",
-        JSON.stringify(evaluationData)
-      );
+
+      console.log("Passing data to success page:", {
+        evaluationMetricScores: JSON.stringify(evaluationData),
+        patientData: patientDataString,
+      });
+
       router.push(`/submission_success?${queryParams}`);
     } catch (error) {
       console.error("Submission error:", error);

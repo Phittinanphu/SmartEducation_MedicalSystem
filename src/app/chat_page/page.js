@@ -20,6 +20,7 @@ function ChatContent() {
     Reason: searchParams.get("Reason"),
     Sex: searchParams.get("Sex"),
     Symptoms: searchParams.get("Symptoms"),
+    mood: searchParams.get("mood") || "normal",
   };
 
   const caseId = searchParams.get("case_id");
@@ -34,6 +35,9 @@ function ChatContent() {
   const [examData, setExamData] = useState(null);
   const [chatMessages, setChatMessages] = useState([]);
   const [activeMode, setActiveMode] = useState("chat");
+
+  // Log patient data in the ChatContent component
+  console.log("Patient data in ChatContent:", patientData);
 
   // Callback from ChatInterface when the exam is submitted.
   // It saves the temporary data and switches to the submission view.
@@ -109,12 +113,14 @@ function ChatContent() {
                 examData={examData}
                 chatHistory={chatMessages}
                 caseId={caseId}
+                patientData={patientData}
               />
             )}
             {step === 4 && (
               <SubmitSuccessScreen
                 caseId={caseId}
                 answer={examData.diagnosis}
+                patientData={patientData}
               />
             )}
           </div>

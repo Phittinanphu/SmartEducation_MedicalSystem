@@ -27,6 +27,7 @@ type ChatInterfaceProps = {
     Reason: string;
     Sex: string;
     Symptoms: string;
+    mood?: "normal" | "happy" | "sad" | "angry" | "scared";
   };
   caseId: string;
 };

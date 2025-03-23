@@ -19,49 +19,89 @@ function EvaluationContent() {
   const userId = Cookies.get("user_id");
   const BE_DNS = process.env.NEXT_PUBLIC_BE_DNS;
 
-  // Fetch patient data on component mount
+  // Extract patient data from URL parameters on component mount
   useEffect(() => {
-    const fetchPatientData = async () => {
+    const extractPatientData = () => {
       try {
-        const response = await fetch(`${BE_DNS}/chat/create`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            owner: userId,
-          }),
-        });
+        // First try to get the patientData JSON from the URL
+        const patientDataParam = searchParams.get("patientData");
+        console.log("Raw patientData param:", patientDataParam);
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.error("Error:", errorData);
+        if (patientDataParam) {
+          try {
+            // Parse the JSON patient data
+            const parsedPatientData = JSON.parse(patientDataParam);
+            console.log("Parsed patient data from URL:", parsedPatientData);
+
+            // If we have the data, use it
+            if (
+              parsedPatientData &&
+              Object.keys(parsedPatientData).length > 0
+            ) {
+              setPatientData(parsedPatientData);
+              return;
+            } else {
+              console.warn("Parsed patientData is empty object");
+            }
+          } catch (parseError) {
+            console.error("Error parsing patientData JSON:", parseError);
+            console.log("Invalid patientData JSON:", patientDataParam);
+          }
+        } else {
+          console.warn("patientData param is missing from URL");
+        }
+
+        // Fallback: try to get individual patient fields from the URL
+        const individualPatientData = {
+          Age: searchParams.get("Age"),
+          Name: searchParams.get("Name"),
+          Occupation: searchParams.get("Occupation"),
+          Reason: searchParams.get("Reason"),
+          Sex: searchParams.get("Sex") || searchParams.get("Gender"),
+          Symptoms: searchParams.get("Symptoms"),
+        };
+
+        console.log(
+          "Individual patient fields from URL:",
+          individualPatientData
+        );
+
+        // Check if we have at least some data
+        const hasData = Object.values(individualPatientData).some(
+          (value) => value
+        );
+
+        if (hasData) {
+          console.log("Using individual patient fields from URL");
+          setPatientData(individualPatientData);
           return;
         }
 
-        const data = await response.json();
-        console.log("Patient data fetched:", data);
-        setPatientData(data.patient_data);
-
-        // Update URL with patient data using 'caseId' as key
-        const queryParams = new URLSearchParams({
-          caseId: data.case_id,
-          Age: data.patient_data.Age,
-          Name: data.patient_data.Name,
-          Occupation: data.patient_data.Occupation,
-          Reason: data.patient_data.Reason,
-          Sex: data.patient_data.Sex,
-          Symptoms: data.patient_data.Symptoms,
-        }).toString();
-
-        router.push(`/evaluation_page?${queryParams}`);
+        console.log("No patient data found in URL parameters, using defaults");
+        setPatientData({
+          Age: "N/A",
+          Name: "N/A",
+          Occupation: "N/A",
+          Reason: "N/A",
+          Sex: "N/A",
+          Symptoms: "N/A",
+        });
       } catch (error) {
-        console.error("Error fetching patient data:", error);
+        console.error("Error extracting patient data from URL:", error);
+        // Set default values if there's an error parsing
+        setPatientData({
+          Age: "N/A",
+          Name: "N/A",
+          Occupation: "N/A",
+          Reason: "N/A",
+          Sex: "N/A",
+          Symptoms: "N/A",
+        });
       }
     };
 
-    fetchPatientData();
-  }, [userId, BE_DNS, router]);
+    extractPatientData();
+  }, [searchParams]);
 
   // On component mount, fetch the evaluation data from the URL parameters
   useEffect(() => {
@@ -71,6 +111,7 @@ function EvaluationContent() {
       const correctAnswer = searchParams.get("correctAnswer");
       const score = searchParams.get("score");
       const evaluationMetricScores = searchParams.get("evaluationMetricScores");
+      const conversationDataParam = searchParams.get("conversationData");
 
       console.log("Required search params:", {
         caseId,
@@ -128,15 +169,33 @@ function EvaluationContent() {
               };
             }
 
+            // Parse conversation data from URL
+            let parsedConversationData = [];
+            try {
+              if (conversationDataParam) {
+                parsedConversationData = JSON.parse(conversationDataParam);
+                console.log(
+                  "Parsed conversation data from URL:",
+                  parsedConversationData
+                );
+              }
+            } catch (error) {
+              console.error("Error parsing conversation data from URL:", error);
+              parsedConversationData = [
+                {
+                  question: "This function is currently unavailable.",
+                  comment: "This function is currently unavailable.",
+                },
+              ];
+            }
+
             const data = {
               case: correctAnswer,
               studentAnswer: studentAnswer,
               correctAnswer: correctAnswer,
               score: score,
               evaluationMetricScores: parsedScores,
-              conversationData: JSON.parse(
-                searchParams.get("conversationData") || "[]"
-              ),
+              conversationData: parsedConversationData,
             };
 
             console.log("Direct evaluation data:", data);

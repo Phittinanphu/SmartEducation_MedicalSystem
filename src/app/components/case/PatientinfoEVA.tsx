@@ -1,24 +1,36 @@
 import React from "react";
 
 interface PatientData {
-  Age: string;
-  Name: string;
-  Occupation: string;
-  Reason: string;
-  Sex: string;
-  Symptoms: string;
+  Age?: string;
+  Name?: string;
+  Occupation?: string;
+  Reason?: string;
+  Sex?: string;
+  Gender?: string; // Alternative field name
+  Symptoms?: string;
+  [key: string]: any; // Allow any additional properties
 }
 
 interface PatientInfoProps {
-  patientData: PatientData;
+  patientData?: PatientData | null;
 }
 
 const PatientInfo: React.FC<PatientInfoProps> = ({ patientData }) => {
+  // Log the patientData received
+  console.log("PatientinfoEVA received patientData:", patientData);
+
   if (!patientData) {
-    return <div>Loading...</div>;
+    return <div>Loading patient data...</div>;
   }
 
-  const { Age, Name, Occupation, Reason, Sex, Symptoms } = patientData;
+  const {
+    Age = "N/A",
+    Name = "N/A",
+    Occupation = "N/A",
+    Reason = "N/A",
+    Sex = patientData.Gender || "N/A",
+    Symptoms = "N/A",
+  } = patientData;
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-4 w-full">
@@ -38,10 +50,12 @@ const PatientInfo: React.FC<PatientInfoProps> = ({ patientData }) => {
           <strong>Occupation:</strong> {Occupation}
         </p>
         <p>
-          <strong>Reason:</strong><br /> {Reason}
+          <strong>Reason:</strong>
+          <br /> {Reason}
         </p>
         <p>
-          <strong>Symptoms:</strong><br /> {Symptoms}
+          <strong>Symptoms:</strong>
+          <br /> {Symptoms}
         </p>
       </div>
     </div>

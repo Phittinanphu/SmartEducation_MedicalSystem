@@ -4,10 +4,21 @@ import { useRouter } from "next/navigation";
 
 interface SubmitSuccessProps {
   caseId: string;
-  studentAnswer: string;
-  correctAnswer: string;
-  score: string;
-  evaluationMetricScores: string;
+  studentAnswer?: string;
+  correctAnswer?: string;
+  score?: string;
+  evaluationMetricScores?: string;
+  patientData?: {
+    Age?: string;
+    Name?: string;
+    Occupation?: string;
+    Reason?: string;
+    Sex?: string;
+    Symptoms?: string;
+    Gender?: string; // Alternative field name
+    mood?: "normal" | "happy" | "sad" | "angry" | "scared";
+    [key: string]: any; // For any additional fields
+  };
 }
 
 const SubmitSuccessScreen: React.FC<SubmitSuccessProps> = ({
@@ -16,6 +27,7 @@ const SubmitSuccessScreen: React.FC<SubmitSuccessProps> = ({
   correctAnswer,
   score,
   evaluationMetricScores,
+  patientData,
 }) => {
   const router = useRouter();
 
@@ -24,6 +36,7 @@ const SubmitSuccessScreen: React.FC<SubmitSuccessProps> = ({
       "Original evaluationMetricScores in SubmitSuccess:",
       evaluationMetricScores
     );
+    console.log("Patient data in SubmitSuccess:", patientData);
 
     // This temporary placeholder will be replaced by actual data when the backend is updated
     const conversationData = [
@@ -33,21 +46,43 @@ const SubmitSuccessScreen: React.FC<SubmitSuccessProps> = ({
       },
     ];
 
-    const queryParams = new URLSearchParams({
+    // Create an object with all parameters that will be included
+    const paramsObj: Record<string, string> = {
       caseId,
-      studentAnswer,
-      correctAnswer,
-      score,
-      evaluationMetricScores,
-      case: correctAnswer,
-      conversationData: JSON.stringify(conversationData),
-      ...(view && { view }), // Only add view parameter if it exists
-    }).toString();
+      case: correctAnswer || "",
+    };
 
-    console.log(
-      "Passing conversation data to evaluation page:",
-      JSON.stringify(conversationData)
-    );
+    // Only add these parameters if they are defined
+    if (studentAnswer) paramsObj.studentAnswer = studentAnswer;
+    if (correctAnswer) paramsObj.correctAnswer = correctAnswer;
+    if (score) paramsObj.score = score;
+    if (evaluationMetricScores)
+      paramsObj.evaluationMetricScores = evaluationMetricScores;
+    if (view) paramsObj.view = view;
+
+    // Always stringify the conversation data
+    paramsObj.conversationData = JSON.stringify(conversationData);
+
+    // Carefully handle the patient data to ensure it's stringified correctly
+    if (patientData && Object.keys(patientData).length > 0) {
+      try {
+        paramsObj.patientData = JSON.stringify(patientData);
+        console.log("Stringified patient data:", paramsObj.patientData);
+      } catch (error) {
+        console.error("Error stringifying patient data:", error);
+        paramsObj.patientData = JSON.stringify({});
+      }
+    } else {
+      console.warn("No patient data available to pass to evaluation page");
+      paramsObj.patientData = JSON.stringify({});
+    }
+
+    const queryParams = new URLSearchParams(paramsObj).toString();
+
+    console.log("Passing data to evaluation page:", {
+      conversationData: JSON.stringify(conversationData),
+      patientData: paramsObj.patientData,
+    });
     router.push(`/evaluation_page?${queryParams}`);
   };
 
