@@ -19,26 +19,40 @@ const SubmitSuccessScreen: React.FC<SubmitSuccessProps> = ({
 }) => {
   const router = useRouter();
 
-  const HandleViewAnswer = () => {
+  const navigateToEvaluation = (view?: string) => {
     console.log(
       "Original evaluationMetricScores in SubmitSuccess:",
       evaluationMetricScores
     );
 
-    // We need to pass the evaluationMetricScores directly without modification
-    // since it's already stringified JSON from the API
+    // This temporary placeholder will be replaced by actual data when the backend is updated
+    const conversationData = [
+      {
+        question: "This function is currently unavailable.",
+        comment: "This function is currently unavailable.",
+      },
+    ];
+
     const queryParams = new URLSearchParams({
-      caseId: caseId,
-      studentAnswer: studentAnswer,
-      correctAnswer: correctAnswer,
-      score: score,
-      evaluationMetricScores: evaluationMetricScores,
+      caseId,
+      studentAnswer,
+      correctAnswer,
+      score,
+      evaluationMetricScores,
       case: correctAnswer,
-      conversationData: JSON.stringify([{ question: "", comment: "" }]),
+      conversationData: JSON.stringify(conversationData),
+      ...(view && { view }), // Only add view parameter if it exists
     }).toString();
 
-    console.log("Passing to evaluation_page:", evaluationMetricScores);
+    console.log(
+      "Passing conversation data to evaluation page:",
+      JSON.stringify(conversationData)
+    );
     router.push(`/evaluation_page?${queryParams}`);
+  };
+
+  const HandleViewAnswer = () => {
+    navigateToEvaluation();
   };
 
   const HandleBackToHome = () => {
@@ -46,26 +60,7 @@ const SubmitSuccessScreen: React.FC<SubmitSuccessProps> = ({
   };
 
   const HandleViewConversation = () => {
-    console.log(
-      "Original evaluationMetricScores in SubmitSuccess:",
-      evaluationMetricScores
-    );
-
-    // We need to pass the evaluationMetricScores directly without modification
-    // since it's already stringified JSON from the API
-    const queryParams = new URLSearchParams({
-      caseId: caseId,
-      studentAnswer: studentAnswer,
-      correctAnswer: correctAnswer,
-      view: "conversation",
-      score: score,
-      evaluationMetricScores: evaluationMetricScores,
-      case: correctAnswer,
-      conversationData: JSON.stringify([{ question: "", comment: "" }]),
-    }).toString();
-
-    console.log("Passing to evaluation_page:", evaluationMetricScores);
-    router.push(`/evaluation_page?${queryParams}`);
+    navigateToEvaluation("conversation");
   };
 
   return (

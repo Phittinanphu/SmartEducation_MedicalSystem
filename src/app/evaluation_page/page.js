@@ -194,16 +194,61 @@ function EvaluationContent() {
             };
           }
 
-          console.log("API evaluation scores extracted:", evaluationScores);
+          // Extract conversation data from different possible locations in the response
+          let conversationData = [];
 
-          // Create the data object with the extracted scores
+          if (completionData && completionData.conversationData) {
+            // Direct conversationData property
+            conversationData = completionData.conversationData;
+            console.log("Found conversationData directly in response");
+          } else if (
+            completionData &&
+            completionData.result &&
+            completionData.result.conversationData
+          ) {
+            // Nested under result object
+            conversationData = completionData.result.conversationData;
+            console.log("Found conversationData in result object");
+          } else if (completionData && Array.isArray(completionData.history)) {
+            // Support for history array format (potential future format)
+            console.log("Found history array in response");
+            conversationData = completionData.history.map((item) => ({
+              question: item.userMessage || item.question || "",
+              comment: item.aiMessage || item.comment || "",
+            }));
+          }
+
+          // Ensure conversationData is always an array with proper structure
+          if (
+            !Array.isArray(conversationData) ||
+            conversationData.length === 0
+          ) {
+            console.log("No valid conversation data found, using placeholder");
+            conversationData = [
+              {
+                question: "This function is currently unavailable.",
+                comment: "This function is currently unavailable.",
+              },
+            ];
+          }
+
+          // Ensure each item has the expected structure
+          conversationData = conversationData.map((item) => ({
+            question: item.question || "No question available",
+            comment: item.comment || "No comment available",
+          }));
+
+          // Log extracted conversation data for debugging
+          console.log("Processed conversation data:", conversationData);
+
+          // Create the data object with the extracted scores and conversation data
           const data = {
             case: completionData.disease || "",
             studentAnswer: studentAnswer,
             correctAnswer: completionData.disease || "",
             score: completionData.score?.toString() || "0",
             evaluationMetricScores: evaluationScores,
-            conversationData: completionData.result?.conversationData || [],
+            conversationData: conversationData,
           };
 
           console.log("Evaluation data:", data);
