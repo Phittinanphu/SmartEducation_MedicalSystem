@@ -8,7 +8,7 @@ interface PatientData {
   Sex?: string;
   Gender?: string; // Alternative field name
   Symptoms?: string;
-  [key: string]: any; // Allow any additional properties
+  [key: string]: string | undefined; // More specific type for additional properties
 }
 
 interface PatientInfoProps {

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Navbar from "../components/Navbar2";
 import ScoreEvaluation from "../components/evaluation/ScoreEvaluation";
 import ConversationAnalysis from "../components/evaluation/ConversationAnalysis";

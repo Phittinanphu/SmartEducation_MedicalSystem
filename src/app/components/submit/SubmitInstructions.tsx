@@ -19,10 +19,13 @@ const SubmitInstructions: React.FC<SubmitInstructionsProps> = ({
       <p className="font-semibold">Instruction</p>
       <ul className="list-disc pl-5 text-sm">
         <li>
-          "Please review your conversation and exam answer before submission."
+          &ldquo;Please review your conversation and exam answer before
+          submission.&rdquo;
         </li>
-        <li>"Ensure all necessary details are included"</li>
-        <li>"Once submitted, you will not be able to make changes."</li>
+        <li>&ldquo;Ensure all necessary details are included&rdquo;</li>
+        <li>
+          &ldquo;Once submitted, you will not be able to make changes.&rdquo;
+        </li>
       </ul>
       {active && (
         <div className="flex justify-end mt-4">

@@ -13,8 +13,6 @@ interface ChatHistoryProps {
   chatHistory: Array<{ sender: string; text: string }>;
   onPrevious: () => void;
   caseId: string;
-  active: boolean;
-  onEditAnswer: () => void;
   patientData?: {
     Age?: string;
     Name?: string;
@@ -30,8 +28,6 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
   chatHistory,
   onPrevious,
   caseId,
-  active,
-  onEditAnswer,
   patientData,
 }) => {
   const [showChatModal, setShowChatModal] = useState(false);

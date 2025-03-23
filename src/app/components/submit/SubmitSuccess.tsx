@@ -17,7 +17,7 @@ interface SubmitSuccessProps {
     Symptoms?: string;
     Gender?: string; // Alternative field name
     mood?: "normal" | "happy" | "sad" | "angry" | "scared";
-    [key: string]: any; // For any additional fields
+    [key: string]: string | undefined; // More specific type for additional fields
   };
 }
 

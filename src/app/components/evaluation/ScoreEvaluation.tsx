@@ -433,13 +433,42 @@ const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({
   // State to capture the case from inputData.
   const [evaluationCase, setEvaluationCase] = useState<string>("Unknown Case");
 
-  // Default metric scores for all domains.
-  const defaultMetricScores: Record<DomainKey, Record<string, number>> = {
-    domain1: {},
-    domain2: {},
-    domain3: {},
-    domain4: {},
-  };
+  // Ensure we have valid evaluation metric scores
+  const metricScoresData = useMemo(() => {
+    // Default metric scores for all domains.
+    const defaultMetricScores: Record<DomainKey, Record<string, number>> = {
+      domain1: {},
+      domain2: {},
+      domain3: {},
+      domain4: {},
+    };
+
+    // Log the incoming data for debugging
+    console.log("Processing inputData for scores:", inputData);
+
+    if (!inputData || !inputData.evaluationMetricScores) {
+      console.log("No scores data found, using defaults");
+      return defaultMetricScores;
+    }
+
+    // Check if the structure is already correct
+    if (
+      inputData.evaluationMetricScores.domain1 ||
+      inputData.evaluationMetricScores.domain2 ||
+      inputData.evaluationMetricScores.domain3 ||
+      inputData.evaluationMetricScores.domain4
+    ) {
+      console.log("Found domain structure in scores");
+      return inputData.evaluationMetricScores;
+    }
+
+    // If we get here, we have scores but no domain structure
+    console.warn(
+      "Unexpected scores structure:",
+      inputData.evaluationMetricScores
+    );
+    return defaultMetricScores;
+  }, [inputData]);
 
   // Update evaluationCase when inputData changes.
   useEffect(() => {
@@ -473,38 +502,6 @@ const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({
 
   // Determine current case.
   const currentCase = evaluationCase || "Unknown Case";
-
-  // Ensure we have valid evaluation metric scores
-  const metricScoresData = useMemo(() => {
-    // Log the incoming data for debugging
-    console.log("Processing inputData for scores:", inputData);
-
-    if (!inputData || !inputData.evaluationMetricScores) {
-      console.log("No scores data found, using defaults");
-      return defaultMetricScores;
-    }
-
-    // Check if the structure is already correct
-    if (
-      inputData.evaluationMetricScores.domain1 ||
-      inputData.evaluationMetricScores.domain2 ||
-      inputData.evaluationMetricScores.domain3 ||
-      inputData.evaluationMetricScores.domain4
-    ) {
-      console.log("Found domain structure in scores");
-      return inputData.evaluationMetricScores;
-    }
-
-    // If we get here, we have scores but no domain structure
-    console.warn(
-      "Unexpected scores structure:",
-      inputData.evaluationMetricScores
-    );
-    return defaultMetricScores;
-  }, [inputData, defaultMetricScores]);
-
-  // Debug log
-  console.log("Using metric scores:", metricScoresData);
 
   // Build an array of domain entries by computing each domain's total score from its metric scores.
   const domainEntries = (Object.keys(domainLabels) as DomainKey[]).map(
