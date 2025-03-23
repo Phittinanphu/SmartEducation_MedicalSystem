@@ -98,6 +98,7 @@ const LoginPage = () => {
             alt="Smart Healthcare Assistant"
             width={64}
             height={64}
+            priority
             className="mx-auto h-16 w-16"
           />
           <h2 className="mt-4 text-2xl font-bold">Smart Healthcare Asst.</h2>

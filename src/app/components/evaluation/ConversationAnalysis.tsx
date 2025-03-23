@@ -15,7 +15,7 @@ const ConversationAnalysis: React.FC<ConversationAnalysisProps> = ({
   data,
   onShowEvaluationMetrics,
 }) => {
-  if (!data) {
+  if (!data || data.length === 0) {
     return (
       <div
         style={{
@@ -53,6 +53,7 @@ const ConversationAnalysis: React.FC<ConversationAnalysisProps> = ({
               Conversation Analysis
             </h1>
             <button
+              type="button"
               className="px-4 py-2 bg-orange-400 text-white rounded-lg hover:bg-orange-500"
               onClick={onShowEvaluationMetrics}
             >
@@ -76,14 +77,14 @@ const ConversationAnalysis: React.FC<ConversationAnalysisProps> = ({
                   <div style={{ marginBottom: "8px" }}>
                     <strong style={{ color: "blue" }}>Question:</strong>
                     <p style={{ margin: "4px 0", color: "#555" }}>
-                      {item.question}
+                      {item.question || "No question available"}
                     </p>
                   </div>
 
                   <div>
                     <strong style={{ color: "blue" }}>Comment:</strong>
                     <p style={{ margin: "4px 0", color: "#555" }}>
-                      {item.comment}
+                      {item.comment || "No comment available"}
                     </p>
                   </div>
                 </div>

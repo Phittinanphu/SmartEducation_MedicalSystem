@@ -54,15 +54,45 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
       const completionData = await completionResponse.json();
       console.log("Completion response:", completionData);
 
+      // Extract evaluationMetricScores from the response structure
+      // First, check if it exists in the response
+      let evaluationData = null;
+
+      if (completionData && completionData.evaluationMetricScores) {
+        evaluationData = completionData.evaluationMetricScores;
+      } else if (
+        completionData &&
+        completionData.result &&
+        completionData.result.evaluationMetricScores
+      ) {
+        evaluationData = completionData.result.evaluationMetricScores;
+      }
+
+      // Log the actual extracted score data
+      console.log("Raw evaluationMetricScores extracted:", evaluationData);
+
+      // If it's still null, create a default empty structure
+      if (!evaluationData) {
+        evaluationData = {
+          domain1: {},
+          domain2: {},
+          domain3: {},
+          domain4: {},
+        };
+      }
+
       // Navigate to the submission success page with the caseId and diagnosis using query params
       const queryParams = new URLSearchParams({
         caseId: caseId,
         studentAnswer: examData?.diagnosis || "",
         correctAnswer: completionData.disease || "",
-        score: completionData.score || "",
-        evaluationMetricScores:
-          JSON.stringify(completionData.evaluationMetricScores) || "",
+        score: completionData.score?.toString() || "0",
+        evaluationMetricScores: JSON.stringify(evaluationData),
       }).toString();
+      console.log(
+        "Passing evaluationMetricScores to success page:",
+        JSON.stringify(evaluationData)
+      );
       router.push(`/submission_success?${queryParams}`);
     } catch (error) {
       console.error("Submission error:", error);
@@ -94,12 +124,14 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
       )}
       <div className="flex justify-center gap-4 mt-4">
         <button
+          type="button"
           onClick={() => setShowChatModal(true)}
           className="bg-white text-black font-semibold px-6 py-2 rounded-lg shadow border border-gray-400 transition transform hover:bg-gray-100 hover:scale-105"
         >
           View Chat History
         </button>
         <button
+          type="button"
           onClick={() => setShowExamModal(true)}
           className="bg-white text-black font-semibold px-6 py-2 rounded-lg shadow border border-gray-400 transition transform hover:bg-gray-100 hover:scale-105"
         >
@@ -108,6 +140,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
       </div>
       <div className="flex justify-between mt-4">
         <button
+          type="button"
           onClick={onPrevious}
           className="bg-gray-800 text-white px-6 py-2 rounded-lg transition transform hover:bg-gray-900 hover:scale-105"
         >
@@ -115,6 +148,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
         </button>
         <div className="flex gap-2">
           <button
+            type="button"
             onClick={handleSubmit}
             disabled={isSubmitting}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg transition transform hover:bg-blue-700 hover:scale-105"
@@ -131,6 +165,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
             <div className="flex justify-between items-center border-b border-blue-200 pb-4 mb-4">
               <h2 className="text-2xl font-semibold">Temporary Chat History</h2>
               <button
+                type="button"
                 onClick={() => setShowChatModal(false)}
                 className="text-gray-600 hover:text-gray-800 text-3xl leading-none"
               >
@@ -155,6 +190,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
             </div>
             <div className="mt-6 text-right">
               <button
+                type="button"
                 onClick={() => setShowChatModal(false)}
                 className="bg-blue-600 text-white px-5 py-2 rounded-md transition hover:bg-blue-700"
               >

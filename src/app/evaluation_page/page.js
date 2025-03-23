@@ -80,43 +80,78 @@ function EvaluationContent() {
         evaluationMetricScores,
       });
 
-      // Validate required parameters:
-      // For SubmitSuccess flow, require all five fields
-      // For ChatHistory flow, only caseId and studentAnswer are needed
-      let valid = false;
+      // ChatHistory flow only needs caseId and studentAnswer
       if (caseId && studentAnswer) {
-        if (correctAnswer || score || evaluationMetricScores) {
-          // If any of the additional submit fields exist, then all must be provided
-          if (correctAnswer && score && evaluationMetricScores) {
-            valid = true;
+        // If we already have evaluation scores, use them directly
+        if (correctAnswer && score && evaluationMetricScores) {
+          try {
+            // Try to parse the evaluationMetricScores if it's a string
+            let parsedScores;
+            try {
+              console.log(
+                "Raw evaluationMetricScores in evaluation_page:",
+                evaluationMetricScores
+              );
+
+              // Handle both string format and empty string/null cases
+              if (evaluationMetricScores && evaluationMetricScores !== "{}") {
+                parsedScores = JSON.parse(evaluationMetricScores);
+                console.log(
+                  "Successfully parsed scores from URL:",
+                  parsedScores
+                );
+              } else {
+                console.log(
+                  "Empty evaluationMetricScores, using default empty object"
+                );
+                parsedScores = {
+                  domain1: {},
+                  domain2: {},
+                  domain3: {},
+                  domain4: {},
+                };
+              }
+            } catch (error) {
+              console.error(
+                "Error parsing evaluationMetricScores from URL:",
+                error
+              );
+              console.log(
+                "Raw evaluationMetricScores:",
+                evaluationMetricScores
+              );
+              parsedScores = {
+                domain1: {},
+                domain2: {},
+                domain3: {},
+                domain4: {},
+              };
+            }
+
+            const data = {
+              case: correctAnswer,
+              studentAnswer: studentAnswer,
+              correctAnswer: correctAnswer,
+              score: score,
+              evaluationMetricScores: parsedScores,
+              conversationData: JSON.parse(
+                searchParams.get("conversationData") || "[]"
+              ),
+            };
+
+            console.log("Direct evaluation data:", data);
+            setLlmOutput(data);
+
+            if (searchParams.get("view") === "conversation") {
+              setShowConversationAnalysis(true);
+            }
+            return;
+          } catch (error) {
+            console.error("Error processing direct evaluation data:", error);
           }
-        } else {
-          // ChatHistory flow
-          valid = true;
         }
-      }
 
-      if (!valid) {
-        console.log(
-          "Incomplete required parameters. Waiting for complete data."
-        );
-        return;
-      }
-
-      // If SubmitSuccess flow (all parameters provided), use them directly
-      if (correctAnswer && score && evaluationMetricScores) {
-        const data = {
-          case: caseId,
-          studentAnswer: studentAnswer,
-          correctAnswer: correctAnswer,
-          score: score,
-          evaluationMetricScores: JSON.parse(evaluationMetricScores),
-          conversationData: [],
-        };
-        console.log("Evaluation data from SubmitSuccess flow:", data);
-        setLlmOutput(data.evaluationMetricScores);
-      } else {
-        // ChatHistory flow: call /chat/complete endpoint to retrieve LlmOutput
+        // Otherwise fetch from API
         try {
           const completionResponse = await fetch(`${BE_DNS}/chat/complete`, {
             method: "POST",
@@ -126,26 +161,61 @@ function EvaluationContent() {
               answer: studentAnswer,
             }),
           });
+
           if (!completionResponse.ok) {
             const errorData = await completionResponse.json();
             console.error("Error in completion request:", errorData);
             return;
           }
+
           const completionData = await completionResponse.json();
           console.log("Completion response:", completionData);
+
+          // Extract evaluationMetricScores from different possible locations in the response
+          let evaluationScores = null;
+
+          if (completionData && completionData.evaluationMetricScores) {
+            evaluationScores = completionData.evaluationMetricScores;
+          } else if (
+            completionData &&
+            completionData.result &&
+            completionData.result.evaluationMetricScores
+          ) {
+            evaluationScores = completionData.result.evaluationMetricScores;
+          }
+
+          // If we still don't have scores, create a default structure
+          if (!evaluationScores) {
+            evaluationScores = {
+              domain1: {},
+              domain2: {},
+              domain3: {},
+              domain4: {},
+            };
+          }
+
+          console.log("API evaluation scores extracted:", evaluationScores);
+
+          // Create the data object with the extracted scores
           const data = {
-            case: caseId,
+            case: completionData.disease || "",
             studentAnswer: studentAnswer,
             correctAnswer: completionData.disease || "",
-            score: completionData.score || "",
-            evaluationMetricScores: completionData.evaluationMetricScores || {},
-            conversationData: [],
+            score: completionData.score?.toString() || "0",
+            evaluationMetricScores: evaluationScores,
+            conversationData: completionData.result?.conversationData || [],
           };
-          console.log("Evaluation data from ChatHistory flow:", data);
-          setLlmOutput(data.evaluationMetricScores);
+
+          console.log("Evaluation data:", data);
+          setLlmOutput(data);
         } catch (error) {
           console.error("Error in ChatHistory flow completing request:", error);
         }
+      } else {
+        console.log(
+          "Incomplete required parameters. Waiting for complete data."
+        );
+        return;
       }
 
       if (searchParams.get("view") === "conversation") {

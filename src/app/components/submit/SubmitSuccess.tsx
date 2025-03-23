@@ -20,14 +20,24 @@ const SubmitSuccessScreen: React.FC<SubmitSuccessProps> = ({
   const router = useRouter();
 
   const HandleViewAnswer = () => {
+    console.log(
+      "Original evaluationMetricScores in SubmitSuccess:",
+      evaluationMetricScores
+    );
+
+    // We need to pass the evaluationMetricScores directly without modification
+    // since it's already stringified JSON from the API
     const queryParams = new URLSearchParams({
       caseId: caseId,
       studentAnswer: studentAnswer,
       correctAnswer: correctAnswer,
       score: score,
       evaluationMetricScores: evaluationMetricScores,
+      case: correctAnswer,
+      conversationData: JSON.stringify([{ question: "", comment: "" }]),
     }).toString();
 
+    console.log("Passing to evaluation_page:", evaluationMetricScores);
     router.push(`/evaluation_page?${queryParams}`);
   };
 
@@ -36,6 +46,13 @@ const SubmitSuccessScreen: React.FC<SubmitSuccessProps> = ({
   };
 
   const HandleViewConversation = () => {
+    console.log(
+      "Original evaluationMetricScores in SubmitSuccess:",
+      evaluationMetricScores
+    );
+
+    // We need to pass the evaluationMetricScores directly without modification
+    // since it's already stringified JSON from the API
     const queryParams = new URLSearchParams({
       caseId: caseId,
       studentAnswer: studentAnswer,
@@ -43,8 +60,11 @@ const SubmitSuccessScreen: React.FC<SubmitSuccessProps> = ({
       view: "conversation",
       score: score,
       evaluationMetricScores: evaluationMetricScores,
+      case: correctAnswer,
+      conversationData: JSON.stringify([{ question: "", comment: "" }]),
     }).toString();
 
+    console.log("Passing to evaluation_page:", evaluationMetricScores);
     router.push(`/evaluation_page?${queryParams}`);
   };
 
@@ -73,18 +93,21 @@ const SubmitSuccessScreen: React.FC<SubmitSuccessProps> = ({
         {/* Button */}
         <div className="flex gap-2 justify-center flex-wrap">
           <button
+            type="button"
             onClick={HandleBackToHome}
             className="w-227 h-50 mt-6 bg-blue-600 text-white text-lg font-semibold px-8 py-3 rounded-lg hover:bg-blue-700 transition duration-300"
           >
             Back To Home
           </button>
           <button
+            type="button"
             onClick={HandleViewConversation}
             className="w-227 h-50 mt-6 bg-purple-400 text-white text-lg font-semibold px-8 py-3 rounded-lg hover:bg-purple-700 transition duration-300"
           >
             View Conversation
           </button>
           <button
+            type="button"
             onClick={HandleViewAnswer}
             className="w-227 h-50 mt-6 bg-green-400 text-white text-lg font-semibold px-8 py-3 rounded-lg hover:bg-green-700 transition duration-300"
           >

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 type Message = {
   sender: string;
@@ -23,8 +23,10 @@ const ChatMode: React.FC<ChatModeProps> = ({
   onKeyPress,
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
@@ -63,8 +65,10 @@ const ChatMode: React.FC<ChatModeProps> = ({
             value={inputText}
             onChange={onInputChange}
             onKeyDown={onKeyPress}
+            {...(isMounted ? {} : { "data-has-listeners": "true" })}
           />
           <button
+            type="button"
             className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600"
             onClick={onSendMessage}
           >

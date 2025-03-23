@@ -77,15 +77,17 @@ const ExamMode: React.FC<ExamModeProps> = ({
             placeholder="Enter medications"
             value={examData.medications}
             onChange={(e) => onExamDataChange("medications", e.target.value)}
+            data-has-listeners="true"
           />
         </label>
       </div>
       <div className="flex justify-end mt-4">
         <button
+          type="button"
           className="bg-red-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-700"
           onClick={onSubmitExam}
         >
-          Submit
+          Submit Exam
         </button>
       </div>
       {showSubmitPopup && (
@@ -94,18 +96,18 @@ const ExamMode: React.FC<ExamModeProps> = ({
             <p className="text-lg font-bold">Confirm Answers</p>
             <div className="flex justify-center gap-4 mt-4">
               <button
+                type="button"
                 className="bg-gray-700 text-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-800"
                 onClick={() => setShowSubmitPopup(false)}
               >
-                NO
+                Cancel
               </button>
               <button
-                // Clicking YES will call onConfirmSubmit, which is implemented in page.js (within the chat_page folder)
-                // to remain on the same page rather than navigating away.
+                type="button"
                 className="bg-red-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-700"
                 onClick={onConfirmSubmit}
               >
-                YES
+                Confirm
               </button>
             </div>
           </div>

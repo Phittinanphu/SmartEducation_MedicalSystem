@@ -12,6 +12,12 @@ function SubmissionContent() {
   const score = searchParams.get("score");
   const evaluationMetricScores = searchParams.get("evaluationMetricScores");
 
+  // Log what we received for debugging
+  console.log(
+    "submission_success received evaluationMetricScores:",
+    evaluationMetricScores
+  );
+
   return (
     <div>
       <Navbar />

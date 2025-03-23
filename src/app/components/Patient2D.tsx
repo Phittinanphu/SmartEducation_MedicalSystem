@@ -22,7 +22,7 @@ const Patient2D: React.FC<Patient2DProps> = ({ mood }) => {
         alt={`Patient ${mood}`}
         width={200}
         height={200}
-        className="w-full max-w-[200px] h-auto object-contain transition-opacity duration-300"
+        className="w-auto h-auto max-w-[200px] object-contain transition-opacity duration-300"
       />
     </div>
   );

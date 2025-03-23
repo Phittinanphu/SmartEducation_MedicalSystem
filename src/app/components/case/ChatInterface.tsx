@@ -128,6 +128,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         {/* Mode buttons arranged side by side */}
         <div className="flex items-center gap-2 mb-4">
           <button
+            type="button"
             className={`px-4 py-2 rounded-lg shadow-md ${
               activeMode === "chat"
                 ? "bg-blue-500 text-white"
@@ -135,9 +136,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             }`}
             disabled
           >
-            Chat
+            Chat Mode
           </button>
           <button
+            type="button"
             className={`px-4 py-2 rounded-lg shadow-md ${
               activeMode === "exam"
                 ? "bg-blue-500 text-white"
@@ -145,7 +147,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             }`}
             disabled
           >
-            Exam
+            Exam Mode
           </button>
         </div>
         {activeMode === "chat" ? (
@@ -159,6 +161,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               onKeyPress={handleKeyPress}
             />
             <button
+              type="button"
               className="bg-red-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-700 mt-4"
               onClick={() => setActiveMode("exam")}
             >

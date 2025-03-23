@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
 // ---------------------------------------------------
 // TYPES & INTERFACES
@@ -441,12 +441,6 @@ const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({
     domain4: {},
   };
 
-  // Extract metric scores from inputData, or use default.
-  const metricScores: Record<
-    DomainKey,
-    Record<string, number>
-  > = inputData?.evaluationMetricScores ?? defaultMetricScores;
-
   // Update evaluationCase when inputData changes.
   useEffect(() => {
     if (inputData && inputData.case) {
@@ -454,10 +448,63 @@ const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({
     } else {
       setEvaluationCase("Unknown Case");
     }
+
+    // Debug log to check what scores are being received
+    console.log("ScoreEvaluation received inputData:", inputData);
+
+    // Log the structure of evaluationMetricScores for debugging
+    if (inputData?.evaluationMetricScores) {
+      console.log(
+        "Evaluation scores structure:",
+        inputData.evaluationMetricScores
+      );
+
+      // Check if domain1 is present and has the expected structure
+      if (inputData.evaluationMetricScores.domain1) {
+        console.log(
+          "domain1 structure:",
+          inputData.evaluationMetricScores.domain1
+        );
+      } else {
+        console.warn("domain1 is missing from evaluationMetricScores");
+      }
+    }
   }, [inputData]);
 
   // Determine current case.
   const currentCase = evaluationCase || "Unknown Case";
+
+  // Ensure we have valid evaluation metric scores
+  const metricScoresData = useMemo(() => {
+    // Log the incoming data for debugging
+    console.log("Processing inputData for scores:", inputData);
+
+    if (!inputData || !inputData.evaluationMetricScores) {
+      console.log("No scores data found, using defaults");
+      return defaultMetricScores;
+    }
+
+    // Check if the structure is already correct
+    if (
+      inputData.evaluationMetricScores.domain1 ||
+      inputData.evaluationMetricScores.domain2 ||
+      inputData.evaluationMetricScores.domain3 ||
+      inputData.evaluationMetricScores.domain4
+    ) {
+      console.log("Found domain structure in scores");
+      return inputData.evaluationMetricScores;
+    }
+
+    // If we get here, we have scores but no domain structure
+    console.warn(
+      "Unexpected scores structure:",
+      inputData.evaluationMetricScores
+    );
+    return defaultMetricScores;
+  }, [inputData, defaultMetricScores]);
+
+  // Debug log
+  console.log("Using metric scores:", metricScoresData);
 
   // Build an array of domain entries by computing each domain's total score from its metric scores.
   const domainEntries = (Object.keys(domainLabels) as DomainKey[]).map(
@@ -465,7 +512,9 @@ const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({
       const metrics = evaluationMetrics[currentCase][domainKey] || [];
       const computedScore = metrics.reduce((sum, metric) => {
         const scoreForMetric =
-          (metricScores[domainKey] && metricScores[domainKey][metric.id]) ?? 0;
+          (metricScoresData[domainKey] &&
+            metricScoresData[domainKey][metric.id]) ??
+          0;
         return sum + scoreForMetric;
       }, 0);
       const computedMax = metrics.reduce(
@@ -575,9 +624,24 @@ const ScoreEvaluation: React.FC<ScoreEvaluationProps> = ({
                             evaluationMetrics[currentCase][domainKey].map(
                               (metric, idx) => {
                                 const studentScore =
-                                  (metricScores[domainKey] &&
-                                    metricScores[domainKey][metric.id]) ??
+                                  (metricScoresData[domainKey] &&
+                                    metricScoresData[domainKey][metric.id]) ??
                                   0;
+
+                                // Debug for this specific metric
+                                if (metric.id === "1.1") {
+                                  console.log(
+                                    `Score for ${metric.id}:`,
+                                    studentScore,
+                                    "Max:",
+                                    metric.maxScore
+                                  );
+                                  console.log(
+                                    "Domain data:",
+                                    metricScoresData[domainKey]
+                                  );
+                                }
+
                                 return (
                                   <li key={idx} className="mb-2">
                                     <strong>{metric.id}.</strong>{" "}
