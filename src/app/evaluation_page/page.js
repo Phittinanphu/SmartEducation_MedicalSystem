@@ -6,7 +6,6 @@ import Navbar from "../components/Navbar2";
 import ScoreEvaluation from "../components/evaluation/ScoreEvaluation";
 import ConversationAnalysis from "../components/evaluation/ConversationAnalysis";
 import PatientInfo from "../components/case/PatientinfoEVA";
-import Cookies from "js-cookie";
 import { Suspense } from "react";
 
 function EvaluationContent() {
@@ -15,8 +14,6 @@ function EvaluationContent() {
     useState(false);
   const [patientData, setPatientData] = useState(null);
   const searchParams = useSearchParams();
-  const router = useRouter();
-  const userId = Cookies.get("user_id");
   const BE_DNS = process.env.NEXT_PUBLIC_BE_DNS;
 
   // Extract patient data from URL parameters on component mount
