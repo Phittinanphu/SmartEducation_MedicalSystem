@@ -4,6 +4,9 @@ import React from "react";
 interface ConversationItem {
   question: string; // Student's question
   comment: string; // LLM's comment
+  userMessage?: string; // Alternative field name for question
+  aiMessage?: string; // Alternative field name for comment
+  timestamp?: string; // Optional timestamp for when the conversation occurred
 }
 
 interface ConversationAnalysisProps {
@@ -15,7 +18,8 @@ const ConversationAnalysis: React.FC<ConversationAnalysisProps> = ({
   data,
   onShowEvaluationMetrics,
 }) => {
-  if (!data) {
+  // Handle case when no data is available
+  if (!data || data.length === 0) {
     return (
       <div
         style={{
@@ -31,6 +35,15 @@ const ConversationAnalysis: React.FC<ConversationAnalysisProps> = ({
       </div>
     );
   }
+
+  // Log the received data for debugging
+  console.log("Conversation data received in component:", data);
+
+  // Check if we have actual conversation data or placeholder
+  const isPlaceholder =
+    data.length === 1 &&
+    data[0].question?.includes("currently unavailable") &&
+    data[0].comment?.includes("currently unavailable");
 
   return (
     <div className="flex w-full">
@@ -53,6 +66,7 @@ const ConversationAnalysis: React.FC<ConversationAnalysisProps> = ({
               Conversation Analysis
             </h1>
             <button
+              type="button"
               className="px-4 py-2 bg-orange-400 text-white rounded-lg hover:bg-orange-500"
               onClick={onShowEvaluationMetrics}
             >
@@ -60,36 +74,62 @@ const ConversationAnalysis: React.FC<ConversationAnalysisProps> = ({
             </button>
           </div>
 
-          <div className="flex">
-            <div className="flex-1" style={{ marginTop: "20px" }}>
-              {data.map((item, index) => (
-                <div
-                  key={index}
-                  style={{
-                    marginBottom: "16px",
-                    backgroundColor: "#ffffff",
-                    borderRadius: "8px",
-                    padding: "16px",
-                    boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-                  }}
-                >
-                  <div style={{ marginBottom: "8px" }}>
-                    <strong style={{ color: "blue" }}>Question:</strong>
-                    <p style={{ margin: "4px 0", color: "#555" }}>
-                      {item.question}
-                    </p>
-                  </div>
-
-                  <div>
-                    <strong style={{ color: "blue" }}>Comment:</strong>
-                    <p style={{ margin: "4px 0", color: "#555" }}>
-                      {item.comment}
-                    </p>
-                  </div>
-                </div>
-              ))}
+          {isPlaceholder ? (
+            <div
+              className="mt-6 p-6 bg-gray-100 rounded-lg text-center"
+              style={{ fontSize: "18px", color: "#555" }}
+            >
+              <p className="mb-4">
+                This feature is currently being developed. Conversation analysis
+                will be available in a future update.
+              </p>
+              <p>
+                When available, this section will show a detailed analysis of
+                your conversation with the patient.
+              </p>
             </div>
-          </div>
+          ) : (
+            <div className="flex">
+              <div className="flex-1" style={{ marginTop: "20px" }}>
+                {data.map((item, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      marginBottom: "16px",
+                      backgroundColor: "#ffffff",
+                      borderRadius: "8px",
+                      padding: "16px",
+                      boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                    }}
+                  >
+                    <div style={{ marginBottom: "8px" }}>
+                      <strong style={{ color: "blue" }}>Question:</strong>
+                      <p style={{ margin: "4px 0", color: "#555" }}>
+                        {item.question ||
+                          item.userMessage ||
+                          "No question available"}
+                      </p>
+                    </div>
+
+                    <div>
+                      <strong style={{ color: "blue" }}>Comment:</strong>
+                      <p style={{ margin: "4px 0", color: "#555" }}>
+                        {item.comment ||
+                          item.aiMessage ||
+                          "No comment available"}
+                      </p>
+                    </div>
+
+                    {item.timestamp && (
+                      <div className="mt-2 text-xs text-gray-500">
+                        {new Date(item.timestamp).toLocaleString()}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

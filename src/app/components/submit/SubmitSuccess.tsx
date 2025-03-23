@@ -4,10 +4,21 @@ import { useRouter } from "next/navigation";
 
 interface SubmitSuccessProps {
   caseId: string;
-  studentAnswer: string;
-  correctAnswer: string;
-  score: string;
-  evaluationMetricScores: string;
+  studentAnswer?: string;
+  correctAnswer?: string;
+  score?: string;
+  evaluationMetricScores?: string;
+  patientData?: {
+    Age?: string;
+    Name?: string;
+    Occupation?: string;
+    Reason?: string;
+    Sex?: string;
+    Symptoms?: string;
+    Gender?: string; // Alternative field name
+    mood?: "normal" | "happy" | "sad" | "angry" | "scared";
+    [key: string]: string | undefined; // More specific type for additional fields
+  };
 }
 
 const SubmitSuccessScreen: React.FC<SubmitSuccessProps> = ({
@@ -16,19 +27,67 @@ const SubmitSuccessScreen: React.FC<SubmitSuccessProps> = ({
   correctAnswer,
   score,
   evaluationMetricScores,
+  patientData,
 }) => {
   const router = useRouter();
 
-  const HandleViewAnswer = () => {
-    const queryParams = new URLSearchParams({
-      caseId: caseId,
-      studentAnswer: studentAnswer,
-      correctAnswer: correctAnswer,
-      score: score,
-      evaluationMetricScores: evaluationMetricScores,
-    }).toString();
+  const navigateToEvaluation = (view?: string) => {
+    console.log(
+      "Original evaluationMetricScores in SubmitSuccess:",
+      evaluationMetricScores
+    );
+    console.log("Patient data in SubmitSuccess:", patientData);
 
+    // This temporary placeholder will be replaced by actual data when the backend is updated
+    const conversationData = [
+      {
+        question: "This function is currently unavailable.",
+        comment: "This function is currently unavailable.",
+      },
+    ];
+
+    // Create an object with all parameters that will be included
+    const paramsObj: Record<string, string> = {
+      caseId,
+      case: correctAnswer || "",
+    };
+
+    // Only add these parameters if they are defined
+    if (studentAnswer) paramsObj.studentAnswer = studentAnswer;
+    if (correctAnswer) paramsObj.correctAnswer = correctAnswer;
+    if (score) paramsObj.score = score;
+    if (evaluationMetricScores)
+      paramsObj.evaluationMetricScores = evaluationMetricScores;
+    if (view) paramsObj.view = view;
+
+    // Always stringify the conversation data
+    paramsObj.conversationData = JSON.stringify(conversationData);
+
+    // Carefully handle the patient data to ensure it's stringified correctly
+    if (patientData && Object.keys(patientData).length > 0) {
+      try {
+        paramsObj.patientData = JSON.stringify(patientData);
+        console.log("Stringified patient data:", paramsObj.patientData);
+      } catch (error) {
+        console.error("Error stringifying patient data:", error);
+        paramsObj.patientData = JSON.stringify({});
+      }
+    } else {
+      console.warn("No patient data available to pass to evaluation page");
+      paramsObj.patientData = JSON.stringify({});
+    }
+
+    const queryParams = new URLSearchParams(paramsObj).toString();
+
+    console.log("Passing data to evaluation page:", {
+      conversationData: JSON.stringify(conversationData),
+      patientData: paramsObj.patientData,
+    });
     router.push(`/evaluation_page?${queryParams}`);
+  };
+
+  const HandleViewAnswer = () => {
+    navigateToEvaluation();
   };
 
   const HandleBackToHome = () => {
@@ -36,16 +95,7 @@ const SubmitSuccessScreen: React.FC<SubmitSuccessProps> = ({
   };
 
   const HandleViewConversation = () => {
-    const queryParams = new URLSearchParams({
-      caseId: caseId,
-      studentAnswer: studentAnswer,
-      correctAnswer: correctAnswer,
-      view: "conversation",
-      score: score,
-      evaluationMetricScores: evaluationMetricScores,
-    }).toString();
-
-    router.push(`/evaluation_page?${queryParams}`);
+    navigateToEvaluation("conversation");
   };
 
   return (
@@ -73,18 +123,21 @@ const SubmitSuccessScreen: React.FC<SubmitSuccessProps> = ({
         {/* Button */}
         <div className="flex gap-2 justify-center flex-wrap">
           <button
+            type="button"
             onClick={HandleBackToHome}
             className="w-227 h-50 mt-6 bg-blue-600 text-white text-lg font-semibold px-8 py-3 rounded-lg hover:bg-blue-700 transition duration-300"
           >
             Back To Home
           </button>
           <button
+            type="button"
             onClick={HandleViewConversation}
             className="w-227 h-50 mt-6 bg-purple-400 text-white text-lg font-semibold px-8 py-3 rounded-lg hover:bg-purple-700 transition duration-300"
           >
             View Conversation
           </button>
           <button
+            type="button"
             onClick={HandleViewAnswer}
             className="w-227 h-50 mt-6 bg-green-400 text-white text-lg font-semibold px-8 py-3 rounded-lg hover:bg-green-700 transition duration-300"
           >
