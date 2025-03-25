@@ -89,7 +89,7 @@ const SignUp = () => {
       <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-6">
         <div className="flex flex-col items-center">
           <Image
-            src="/logo.png"
+            src="/Logo2.png"
             alt="Smart Healthcare Logo"
             width={96}
             height={96}
