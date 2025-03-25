@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { useRouter } from "next/navigation";
+import { getFullUrl } from "../../utils/navigation";
 
 interface SubmitSuccessProps {
   caseId: string;
@@ -83,7 +84,7 @@ const SubmitSuccessScreen: React.FC<SubmitSuccessProps> = ({
       conversationData: JSON.stringify(conversationData),
       patientData: paramsObj.patientData,
     });
-    router.push(`/evaluation_page?${queryParams}`);
+    router.push(getFullUrl(`/evaluation_page?${queryParams}`));
   };
 
   const HandleViewAnswer = () => {
@@ -91,7 +92,7 @@ const SubmitSuccessScreen: React.FC<SubmitSuccessProps> = ({
   };
 
   const HandleBackToHome = () => {
-    router.push("/main");
+    router.push(getFullUrl("/main"));
   };
 
   const HandleViewConversation = () => {

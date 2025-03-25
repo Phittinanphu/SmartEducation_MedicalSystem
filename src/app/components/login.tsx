@@ -9,6 +9,7 @@ import { CardContent } from "./card";
 // Import for Google Auth
 import { signIn } from "next-auth/react";
 import Image from "next/image";
+import { getFullUrl } from "../utils/navigation";
 
 interface FormEvent extends React.FormEvent<HTMLFormElement> {
   preventDefault: () => void;
@@ -30,7 +31,7 @@ const LoginPage = () => {
     setError("");
     try {
       const result = await signIn("google", {
-        callbackUrl: "/main",
+        callbackUrl: getFullUrl("/main"),
         redirect: false,
       });
 
@@ -38,7 +39,7 @@ const LoginPage = () => {
         throw new Error(result.error);
       }
 
-      router.push("/main");
+      router.push(getFullUrl("/main"));
     } catch (err) {
       console.error("Google sign-in error:", err);
       setError("An error occurred with Google sign-in. Please try again.");
@@ -69,7 +70,7 @@ const LoginPage = () => {
         throw new Error(result.error);
       }
 
-      router.push("/main");
+      router.push(getFullUrl("/main"));
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message || "Failed to login. Please try again.");
@@ -173,7 +174,7 @@ const LoginPage = () => {
             Don&apos;t have an account yet?{" "}
             <span
               className="text-blue-500 cursor-pointer"
-              onClick={() => router.push("/signup")}
+              onClick={() => router.push(getFullUrl("/signup"))}
               style={{ pointerEvents: isLoading ? "none" : "auto" }}
             >
               Sign up

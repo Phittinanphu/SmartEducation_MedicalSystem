@@ -3,6 +3,7 @@ import React from "react";
 import { useRouter } from "next/navigation"; // Import useRouter from next/navigation
 import Navbar from "../components/Navbar2"; // ✅ Import Navbar
 import Image from "next/image";
+import { getFullUrl } from "../utils/navigation";
 
 const Report = ({ patientName }: { patientName: string }) => {
   const router = useRouter(); // Initialize router
@@ -11,7 +12,7 @@ const Report = ({ patientName }: { patientName: string }) => {
     .replace(/ /g, "-")}-report.pdf`;
 
   const handleButtonClick = () => {
-    router.push("/evaluation_page"); // Router push to /evaluation_page
+    router.push(getFullUrl("/evaluation_page")); // Router push to /evaluation_page
   };
 
   return (

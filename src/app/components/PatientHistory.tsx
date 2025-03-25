@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { getFullUrl } from "../utils/navigation";
 
 interface HistoryItem {
   case_id: string;
@@ -60,11 +61,11 @@ const PatientHistory: React.FC = () => {
   }, [session]);
 
   const handleViewAnswer = (caseId: string) => {
-    router.push(`/evaluation_page?case=${caseId}`);
+    router.push(getFullUrl(`/evaluation_page?case=${caseId}`));
   };
 
   const handleViewReport = (caseId: string) => {
-    router.push(`/report?case=${caseId}`);
+    router.push(getFullUrl(`/report?case=${caseId}`));
   };
 
   // Function to get profile data, prioritizing direct name and symptom fields

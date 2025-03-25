@@ -4,6 +4,7 @@ import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { getFullUrl } from "../../utils/navigation";
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
@@ -27,7 +28,7 @@ export default function SignIn() {
       if (result.error) {
         setError('Invalid email or password');
       } else {
-        router.push('/dashboard');
+        router.push(getFullUrl('/dashboard'));
       }
     } catch (err) {
       setError('An error occurred. Please try again.');

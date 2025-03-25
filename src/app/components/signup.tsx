@@ -6,6 +6,7 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
+import { getFullUrl } from "../utils/navigation";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -68,7 +69,7 @@ const SignUp = () => {
       setSuccess("Registration successful! Redirecting to login...");
 
       setTimeout(() => {
-        router.push("/login");
+        router.push(getFullUrl("/login"));
       }, 2000);
     } catch (err) {
       setError(

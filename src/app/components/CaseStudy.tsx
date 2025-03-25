@@ -2,6 +2,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { getFullUrl } from "../utils/navigation";
 
 const CaseStudyScreen: React.FC = () => {
   const router = useRouter();
@@ -54,7 +55,7 @@ const CaseStudyScreen: React.FC = () => {
         mood: "normal", // Default mood - you can change based on symptoms if desired
       }).toString();
 
-      router.push(`/chat_page?${queryParams}`);
+      router.push(getFullUrl(`/chat_page?${queryParams}`));
     } catch (error) {
       console.error("Error during case study creation:", error);
     }

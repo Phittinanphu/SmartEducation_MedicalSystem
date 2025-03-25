@@ -3,13 +3,14 @@ import React from "react";
 import { useRouter } from "next/navigation"; // Use "next/navigation" in App Router
 import { Search } from "lucide-react";
 import Image from "next/image";
+import { getFullUrl } from "../utils/navigation";
 
 const SearchSection: React.FC = () => {
   const router = useRouter();
 
   // Navigation handler
   const handleNavigation = (path: string) => {
-    router.push(path);
+    router.push(getFullUrl(path));
   };
 
   return (
