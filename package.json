@@ -34,6 +34,7 @@
     "requirement": "^0.0.8",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
+    "tar": "^7.5.3",
     "three": "^0.174.0",
     "uuid": "^11.1.0"
   },
