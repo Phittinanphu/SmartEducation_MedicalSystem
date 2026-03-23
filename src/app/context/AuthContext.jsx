@@ -3,6 +3,7 @@
 import { createContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { signOut } from 'next-auth/react'
+import { getFullUrl } from "../utils/navigation"
 
 /**
  * Authentication Context
@@ -64,11 +65,11 @@ export function AuthProvider({ children }) {
 			setUser(null)
 			
 			// Redirect to login
-			router.push('/login')
+			router.push(getFullUrl('/login'))
 		} catch (error) {
 			console.error('Error in logout:', error)
 			// Force redirect to login even if there's an error
-			router.push('/login')
+			router.push(getFullUrl('/login'))
 		}
 	}
 

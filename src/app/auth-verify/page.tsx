@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { verifyAuthentication, getGoogleAccountData } from "../lib/auth-utils";
 import { query } from "../lib/postgres";
 import { Session } from "next-auth";
+import { getFullUrl } from "../utils/navigation";
 
 interface TestResult {
   name: string;
@@ -193,7 +194,7 @@ export default function AuthVerificationPage() {
 
           <div className="flex justify-between">
             <button
-              onClick={() => router.push("/profile")}
+              onClick={() => router.push(getFullUrl("/profile"))}
               className="bg-blue-600 text-white py-2 px-4 rounded-md font-semibold transition hover:bg-blue-700"
             >
               Go to Profile

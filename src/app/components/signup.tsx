@@ -6,6 +6,7 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
+import { getFullUrl } from "../utils/navigation";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -68,7 +69,7 @@ const SignUp = () => {
       setSuccess("Registration successful! Redirecting to login...");
 
       setTimeout(() => {
-        router.push("/login");
+        router.push(getFullUrl("/login"));
       }, 2000);
     } catch (err) {
       setError(
@@ -88,7 +89,7 @@ const SignUp = () => {
       <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-6">
         <div className="flex flex-col items-center">
           <Image
-            src="/logo.png"
+            src="/Logo2.png"
             alt="Smart Healthcare Logo"
             width={96}
             height={96}

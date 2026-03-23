@@ -9,6 +9,7 @@ import {
   logoutUser,
 } from "../lib/auth-utils";
 import Image from "next/image";
+import { getFullUrl } from "../utils/navigation";
 
 interface GoogleAccountData {
   id: number;
@@ -32,7 +33,7 @@ export default function ProfilePage() {
   useEffect(() => {
     // Redirect to login if not authenticated
     if (status === "unauthenticated") {
-      router.push("/login");
+      router.push(getFullUrl("/login"));
       return;
     }
 
@@ -154,7 +155,7 @@ export default function ProfilePage() {
               </h3>
               <div className="flex flex-col space-y-2">
                 <button
-                  onClick={() => router.push("/main")}
+                  onClick={() => router.push(getFullUrl("/main"))}
                   className="bg-blue-600 text-white py-2 rounded-md font-semibold transition hover:bg-blue-700"
                 >
                   Go to Dashboard

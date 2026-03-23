@@ -3,6 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import pool, { query, generateUUID } from "@/app/lib/postgresql";
 import bcrypt from "bcryptjs";
+import { getFullUrl } from "@/app/utils/navigation";
 
 /**
  * NextAuth.js Configuration
@@ -26,7 +27,7 @@ import bcrypt from "bcryptjs";
  * 6. Select "Web application" as the application type
  * 7. Add authorized redirect URIs:
  *    - http://localhost:3000/api/auth/callback/google (for development)
- *    - https://yourdomain.com/api/auth/callback/google (for production)
+ *    - http://143.198.91/api/auth/callback/google (for production)
  * 8. Copy the generated Client ID and Client Secret to your .env file
  */
 
@@ -48,7 +49,7 @@ const handler = NextAuth({
         }
 
         try {
-          await query("SELECT * FROM users WHERE email = $1", [
+          const result = await query("SELECT * FROM users WHERE email = $1", [
             credentials.email,
           ]);
 
@@ -115,9 +116,6 @@ const handler = NextAuth({
         if (token.googleId) {
           session.user.googleId = token.googleId;
         }
-
-        // Set cookie here to ensure it's always set immediately
-        // This won't work directly here - we'll add client-side code
       }
       return session;
     },
@@ -211,6 +209,12 @@ const handler = NextAuth({
       }
 
       return true;
+    },
+    async redirect({ url, baseUrl }) {
+      // If the URL starts with the base URL, return it as-is
+      if (url.startsWith(baseUrl)) return url;
+      // Otherwise, make sure to use the full URL with IP in production
+      return getFullUrl(url);
     },
   },
   session: {

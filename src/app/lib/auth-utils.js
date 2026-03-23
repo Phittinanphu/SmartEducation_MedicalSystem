@@ -11,6 +11,7 @@ import { getSession, signOut } from "next-auth/react";
 import { query } from "./postgres";
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
+import { getFullUrl } from "../utils/navigation";
 
 /**
  * Verifies if a user is authenticated
@@ -71,11 +72,11 @@ export async function updateGoogleLoginTimestamp(googleId) {
 export async function logoutUser(router) {
   try {
     await signOut({ redirect: false });
-    router.push("/login");
+    router.push(getFullUrl("/login"));
   } catch (error) {
     console.error("Error during logout:", error);
     // Force redirect to login even if there's an error
-    router.push("/login");
+    router.push(getFullUrl("/login"));
   }
 }
 

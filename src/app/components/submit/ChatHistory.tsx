@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { getFullUrl } from "../../utils/navigation";
 
 interface ChatHistoryProps {
   examData: {
@@ -117,7 +118,7 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({
         patientData: patientDataString,
       });
 
-      router.push(`/submission_success?${queryParams}`);
+      router.push(getFullUrl(`/submission_success?${queryParams}`));
     } catch (error) {
       console.error("Submission error:", error);
 
